@@ -1,22 +1,17 @@
-package no.nav.klage.dokument.service.distribusjon
+package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.OpplastetDokument
-import no.nav.klage.dokument.service.MellomlagerService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
 @Transactional
-class VedtakDistribusjonService(
-    private val applicationEventPublisher: ApplicationEventPublisher,
-    private val dokDistFordelingClient: DokDistFordelingClient,
-    private val mellomlagerService: MellomlagerService,
+class BrevMottakerDistribusjonService(
+    private val dokDistFordelingClient: DokDistFordelingClient
 ) {
 
     companion object {
@@ -27,9 +22,7 @@ class VedtakDistribusjonService(
         const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
     }
 
-    fun distribuerJournalpostTilMottaker(
-        brevMottaker: BrevMottaker
-    ): BrevMottaker {
+    fun distribuerJournalpostTilMottaker(brevMottaker: BrevMottaker): BrevMottaker {
         try {
             val dokdistReferanse: UUID =
                 dokDistFordelingClient.distribuerJournalpost(brevMottaker.journalpostId!!).bestillingsId
@@ -38,11 +31,5 @@ class VedtakDistribusjonService(
             logger.warn("Kunne ikke distribuere journalpost ${brevMottaker.journalpostId}")
             throw e
         }
-    }
-
-    fun slettMellomlagretDokument(
-        opplastetDokument: OpplastetDokument
-    ) {
-        mellomlagerService.deleteDocumentAsSystemUser(opplastetDokument.mellomlagerId)
     }
 }

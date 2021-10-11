@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.repositories
+package no.nav.klage.dokument.service.saksbehandler
 
 import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.EnheterMedLovligeTemaer
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 import kotlin.system.measureTimeMillis
 
 @Service
-class SaksbehandlerRepository(
+class SaksbehandlerService(
     private val azureGateway: AzureGateway,
     private val axsysGateway: AxsysGateway,
     @Value("\${ROLE_GOSYS_OPPGAVE_BEHANDLER}") private val gosysSaksbehandlerRole: String,

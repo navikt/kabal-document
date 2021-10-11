@@ -24,41 +24,8 @@ class SafGraphQlClient(
     }
 
     @Retryable
-    fun getDokumentoversiktBruker(
-        fnr: String,
-        tema: List<Tema>,
-        pageSize: Int,
-        previousPageRef: String? = null
-    ): DokumentoversiktBruker {
-        return runWithTimingAndLogging {
-            safWebClient.post()
-                .uri("graphql")
-                .header(
-                    HttpHeaders.AUTHORIZATION,
-                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithSafScope()}"
-                )
-                .header("Nav-Callid", tracer.currentSpan().context().traceIdString())
-
-                .bodyValue(hentDokumentoversiktBrukerQuery(fnr, tema, pageSize, previousPageRef))
-                .retrieve()
-                .bodyToMono<DokumentoversiktBrukerResponse>()
-                .block()
-                ?.let { logErrorsFromSaf(it, fnr, pageSize, previousPageRef); it }
-                ?.let { failOnErrors(it); it }
-                ?.data!!.dokumentoversiktBruker
-        }
-    }
-
-    @Retryable
-    fun getJournalpostAsSaksbehandler(journalpostId: String): Journalpost? {
-        return runWithTimingAndLogging {
-            val token = tokenUtil.getSaksbehandlerAccessTokenWithSafScope()
-            getJournalpostWithToken(journalpostId, token)
-        }
-    }
-
-    @Retryable
     fun getJournalpostAsSystembruker(journalpostId: String): Journalpost? {
+        //TODO: Her kan vi vel bruke det nye auth-opplegget til Saf?
         return runWithTimingAndLogging {
             val token = tokenUtil.getStsSystembrukerToken()
             getJournalpostWithToken(journalpostId, token)
@@ -83,24 +50,6 @@ class SafGraphQlClient(
         if (response.data == null || response.errors != null && response.errors.map { it.extensions.classification }
                 .contains("ValidationError")) {
             throw RuntimeException("getJournalpost failed")
-        }
-    }
-
-    private fun failOnErrors(response: DokumentoversiktBrukerResponse) {
-        if (response.data == null || response.errors != null) {
-            throw RuntimeException("getDokumentoversiktBruker failed")
-        }
-    }
-
-    private fun logErrorsFromSaf(
-        response: DokumentoversiktBrukerResponse,
-        fnr: String,
-        pageSize: Int,
-        previousPageRef: String?
-    ) {
-        if (response.errors != null) {
-            logger.error("Error from SAF, see securelogs")
-            secureLogger.error("Error from SAF when making call with following parameters: fnr=$fnr, pagesize=$pageSize, previousPageRef=$previousPageRef. Error is ${response.errors}")
         }
     }
 

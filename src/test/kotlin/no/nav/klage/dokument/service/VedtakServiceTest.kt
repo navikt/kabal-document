@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.service
 
 import io.mockk.mockk
+import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.AttachmentValidator
 import java.util.*
 
@@ -10,7 +11,10 @@ class VedtakServiceTest {
 
     val mellomlagerService = mockk<MellomlagerService>()
 
-    val vedtakService = VedtakService(
+    val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
+
+    val dokumentEnhetService = DokumentEnhetService(
+        dokumentEnhetRepository,
         attachmentValidator,
         mellomlagerService,
     )

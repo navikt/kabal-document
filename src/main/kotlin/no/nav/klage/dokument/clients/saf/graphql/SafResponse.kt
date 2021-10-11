@@ -3,14 +3,10 @@ package no.nav.klage.dokument.clients.saf.graphql
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDateTime
 
-data class DokumentoversiktBrukerResponse(val data: DokumentoversiktBrukerDataWrapper?, val errors: List<Error>?)
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Error(val message: String, val extensions: Extensions)
 
 data class Extensions(val classification: String)
-
-data class DokumentoversiktBrukerDataWrapper(val dokumentoversiktBruker: DokumentoversiktBruker)
 
 data class DokumentoversiktBruker(val journalposter: List<Journalpost>, val sideInfo: SideInfo)
 

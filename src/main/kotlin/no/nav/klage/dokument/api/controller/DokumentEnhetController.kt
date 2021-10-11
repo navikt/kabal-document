@@ -4,15 +4,10 @@ import io.swagger.annotations.Api
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.*
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
-import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
-import no.nav.klage.dokument.repositories.InnloggetSaksbehandlerRepository
 import no.nav.klage.dokument.service.DokumentEnhetService
-import no.nav.klage.dokument.service.MellomlagerService
-import no.nav.klage.dokument.service.VedtakService
+import no.nav.klage.dokument.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -22,10 +17,8 @@ import java.util.*
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 @RequestMapping("/dokumentenheter")
 class DokumentEnhetController(
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository,
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val dokumentEnhetMapper: DokumentEnhetMapper,
-    private val vedtakService: VedtakService,
-    private val mellomlagerService: MellomlagerService,
     private val dokumentEnhetService: DokumentEnhetService
 ) {
 
@@ -38,7 +31,12 @@ class DokumentEnhetController(
     fun createDokumentEnhet(
         @ModelAttribute input: DokumentEnhetInput
     ): DokumentEnhetView {
-        //TODO:
+        dokumentEnhetService.opprettDokumentEnhet(
+            innloggetSaksbehandlerService.getInnloggetIdent(),
+            input.brevMottakere,
+            input.journalfoeringData
+        )
+
         return DokumentEnhetView()
     }
 
@@ -48,16 +46,22 @@ class DokumentEnhetController(
         @ModelAttribute input: FilInput
     ): HovedDokumentEditedView? {
 
-        //TODO: Gjenstår å lagre endringer
-        val dokumentEnhet = dokumentEnhetService.findById(dokumentEnhetId)
-            ?: throw JournalpostNotFoundException("Dokument er ikke lastet opp")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
-            vedtakService.knyttVedtaksFilTilVedtak(
-                dokumentEnhet,
+            dokumentEnhetService.mellomlagreNyttHovedDokument(
+                dokumentEnhetId,
                 input.file,
-                innloggetSaksbehandlerRepository.getInnloggetIdent()
+                innloggetSaksbehandlerService.getInnloggetIdent()
             )
         )
+    }
+
+    @ResponseBody
+    @GetMapping("/{dokumentEnhetId}/innhold")
+    fun getHovedDokument(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+    ): ResponseEntity<ByteArray> {
+
+        return dokumentEnhetMapper.mapToByteArray(dokumentEnhetService.hentMellomlagretHovedDokument(dokumentEnhetId))
     }
 
     @DeleteMapping("/{dokumentEnhetId}/innhold")
@@ -65,13 +69,10 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): HovedDokumentEditedView {
 
-        //TODO: Gjenstår å lagre endringer
-        val dokumentEnhet = dokumentEnhetService.findById(dokumentEnhetId)
-            ?: throw JournalpostNotFoundException("Dokument er ikke lastet opp")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
-            vedtakService.slettFilTilknyttetVedtak(
-                dokumentEnhet,
-                innloggetSaksbehandlerRepository.getInnloggetIdent()
+            dokumentEnhetService.slettMellomlagretHovedDokument(
+                dokumentEnhetId,
+                innloggetSaksbehandlerService.getInnloggetIdent()
             )
         )
     }
@@ -81,34 +82,50 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
     ): DokumentEnhetFullfoertView {
 
-        //TODO: Gjenstår å lagre endringer
-        val dokumentEnhet = dokumentEnhetService.findById(dokumentEnhetId)
-            ?: throw JournalpostNotFoundException("Dokument er ikke lastet opp")
+        //TODO: Kan enten motta JournalfoeringData her eller i create?
 
-        val klagebehandling = vedtakService.ferdigstillVedtak(
-            dokumentEnhet,
-            innloggetSaksbehandlerRepository.getInnloggetIdent()
+        return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(
+            dokumentEnhetService.ferdigstillDokumentEnhet(
+                dokumentEnhetId,
+                innloggetSaksbehandlerService.getInnloggetIdent()
+            )
         )
-        return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(klagebehandling)
+    }
+
+    @PutMapping("/{dokumentEnhetId}/brevmottakere")
+    fun updateBrevMottakere(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+        @ModelAttribute input: BrevmottakereInput
+    ) {
+    }
+
+    @PutMapping("/{dokumentEnhetId}/journalfoeringdata")
+    fun updateJournalfoeringData(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+        @ModelAttribute input: JournalfoeringDataInput
+    ) {
+    }
+
+    @PostMapping("/{dokumentEnhetId}/vedlegg")
+    fun uploadVedlegg(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+        @ModelAttribute input: FilInput
+    ) {
+    }
+
+    @DeleteMapping("/{dokumentEnhetId}/vedlegg/{vedleggId}")
+    fun deleteHovedDokument(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+        @PathVariable("vedleggId") vedleggId: UUID,
+    ) {
     }
 
     @ResponseBody
-    @GetMapping("/{dokumentEnhetId}/innhold")
-    fun getHovedDokument(
+    @GetMapping("/{dokumentEnhetId}/vedlegg/{vedleggId}")
+    fun getVedlegg(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
-    ): ResponseEntity<ByteArray> {
-        val mellomlagerId = dokumentEnhetService.findById(dokumentEnhetId)?.hovedDokument?.mellomlagerId
-            ?: throw JournalpostNotFoundException("Dokument er ikke lastet opp")
-
-        val mellomlagretDokument = mellomlagerService.getUploadedDocument(mellomlagerId)
-        val responseHeaders = HttpHeaders()
-        responseHeaders.contentType = mellomlagretDokument.contentType
-        responseHeaders.add("Content-Disposition", "inline; filename=${mellomlagretDokument.title}")
-        return ResponseEntity(
-            mellomlagretDokument.content,
-            responseHeaders,
-            HttpStatus.OK
-        )
+        @PathVariable("vedleggId") vedleggId: UUID,
+    ) {
     }
 
 }

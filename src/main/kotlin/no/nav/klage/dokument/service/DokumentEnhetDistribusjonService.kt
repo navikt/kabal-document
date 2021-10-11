@@ -1,7 +1,8 @@
-package no.nav.klage.dokument.service.distribusjon
+package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.OpplastetDokument
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -11,9 +12,10 @@ import java.time.LocalDateTime
 
 @Service
 @Transactional
-class KlagebehandlingDistribusjonService(
-    private val vedtakDistribusjonService: VedtakDistribusjonService,
-    private val vedtakJournalfoeringService: VedtakJournalfoeringService
+class DokumentEnhetDistribusjonService(
+    private val brevMottakerDistribusjonService: BrevMottakerDistribusjonService,
+    private val vedtakJournalfoeringService: BrevMottakerJournalfoeringService,
+    private val mellomlagerService: MellomlagerService
 ) {
 
     companion object {
@@ -32,7 +34,7 @@ class KlagebehandlingDistribusjonService(
                 dokumentEnhet
                     .let { distribuerDokumentEnhet(it) }
                     .let { slettMellomlagretDokument(it) }
-                    .let { markerVedtakSomFerdigDistribuert(it) }
+                    .let { markerDokumentEnhetSomFerdigDistribuert(it) }
             } else {
                 dokumentEnhet
             }
@@ -67,6 +69,7 @@ class KlagebehandlingDistribusjonService(
     private fun opprettJournalpostForBrevMottaker(
         brevMottaker: BrevMottaker, dokumentEnhet: DokumentEnhet
     ): BrevMottaker {
+        //TODO: Save brevmottaker
         return vedtakJournalfoeringService.opprettJournalpostForBrevMottaker(
             brevMottaker,
             dokumentEnhet.hovedDokument!!, //TODO
@@ -75,23 +78,33 @@ class KlagebehandlingDistribusjonService(
     }
 
     private fun ferdigstillJournalpostForBrevMottaker(brevMottaker: BrevMottaker): BrevMottaker {
+        //TODO: Save brevmottaker
         return vedtakJournalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottaker)
     }
 
     private fun distribuerVedtakTilBrevmottaker(brevMottaker: BrevMottaker): BrevMottaker {
         logger.debug("Distribuerer til brevmottaker ${brevMottaker.id}")
-        return vedtakDistribusjonService.distribuerJournalpostTilMottaker(brevMottaker)
+        //TODO: Save brevmottaker
+        return brevMottakerDistribusjonService.distribuerJournalpostTilMottaker(brevMottaker)
     }
 
+    //TODO: Flytt til dokumentEnhetService?
     fun slettMellomlagretDokument(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
-        dokumentEnhet.hovedDokument?.let { vedtakDistribusjonService.slettMellomlagretDokument(it) }
+        dokumentEnhet.hovedDokument?.let { slettMellomlagretDokument(it) }
+        //TODO: Save dokumentEnhet
         return dokumentEnhet.copy(hovedDokument = null)
     }
 
-    private fun markerVedtakSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+    //TODO: Flytt til dokumentEnhetService?
+    private fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         logger.debug("Markerer dokumentEnhet ${dokumentEnhet.id} som ferdig distribuert")
+        //TODO: Save dokumentEnhet
         return dokumentEnhet.copy(avsluttet = LocalDateTime.now())
+    }
+
+    private fun slettMellomlagretDokument(opplastetDokument: OpplastetDokument) {
+        mellomlagerService.deleteDocumentAsSystemUser(opplastetDokument.mellomlagerId)
     }
 }
 

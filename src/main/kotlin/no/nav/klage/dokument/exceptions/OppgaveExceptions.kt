@@ -4,7 +4,7 @@ class DuplicateOversendelseException(msg: String) : RuntimeException(msg)
 
 class OppgaveNotFoundException(msg: String) : RuntimeException(msg)
 
-class JournalpostNotFoundException(msg: String) : ValidationException(msg)
+class DokumentEnhetNotFoundException(msg: String) : ValidationException(msg)
 
 class DocumentNotFoundInStorageException(msg: String) : ValidationException(msg)
 
@@ -22,7 +22,7 @@ class MeldingNotFoundException(msg: String) : RuntimeException(msg)
 
 class SaksdokumentNotFoundException(msg: String) : RuntimeException(msg)
 
-class VedtakFinalizedException(msg: String) : RuntimeException(msg)
+class DokumentEnhetFinalizedException(msg: String) : RuntimeException(msg)
 
 open class ValidationException(msg: String) : RuntimeException(msg)
 

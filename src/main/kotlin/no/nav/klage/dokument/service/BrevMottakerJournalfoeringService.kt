@@ -1,14 +1,13 @@
-package no.nav.klage.dokument.service.distribusjon
+package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.clients.saf.graphql.Journalstatus
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
 import no.nav.klage.dokument.exceptions.JournalpostFinalizationException
-import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
-import no.nav.klage.dokument.gateway.JournalpostGateway
-import no.nav.klage.dokument.service.MellomlagerService
+import no.nav.klage.dokument.gateway.JoarkGateway
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -17,9 +16,9 @@ import java.time.LocalDateTime
 
 @Service
 @Transactional
-class VedtakJournalfoeringService(
+class BrevMottakerJournalfoeringService(
     private val mellomlagerService: MellomlagerService,
-    private val journalpostGateway: JournalpostGateway,
+    private val joarkGateway: JoarkGateway,
     private val safClient: SafGraphQlClient,
 ) {
 
@@ -38,7 +37,7 @@ class VedtakJournalfoeringService(
     ): BrevMottaker {
         val documentInStorage = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
         if (brevMottaker.journalpostId == null) {
-            val journalpostId = journalpostGateway.createJournalpostAsSystemUser(
+            val journalpostId = joarkGateway.createJournalpostAsSystemUser(
                 journalfoeringData,
                 documentInStorage,
                 brevMottaker
@@ -49,15 +48,13 @@ class VedtakJournalfoeringService(
         return brevMottaker
     }
 
-    fun ferdigstillJournalpostForBrevMottaker(
-        brevMottaker: BrevMottaker
-    ): BrevMottaker {
+    fun ferdigstillJournalpostForBrevMottaker(brevMottaker: BrevMottaker): BrevMottaker {
 
         try {
             val journalpost = safClient.getJournalpostAsSystembruker(brevMottaker.journalpostId!!)
-                ?: throw JournalpostNotFoundException("Journalpost med id ${brevMottaker.journalpostId} finnes ikke")
+                ?: throw DokumentEnhetNotFoundException("Journalpost med id ${brevMottaker.journalpostId} finnes ikke")
             if (journalpost.journalstatus != Journalstatus.FERDIGSTILT) {
-                journalpostGateway.finalizeJournalpostAsSystemUser(
+                joarkGateway.finalizeJournalpostAsSystemUser(
                     brevMottaker.journalpostId,
                     SYSTEM_JOURNALFOERENDE_ENHET
                 )

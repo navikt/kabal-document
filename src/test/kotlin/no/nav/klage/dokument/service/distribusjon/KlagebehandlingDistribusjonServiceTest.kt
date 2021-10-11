@@ -8,9 +8,8 @@ import no.nav.klage.dokument.clients.joark.JoarkClient
 import no.nav.klage.dokument.clients.klagefileapi.FileApiClient
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.db.TestPostgresqlContainer
-import no.nav.klage.dokument.gateway.JournalpostGateway
-import no.nav.klage.dokument.service.MellomlagerService
-import no.nav.klage.dokument.service.VedtakService
+import no.nav.klage.dokument.gateway.JoarkGateway
+import no.nav.klage.dokument.service.*
 import no.nav.klage.dokument.util.AttachmentValidator
 import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.TokenUtil
@@ -31,7 +30,7 @@ import java.util.*
 
 @ActiveProfiles("local")
 @Import(KlagebehandlingDistribusjonServiceTest.MyTestConfiguration::class)
-@SpringBootTest(classes = [VedtakDistribusjonService::class, KlagebehandlingDistribusjonService::class, VedtakService::class, VedtakDistribusjonService::class])
+@SpringBootTest(classes = [BrevMottakerDistribusjonService::class, DokumentEnhetDistribusjonService::class, DokumentEnhetService::class, BrevMottakerDistribusjonService::class])
 @EnableJpaRepositories(basePackages = ["no.nav.klage.dokument.repositories"])
 @EntityScan("no.nav.klage.oppgave.domain")
 @AutoConfigureDataJpa
@@ -76,7 +75,7 @@ internal class KlagebehandlingDistribusjonServiceTest {
 
 
     @SpykBean
-    lateinit var klagebehandlingDistribusjonService: KlagebehandlingDistribusjonService
+    lateinit var dokumentEnhetDistribusjonService: DokumentEnhetDistribusjonService
 
     @MockkBean
     lateinit var dokDistFordelingClient: DokDistFordelingClient
@@ -90,20 +89,20 @@ internal class KlagebehandlingDistribusjonServiceTest {
     private val journalpostId = "5678"
 
     @SpykBean
-    lateinit var vedtakDistribusjonService: VedtakDistribusjonService
+    lateinit var brevMottakerDistribusjonService: BrevMottakerDistribusjonService
 
     @SpykBean
-    lateinit var vedtakJournalfoeringService: VedtakJournalfoeringService
+    lateinit var vedtakJournalfoeringService: BrevMottakerJournalfoeringService
 
 
     @MockkBean
     lateinit var mellomlagerService: MellomlagerService
 
     @SpykBean
-    lateinit var journalpostGateway: JournalpostGateway
+    lateinit var joarkGateway: JoarkGateway
 
     @SpykBean
-    lateinit var vedtakService: VedtakService
+    lateinit var dokumentEnhetService: DokumentEnhetService
 
     /*
     @Test

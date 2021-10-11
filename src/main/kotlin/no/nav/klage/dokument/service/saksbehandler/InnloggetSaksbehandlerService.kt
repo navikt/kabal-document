@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.repositories
+package no.nav.klage.dokument.service.saksbehandler
 
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.util.TokenUtil
@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
-class InnloggetSaksbehandlerRepository(
-    private val saksbehandlerRepository: SaksbehandlerRepository,
+class InnloggetSaksbehandlerService(
     private val tokenUtil: TokenUtil,
     @Value("\${ROLE_GOSYS_OPPGAVE_BEHANDLER}") private val gosysSaksbehandlerRole: String,
     @Value("\${ROLE_KLAGE_SAKSBEHANDLER}") private val saksbehandlerRole: String,

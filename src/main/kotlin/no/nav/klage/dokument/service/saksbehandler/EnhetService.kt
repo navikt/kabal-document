@@ -1,11 +1,11 @@
-package no.nav.klage.dokument.repositories
+package no.nav.klage.dokument.service.saksbehandler
 
 import no.nav.klage.dokument.gateway.AxsysGateway
 import org.springframework.stereotype.Service
 
 @Service
-class EnhetRepository(
-    private val saksbehandlerRepository: SaksbehandlerRepository,
+class EnhetService(
+    private val saksbehandlerService: SaksbehandlerService,
     private val axsysGateway: AxsysGateway
 ) {
 
@@ -15,13 +15,13 @@ class EnhetRepository(
 
     fun getLedereIEnhet(enhetId: String): List<String> {
         return axsysGateway.getSaksbehandlereIEnhet(enhetId)
-            .filter { saksbehandlerRepository.erLeder(it.navIdent) }
+            .filter { saksbehandlerService.erLeder(it.navIdent) }
             .map { it.navIdent }
     }
 
     fun getFagansvarligeIEnhet(enhetId: String): List<String> {
         return axsysGateway.getSaksbehandlereIEnhet(enhetId)
-            .filter { saksbehandlerRepository.erFagansvarlig(it.navIdent) }
+            .filter { saksbehandlerService.erFagansvarlig(it.navIdent) }
             .map { it.navIdent }
     }
 

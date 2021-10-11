@@ -8,9 +8,10 @@ data class DokumentEnhet(
     val id: UUID = UUID.randomUUID(),
     val eier: SaksbehandlerIdent,
     val journalfoeringData: JournalfoeringData,
-    val brevMottakere: List<BrevMottaker> = emptyList(),
+    val brevMottakere: List<BrevMottaker>,
     val hovedDokument: OpplastetDokument? = null,
     val vedlegg: List<OpplastetDokument> = emptyList(),
+    
     val avsluttetAvSaksbehandler: LocalDateTime? = null,
     val avsluttet: LocalDateTime? = null,
     val modified: LocalDateTime = LocalDateTime.now()

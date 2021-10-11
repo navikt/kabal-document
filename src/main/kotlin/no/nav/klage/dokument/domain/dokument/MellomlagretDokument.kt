@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.domain
+package no.nav.klage.dokument.domain.dokument
 
 import org.springframework.http.MediaType
 

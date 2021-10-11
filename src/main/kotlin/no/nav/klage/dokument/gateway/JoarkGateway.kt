@@ -2,9 +2,9 @@ package no.nav.klage.dokument.gateway
 
 import brave.Tracer
 import no.nav.klage.dokument.clients.joark.JoarkClient
-import no.nav.klage.dokument.domain.MellomlagretDokument
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.domain.joark.*
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.util.PdfUtils
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class JournalpostGateway(
+class JoarkGateway(
     private val joarkClient: JoarkClient,
     private val tracer: Tracer,
     private val pdfUtils: PdfUtils

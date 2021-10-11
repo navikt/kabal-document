@@ -5,9 +5,13 @@ import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.HovedDokumentEditedView
 import no.nav.klage.dokument.api.view.OpplastetFilMetadataView
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
@@ -40,6 +44,17 @@ class DokumentEnhetMapper {
         return DokumentEnhetFullfoertView(
             dokumentEnhet.modified,
             dokumentEnhet.avsluttetAvSaksbehandler!!
+        )
+    }
+
+    fun mapToByteArray(mellomlagretDokument: MellomlagretDokument): ResponseEntity<ByteArray> {
+        val responseHeaders = HttpHeaders()
+        responseHeaders.contentType = mellomlagretDokument.contentType
+        responseHeaders.add("Content-Disposition", "inline; filename=${mellomlagretDokument.title}")
+        return ResponseEntity(
+            mellomlagretDokument.content,
+            responseHeaders,
+            HttpStatus.OK
         )
     }
 }

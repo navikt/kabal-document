@@ -1,7 +1,7 @@
 package no.nav.klage.dokument.config
 
 import no.nav.klage.dokument.exceptions.NoSaksbehandlerRoleException
-import no.nav.klage.dokument.repositories.InnloggetSaksbehandlerRepository
+import no.nav.klage.dokument.service.saksbehandler.InnloggetSaksbehandlerService
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.AsyncHandlerInterceptor
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 class SaksbehandlerRolleInterceptor(
-    private val innloggetSaksbehandlerRepository: InnloggetSaksbehandlerRepository
+    private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService
 ) : AsyncHandlerInterceptor {
 
     @Throws(Exception::class)
@@ -21,7 +21,7 @@ class SaksbehandlerRolleInterceptor(
         response: HttpServletResponse,
         handler: Any?
     ): Boolean {
-        val isSaksbehandler = innloggetSaksbehandlerRepository.erSaksbehandler()
+        val isSaksbehandler = innloggetSaksbehandlerService.erSaksbehandler()
         if (isSaksbehandler) {
             return true
         }
