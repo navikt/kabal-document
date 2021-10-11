@@ -18,12 +18,14 @@ data class DokumentEnhet(
     val modified: LocalDateTime = LocalDateTime.now()
 ) {
     fun erDistribuertTil(brevMottaker: BrevMottaker): Boolean =
-        distribusjonAvBrevMottaker(brevMottaker)?.dokdistReferanse != null
+        findBrevMottakerDistribusjon(brevMottaker)?.dokdistReferanse != null
 
-    fun distribusjonAvBrevMottaker(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
+    fun findBrevMottakerDistribusjon(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
         brevMottakerDistribusjoner.find { it.brevMottakerId == brevMottaker.id }
 
-    fun erDistribuertTilAlle(): Boolean {
-        return true
-    }
+    fun validateDistribuertTilAlle(): DokumentEnhet =
+        if (brevMottakere.all { erDistribuertTil(it) }) {
+            this
+        } else throw RuntimeException("DokumentEnhet ikke distribuert til alle brevmottakere")
+
 }

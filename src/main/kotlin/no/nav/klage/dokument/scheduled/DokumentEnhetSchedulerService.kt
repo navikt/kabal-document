@@ -3,7 +3,7 @@ package no.nav.klage.dokument.scheduled
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
-import no.nav.klage.dokument.service.DokumentEnhetDistribusjonService
+import no.nav.klage.dokument.service.distribusjon.DokumentEnhetDistribusjonService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
@@ -19,7 +19,8 @@ class DokumentEnhetSchedulerService(
 
         val dokumentEnheter: List<DokumentEnhet> = dokumentEnhetRepository.findDokumentEnheterForDistribusjon()
         dokumentEnheter.forEach {
-            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(it)
+            val distribuertDokumentEnhet = dokumentEnhetDistribusjonService.distribuerDokumentEnhet(it)
+            dokumentEnhetRepository.save(distribuertDokumentEnhet)
         }
     }
 }

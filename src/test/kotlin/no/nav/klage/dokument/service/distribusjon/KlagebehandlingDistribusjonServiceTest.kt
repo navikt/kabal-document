@@ -9,7 +9,8 @@ import no.nav.klage.dokument.clients.joark.JoarkClient
 import no.nav.klage.dokument.clients.klagefileapi.FileApiClient
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.db.TestPostgresqlContainer
-import no.nav.klage.dokument.service.*
+import no.nav.klage.dokument.service.DokumentEnhetService
+import no.nav.klage.dokument.service.MellomlagerService
 import no.nav.klage.dokument.util.AttachmentValidator
 import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.TokenUtil
