@@ -1,13 +1,11 @@
 package no.nav.klage.dokument.service
 
+import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
 import no.nav.klage.dokument.clients.saf.graphql.Journalstatus
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.JournalfoeringData
-import no.nav.klage.dokument.domain.dokument.OpplastetDokument
+import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
 import no.nav.klage.dokument.exceptions.JournalpostFinalizationException
-import no.nav.klage.dokument.gateway.JoarkGateway
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -18,7 +16,7 @@ import java.time.LocalDateTime
 @Transactional
 class BrevMottakerJournalfoeringService(
     private val mellomlagerService: MellomlagerService,
-    private val joarkGateway: JoarkGateway,
+    private val joarkGateway: DefaultJoarkGateway,
     private val safClient: SafGraphQlClient,
 ) {
 
@@ -34,36 +32,31 @@ class BrevMottakerJournalfoeringService(
         brevMottaker: BrevMottaker,
         opplastetDokument: OpplastetDokument,
         journalfoeringData: JournalfoeringData
-    ): BrevMottaker {
+    ): JournalpostId {
         val documentInStorage = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
-        if (brevMottaker.journalpostId == null) {
-            val journalpostId = joarkGateway.createJournalpostAsSystemUser(
-                journalfoeringData,
-                documentInStorage,
-                brevMottaker
-            )
-
-            return brevMottaker.copy(journalpostId = journalpostId)
-        }
-        return brevMottaker
+        return joarkGateway.createJournalpostAsSystemUser(
+            journalfoeringData,
+            documentInStorage,
+            brevMottaker
+        )
     }
 
-    fun ferdigstillJournalpostForBrevMottaker(brevMottaker: BrevMottaker): BrevMottaker {
-
+    fun ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
         try {
-            val journalpost = safClient.getJournalpostAsSystembruker(brevMottaker.journalpostId!!)
-                ?: throw DokumentEnhetNotFoundException("Journalpost med id ${brevMottaker.journalpostId} finnes ikke")
-            if (journalpost.journalstatus != Journalstatus.FERDIGSTILT) {
+            //TODO Innføre Gateway
+            val journalpost = safClient.getJournalpostAsSystembruker(brevMottakerDistribusjon.journalpostId.value)
+                ?: throw DokumentEnhetNotFoundException("Journalpost med id ${brevMottakerDistribusjon.journalpostId.value} finnes ikke")
+            if (journalpost.journalstatus != Journalstatus.FERDIGSTILT) { //TODO: Kan vi istedet sjekke brevMottakerDistribusjon.ferdigstiltIJoark ?
                 joarkGateway.finalizeJournalpostAsSystemUser(
-                    brevMottaker.journalpostId,
+                    brevMottakerDistribusjon.journalpostId,
                     SYSTEM_JOURNALFOERENDE_ENHET
                 )
+                brevMottakerDistribusjon.copy(ferdigstiltIJoark = LocalDateTime.now())
+            } else {
+                brevMottakerDistribusjon.copy(ferdigstiltIJoark = LocalDateTime.now()) //TODO Kan denne datoen hentes fra saf?
             }
         } catch (e: Exception) {
-            logger.warn("Kunne ikke ferdigstille journalpost ${brevMottaker.journalpostId}", e)
+            logger.warn("Kunne ikke ferdigstille journalpost ${brevMottakerDistribusjon.journalpostId.value}", e)
             throw JournalpostFinalizationException("Klarte ikke å ferdigstille journalpost")
         }
-
-        return brevMottaker.copy(ferdigstiltIJoark = LocalDateTime.now())
-    }
 }

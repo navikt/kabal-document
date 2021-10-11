@@ -11,8 +11,19 @@ data class DokumentEnhet(
     val brevMottakere: List<BrevMottaker>,
     val hovedDokument: OpplastetDokument? = null,
     val vedlegg: List<OpplastetDokument> = emptyList(),
-    
+
+    val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
     val avsluttetAvSaksbehandler: LocalDateTime? = null,
     val avsluttet: LocalDateTime? = null,
     val modified: LocalDateTime = LocalDateTime.now()
-)
+) {
+    fun erDistribuertTil(brevMottaker: BrevMottaker): Boolean =
+        distribusjonAvBrevMottaker(brevMottaker)?.dokdistReferanse != null
+
+    fun distribusjonAvBrevMottaker(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
+        brevMottakerDistribusjoner.find { it.brevMottakerId == brevMottaker.id }
+
+    fun erDistribuertTilAlle(): Boolean {
+        return true
+    }
+}

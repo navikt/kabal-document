@@ -19,7 +19,7 @@ class DokumentEnhetSchedulerService(
 
         val dokumentEnheter: List<DokumentEnhet> = dokumentEnhetRepository.findDokumentEnheterForDistribusjon()
         dokumentEnheter.forEach {
-            dokumentEnhetDistribusjonService.distribuerKlagebehandling(it)
+            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(it)
         }
     }
 }

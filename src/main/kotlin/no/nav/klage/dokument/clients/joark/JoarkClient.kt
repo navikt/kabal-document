@@ -1,10 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
 import brave.Tracer
-import no.nav.klage.dokument.domain.joark.AvbrytJournalpostPayload
-import no.nav.klage.dokument.domain.joark.FerdigstillJournalpostPayload
-import no.nav.klage.dokument.domain.joark.Journalpost
-import no.nav.klage.dokument.domain.joark.JournalpostResponse
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger

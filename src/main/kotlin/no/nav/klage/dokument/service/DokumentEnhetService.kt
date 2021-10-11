@@ -69,10 +69,10 @@ class DokumentEnhetService(
         return dokumentEnhetRepository.save(
             dokumentEnhet.copy(
                 hovedDokument = OpplastetDokument(
-                    mellomlagerId,
-                    LocalDateTime.now(),
-                    fil.size,
-                    fil.name
+                    mellomlagerId = mellomlagerId,
+                    opplastet = LocalDateTime.now(),
+                    size = fil.size,
+                    name = fil.name
                 )
             )
         )
@@ -135,4 +135,22 @@ class DokumentEnhetService(
             )
         )
     }
+
+    fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet =
+        if (dokumentEnhet.erDistribuertTilAlle()) {
+            logger.debug("Markerer dokumentEnhet ${dokumentEnhet.id} som ferdig distribuert")
+            dokumentEnhet.copy(avsluttet = LocalDateTime.now())
+        } else {
+            dokumentEnhet
+        }
+
+    fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet =
+        if (dokumentEnhet.erDistribuertTilAlle()) {
+            logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
+            dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
+            dokumentEnhet.copy(hovedDokument = null)
+        } else {
+            dokumentEnhet
+        }
+
 }

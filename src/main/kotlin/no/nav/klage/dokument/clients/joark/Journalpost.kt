@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.domain.joark
+package no.nav.klage.dokument.clients.joark
 
 import no.nav.klage.dokument.domain.kodeverk.Tema
 

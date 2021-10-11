@@ -4,11 +4,11 @@ import brave.Tracer
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
+import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
 import no.nav.klage.dokument.clients.joark.JoarkClient
 import no.nav.klage.dokument.clients.klagefileapi.FileApiClient
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.db.TestPostgresqlContainer
-import no.nav.klage.dokument.gateway.JoarkGateway
 import no.nav.klage.dokument.service.*
 import no.nav.klage.dokument.util.AttachmentValidator
 import no.nav.klage.dokument.util.PdfUtils
@@ -99,7 +99,7 @@ internal class KlagebehandlingDistribusjonServiceTest {
     lateinit var mellomlagerService: MellomlagerService
 
     @SpykBean
-    lateinit var joarkGateway: JoarkGateway
+    lateinit var joarkGateway: DefaultJoarkGateway
 
     @SpykBean
     lateinit var dokumentEnhetService: DokumentEnhetService
