@@ -9,7 +9,42 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "100M"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
 spec:
-  image: {{ image }}
+  image: {{image}}
+  gcp:
+    sqlInstances:
+      - name: kabal-document
+        type: POSTGRES_12
+        maintenanceWindow:
+          day: 1
+          hour: 4
+        tier: {{db_tier}}
+        diskType: SSD
+        highAvailability: {{db_ha}}
+        diskSize: {{db_size}}
+        diskAutoresize: true
+        autoBackupTime: "02:00"
+        cascadingDelete: false
+        databases:
+          - name: kabal-document
+    azure:
+      application:
+        enabled: true
+        tenant: {{tenant}}
+        claims:
+          groups:
+            - id: {{ROLE_KLAGE_SAKSBEHANDLER}}
+            - id: {{ROLE_KLAGE_FAGANSVARLIG}}
+            - id: {{ROLE_KLAGE_LEDER}}
+            - id: {{ROLE_KLAGE_MERKANTIL}}
+            - id: {{ROLE_KLAGE_FORTROLIG}}
+            - id: {{ROLE_KLAGE_STRENGT_FORTROLIG}}
+            - id: {{ROLE_KLAGE_EGEN_ANSATT}}
+            - id: {{ROLE_GOSYS_OPPGAVE_BEHANDLER}}
+            {{#if ROLE_ADMIN}}
+            - id: {{ROLE_ADMIN}}
+            {{/if}}
+          extra:
+            - NAVident
   port: 7093
   startup:
     failureThreshold: 20
@@ -35,9 +70,9 @@ spec:
       cpu: 400m
       memory: 256Mi
   ingresses:
-  {{#each ingresses as |ingress|}}
+    {{#each ingresses as |ingress|}}
     - {{ingress}}
-  {{/each}}
+    {{/each}}
   replicas:
     min: 2
     max: 4
@@ -50,8 +85,33 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: kabal-api
         - application: kabal-frontend
-  env:
-    - name: SPRING_PROFILES_ACTIVE
-      value: {{springProfile}}
+        - application: kabal-api
+    outbound:
+      rules:
+        - application: kabal-file-api
+        - application: clamav
+          namespace: clamav
+      external:
+        {{#each externalHosts}}
+        - host: {{host}}
+          {{#if ports}}
+          ports:
+            {{#each ports}}
+            - name: {{name}}
+              port: {{port}}
+              protocol: {{protocol}}
+            {{/each}}
+          {{/if}}
+        {{/each}}
+  envFrom:
+    - secret: srvklage-saksbeh
+    - secret: sts-apikey
+    - secret: pdl-apikey
+    - secret: slack-url
+    - secret: slack-channel-id
+    - secret: norg2
+    - secret: axsys
+    - secret: journalpost-apikey
+    - secret: ereg
+    - secret: dokdist-apikey

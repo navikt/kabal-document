@@ -4,11 +4,6 @@ PDL_BASE_URL: https://pdl-api.prod-fss-pub.nais.io/graphql
 PDL_SCOPE: prod-fss.pdl.pdl-api
 
 NORG2_API_V1_URL: https://api-gw.oera.no/norg2/api/v1
-PROXY_APP_CLIENT_ID: 981be1fb-1379-465f-bddc-7563197aed84
-
-OPPGAVE_APP_CLIENT_ID: 50346823-61a0-49e7-ad89-ea2b1a0e90f8
-
-OPPGAVE_URL: https://api-gw.oera.no/oppgave/api/v1/oppgaver
 
 EREG_URL: https://api-gw.oera.no/ereg/api
 
@@ -16,14 +11,6 @@ AXSYS_URL: https://api-gw.oera.no/axsys/api/v2
 AXSYS_CLUSTER: prod-fss
 AXSYS_NAMESPACE: org
 AXSYS_APP: axsys
-
-VEDTAK_FATTET_TOPIC: klage.vedtak-fattet.v1
-DVH_STATISTIKK_TOPIC: klage.kabal-statistikk.v1
-
-AIVEN_ES_HOST: elastic-klage-oppgave-es-nav-prod.aivencloud.com
-AIVEN_ES_PORT: 26482
-AIVEN_ES_SCHEME: https
-AIVEN_ES_USE_SSL: true
 
 SAF_BASE_URL: https://saf.prod-fss-pub.nais.io/
 SAF_APP_CLIENT_ID: feb9588b-a3d6-4d2f-8809-97284046ae72
@@ -45,6 +32,3 @@ JOARK_SERVICE_URL: https://api-gw.oera.no/dokarkiv/rest/journalpostapi/v1/journa
 DOKDIST_SERVICE_URL: https://api-gw.oera.no/dokdistfordeling/rest/v1/distribuerjournalpost
 
 CLAM_AV_URL: http://clamav.clamav/scan
-
-INFLUX_HOST: influx-klage-nav-prod.aivencloud.com
-INFLUX_PORT: 26482
