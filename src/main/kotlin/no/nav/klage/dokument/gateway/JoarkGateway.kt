@@ -97,12 +97,11 @@ class JoarkGateway(
             )
         }
     }
-
-    //TODO: Kan SakenGjelder være org?? Datatypen åpner for det!
+    
     private fun createBruker(journalfoeringData: JournalfoeringData): Bruker {
         return Bruker(
             journalfoeringData.sakenGjelder.value,
-            BrukerIdType.FNR
+            if (journalfoeringData.sakenGjelder.type == PartIdType.VIRKSOMHET) BrukerIdType.ORGNR else BrukerIdType.FNR
         )
     }
 
