@@ -22,7 +22,7 @@ class SchedulingConfiguration {
         return JdbcTemplateLockProvider(
             JdbcTemplateLockProvider.Configuration.builder()
                 .withJdbcTemplate(JdbcTemplate(dataSource))
-                .withTableName("klage.shedlock")
+                .withTableName("document.shedlock")
                 .usingDbTime()
                 .build()
         )
