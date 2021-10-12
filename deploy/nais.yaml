@@ -45,7 +45,7 @@ spec:
           {{/if}}
         extra:
           - NAVident
-  port: 7093
+  port: 7094
   startup:
     failureThreshold: 20
     initialDelay: 30

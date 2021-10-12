@@ -52,7 +52,7 @@ org:
     SQL_SLOW: info
 
 server:
-  port: 7081
+  port: 7094
   error:
     whitelabel:
       enabled: false
