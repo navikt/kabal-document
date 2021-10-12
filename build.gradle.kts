@@ -7,7 +7,6 @@ val logstashVersion = "6.6"
 val springSleuthVersion = "3.0.0"
 val unleashVersion = "3.3.3"
 val problemSpringWebStartVersion = "0.26.2"
-val kafkaAvroVersion = "5.5.2"
 val pdfboxVersion = "2.0.19"
 val springRetryVersion = "1.3.1"
 val springMockkVersion = "3.0.1"
@@ -63,14 +62,9 @@ dependencies {
     implementation("org.ehcache:ehcache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    
+
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
-
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation("io.confluent:kafka-avro-serializer:$kafkaAvroVersion") {
-        exclude(group = "org.slf4j", module = "slf4j-log4j12")
-    }
 
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
     implementation("io.springfox:springfox-boot-starter:$springFoxVersion")
@@ -111,9 +105,7 @@ dependencies {
     }
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:elasticsearch:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
 }
 
