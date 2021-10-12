@@ -8,6 +8,7 @@ externalHosts:
   - host: saf.dev-fss-pub.nais.io
   - host: pdl-api.dev-fss-pub.nais.io
 springProfile: dev-gcp
+kafka_pool: nav-dev
 tenant: trygdeetaten.no
 db_tier: db-custom-1-3840
 db_size: 10
