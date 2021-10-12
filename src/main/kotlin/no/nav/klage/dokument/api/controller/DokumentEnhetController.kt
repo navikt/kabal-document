@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@Api(tags = ["kabal-api"])
+@Api(tags = ["kabal-document"])
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 @RequestMapping("/dokumentenheter")
 class DokumentEnhetController(

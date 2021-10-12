@@ -1,1 +1,1 @@
-rootProject.name = "kabal-api"
+rootProject.name = "kabal-document"

@@ -79,7 +79,7 @@ class AivenKafkaConfiguration(
 
     private fun egenAnsattConsumerProps(): Map<String, Any> {
         return mapOf(
-            ConsumerConfig.GROUP_ID_CONFIG to "kabal-api",
+            ConsumerConfig.GROUP_ID_CONFIG to "kabal-document",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to ErrorHandlingDeserializer::class.java,

@@ -22,7 +22,7 @@ class OpenApiConfig {
             .pathMapping("/")
             .groupName("external")
             .genericModelSubstitutes(ResponseEntity::class.java)
-            .tags(Tag("kabal-api-external", "Eksternt api for Kabal"))
+            .tags(Tag("kabal-document-external", "Eksternt api for Kabal"))
     }
 
     @Bean
@@ -34,7 +34,7 @@ class OpenApiConfig {
             .pathMapping("/")
             .groupName("internal")
             .genericModelSubstitutes(ResponseEntity::class.java)
-            .tags(Tag("kabal-api", "API for saksbehandlere ved klageinstansen"))
+            .tags(Tag("kabal-document", "API for saksbehandlere ved klageinstansen"))
     }
 
 }
