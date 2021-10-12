@@ -115,3 +115,8 @@ spec:
     - secret: journalpost-apikey
     - secret: ereg
     - secret: dokdist-apikey
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: {{springProfile}}
+    - name: JAVA_OPTS
+      value: "-Xms512m -Xmx2048m"

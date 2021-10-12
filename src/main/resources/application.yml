@@ -76,7 +76,7 @@ management:
     tags:
       application: ${spring.application.name}
 
-SERVICE_USER_USERNAME: srvkabal-doc
+SERVICE_USER_USERNAME: srvklage-saksbeh
 
 no.nav.security.jwt:
   issuer:
