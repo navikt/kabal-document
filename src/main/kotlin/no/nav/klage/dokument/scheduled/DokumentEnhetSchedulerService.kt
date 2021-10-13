@@ -20,7 +20,7 @@ class DokumentEnhetSchedulerService(
         dokumentEnhetIder.forEach {
             val dokumentEnhet = dokumentEnhetRepository.findById(it)!!
             val distribuertDokumentEnhet = dokumentEnhetDistribusjonService.distribuerDokumentEnhet(dokumentEnhet)
-            dokumentEnhetRepository.save(distribuertDokumentEnhet)
+            dokumentEnhetRepository.saveOrUpdate(distribuertDokumentEnhet)
         }
     }
 }

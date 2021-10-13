@@ -29,6 +29,8 @@ class DokumentEnhetService(
         private val secureLogger = getSecureLogger()
     }
 
+    //TODO: Logge hvem som gjør hva. Via logger eller lagre i db eller begge deler?
+
     fun slettMellomlagretHovedDokument(
         dokumentEnhetId: UUID,
         innloggetIdent: SaksbehandlerIdent
@@ -37,14 +39,17 @@ class DokumentEnhetService(
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
-        //TODO: Burde man sjekket tilgang til EnhetOgTema, ikke bare enhet?
-        //tilgangService.verifyInnloggetSaksbehandlersTilgangTilEnhet(klagebehandling.tildeling!!.enhet!!)
+        //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
 
         if (dokumentEnhet.hovedDokument == null) {
             return dokumentEnhet
         }
+        val oppdatertDokumentEnhet = dokumentEnhetRepository.saveOrUpdate(dokumentEnhet.copy(hovedDokument = null))
+
+        //Sletter ikke det gamle før vi vet at det nye er lagret
         mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument.mellomlagerId)
-        return dokumentEnhetRepository.save(dokumentEnhet.copy(hovedDokument = null))
+
+        return oppdatertDokumentEnhet
     }
 
     fun mellomlagreNyttHovedDokument(
@@ -56,17 +61,14 @@ class DokumentEnhetService(
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
-        //TODO tilgangService.verifyInnloggetSaksbehandlersTilgangTilEnhet(klagebehandling.tildeling!!.enhet!!)
+        //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
+
         attachmentValidator.validateAttachment(fil)
         if (dokumentEnhet.avsluttetAvSaksbehandler != null) throw DokumentEnhetFinalizedException("Klagebehandlingen er avsluttet")
 
-        if (dokumentEnhet.hovedDokument != null) {
-            mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument.mellomlagerId)
-        }
-
         val mellomlagerId = mellomlagerService.uploadDocument(fil)
 
-        return dokumentEnhetRepository.save(
+        val oppdatertDokumentEnhet = dokumentEnhetRepository.saveOrUpdate(
             dokumentEnhet.copy(
                 hovedDokument = OpplastetDokument(
                     mellomlagerId = mellomlagerId,
@@ -76,6 +78,13 @@ class DokumentEnhetService(
                 )
             )
         )
+
+        //Sletter ikke det gamle før vi vet at det nye er lagret
+        if (dokumentEnhet.hovedDokument != null) {
+            mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument.mellomlagerId)
+        }
+
+        return oppdatertDokumentEnhet
     }
 
     fun ferdigstillDokumentEnhet(
@@ -86,7 +95,7 @@ class DokumentEnhetService(
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
-        verifyTilgangTilAaFerdigstilleDokumentEnhet(dokumentEnhet, innloggetIdent)
+        //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
         if (dokumentEnhet.avsluttetAvSaksbehandler != null) throw DokumentEnhetFinalizedException("Dokumentenheten er avsluttet")
 
         //Sjekker om fil er lastet opp til mellomlager
@@ -95,12 +104,15 @@ class DokumentEnhetService(
         }
 
         //Her settes en markør som så brukes async i kallet klagebehandlingRepository.findByAvsluttetIsNullAndAvsluttetAvSaksbehandlerIsNotNull
-        return dokumentEnhetRepository.save(dokumentEnhet.copy(avsluttetAvSaksbehandler = LocalDateTime.now()))
+        return dokumentEnhetRepository.saveOrUpdate(dokumentEnhet.copy(avsluttetAvSaksbehandler = LocalDateTime.now()))
     }
 
-    fun hentMellomlagretHovedDokument(dokumentEnhetId: UUID): MellomlagretDokument {
+    fun hentMellomlagretHovedDokument(dokumentEnhetId: UUID, innloggetIdent: SaksbehandlerIdent): MellomlagretDokument {
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
+
+        //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
+
         if (dokumentEnhet.hovedDokument == null) {
             throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")
         }
@@ -108,17 +120,17 @@ class DokumentEnhetService(
         return mellomlagerService.getUploadedDocument(dokumentEnhet.hovedDokument.mellomlagerId)
     }
 
-    private fun verifyTilgangTilAaFerdigstilleDokumentEnhet(
+    private fun verifyTilgangTilDokumentEnhet(
         dokumentEnhet: DokumentEnhet,
         innloggetIdent: SaksbehandlerIdent
     ) {
         if (dokumentEnhet.eier != innloggetIdent) {
             secureLogger.error(
-                "{} prøvde å fullføre vedtak for klagebehandling {}, men er ikke medunderskriver.",
+                "{} prøvde å ferdigstille dokumentenhet {}, men er ikke eier.",
                 innloggetIdent,
                 dokumentEnhet.id
             )
-            throw MissingTilgangException("Vedtak kan kun ferdigstilles av medunderskriver")
+            throw MissingTilgangException("Vedtak kan kun ferdigstilles av eier")
         }
     }
 

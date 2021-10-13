@@ -61,7 +61,12 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): ResponseEntity<ByteArray> {
 
-        return dokumentEnhetMapper.mapToByteArray(dokumentEnhetService.hentMellomlagretHovedDokument(dokumentEnhetId))
+        return dokumentEnhetMapper.mapToByteArray(
+            dokumentEnhetService.hentMellomlagretHovedDokument(
+                dokumentEnhetId,
+                innloggetSaksbehandlerService.getInnloggetIdent()
+            )
+        )
     }
 
     @DeleteMapping("/{dokumentEnhetId}/innhold")

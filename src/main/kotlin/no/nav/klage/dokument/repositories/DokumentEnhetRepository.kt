@@ -21,36 +21,32 @@ class DokumentEnhetRepository(
 ) {
 
     fun findDokumentEnheterForDistribusjon(): List<UUID> {
-        return jdbcTemplate.query("SELECT id FROM dokumentenhet WHERE avsluttet_av_saksbehandler IS NOT NULL AND avsluttet IS NULL")
+        return jdbcTemplate.query("SELECT id FROM document.dokumentenhet WHERE avsluttet_av_saksbehandler IS NOT NULL AND avsluttet IS NULL")
         { rs: ResultSet, _: Int ->
             rs.getObject("id", UUID::class.java)
         }
     }
 
     fun findById(dokumentEnhetId: UUID): DokumentEnhet? {
-        jdbcTemplate.query("SELECT id FROM dokumentenhet")
+        jdbcTemplate.query("SELECT id FROM document.dokumentenhet")
         { rs: ResultSet, _: Int ->
             rs.getObject("id", UUID::class.java)
         }.firstOrNull() ?: return null
 
-        return try {
-            val journalfoeringData = getJournalfoeringData(dokumentEnhetId)
-            val brevMottakere = getBrevMottakere(dokumentEnhetId)
-            val hovedDokument = getHovedDokument(dokumentEnhetId)
-            val vedlegg = getVedlegg(dokumentEnhetId)
-            val brevMottakerDistribusjoner = getBrevMottakerDistribusjoner(dokumentEnhetId)
+        val journalfoeringData = getJournalfoeringData(dokumentEnhetId) ?: return null
+        val brevMottakere = getBrevMottakere(dokumentEnhetId)
+        val hovedDokument = getHovedDokument(dokumentEnhetId)
+        val vedlegg = getVedlegg(dokumentEnhetId)
+        val brevMottakerDistribusjoner = getBrevMottakerDistribusjoner(dokumentEnhetId)
 
-            getDokumentEnhet(
-                dokumentEnhetId,
-                journalfoeringData,
-                brevMottakere,
-                hovedDokument,
-                vedlegg,
-                brevMottakerDistribusjoner
-            )
-        } catch (nsee: NoSuchElementException) {
-            null
-        }
+        return getDokumentEnhet(
+            dokumentEnhetId,
+            journalfoeringData,
+            brevMottakere,
+            hovedDokument,
+            vedlegg,
+            brevMottakerDistribusjoner
+        )
     }
 
     private fun getDokumentEnhet(
@@ -62,7 +58,7 @@ class DokumentEnhetRepository(
         brevMottakerDistribusjoner: List<BrevMottakerDistribusjon>
     ): DokumentEnhet? {
         return jdbcTemplate.queryForObject(
-            "SELECT id FROM dokumentenhet WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.dokumentenhet WHERE dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 DokumentEnhet(
                     id = rs.getObject("id", UUID::class.java),
@@ -82,7 +78,7 @@ class DokumentEnhetRepository(
 
     private fun getBrevMottakerDistribusjoner(dokumentEnhetId: UUID): List<BrevMottakerDistribusjon> {
         return jdbcTemplate.query(
-            "SELECT id FROM brevmottakerdist WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.brevmottakerdist WHERE dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 BrevMottakerDistribusjon(
                     id = rs.getObject("id", UUID::class.java),
@@ -98,7 +94,7 @@ class DokumentEnhetRepository(
 
     private fun getHovedDokument(dokumentEnhetId: UUID): OpplastetDokument? {
         return jdbcTemplate.queryForObject(
-            "SELECT id FROM hoveddokument WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.opplastetdokument WHERE type = 'HOVEDDOKUMENT' AND  dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 OpplastetDokument(
                     id = rs.getObject("id", UUID::class.java),
@@ -113,7 +109,7 @@ class DokumentEnhetRepository(
 
     private fun getVedlegg(dokumentEnhetId: UUID): List<OpplastetDokument> {
         return jdbcTemplate.query(
-            "SELECT id FROM vedlegg WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.opplastetdokument WHERE type = 'VEDLEGG' AND dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 OpplastetDokument(
                     id = rs.getObject("id", UUID::class.java),
@@ -126,9 +122,9 @@ class DokumentEnhetRepository(
         )
     }
 
-    private fun getJournalfoeringData(dokumentEnhetId: UUID): JournalfoeringData {
+    private fun getJournalfoeringData(dokumentEnhetId: UUID): JournalfoeringData? {
         return jdbcTemplate.queryForObject(
-            "SELECT id FROM journalfoeringdata WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 JournalfoeringData(
                     id = rs.getObject("id", UUID::class.java),
@@ -148,7 +144,7 @@ class DokumentEnhetRepository(
 
     private fun getBrevMottakere(dokumentEnhetId: UUID): List<BrevMottaker> {
         return jdbcTemplate.query(
-            "SELECT id FROM brevmottaker WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.brevmottaker WHERE dokumentenhet_id = ?",
             { rs: ResultSet, _: Int ->
                 BrevMottaker(
                     id = rs.getObject("id", UUID::class.java),
@@ -169,9 +165,9 @@ class DokumentEnhetRepository(
         dokumentEnhet.brevMottakere.forEach {
             insertBrevMottaker(it, dokumentEnhet.id)
         }
-        dokumentEnhet.hovedDokument?.let { insertOpplastetDokument(it, dokumentEnhet.id, "hoveddokument") }
+        dokumentEnhet.hovedDokument?.let { insertOpplastetDokument(it, dokumentEnhet.id, "HOVEDDOKUMENT") }
         dokumentEnhet.vedlegg.forEach {
-            insertOpplastetDokument(it, dokumentEnhet.id, "vedlegg")
+            insertOpplastetDokument(it, dokumentEnhet.id, "VEDLEGG")
         }
         dokumentEnhet.brevMottakerDistribusjoner.forEach {
             insertBrevMottakerDistribusjon(it, dokumentEnhet.id)
@@ -180,7 +176,7 @@ class DokumentEnhetRepository(
     }
 
     private fun insertDokumentEnhet(dokumentEnhet: DokumentEnhet) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("dokumentenhet").apply {
+        SimpleJdbcInsert(jdbcTemplate).withTableName("document.dokumentenhet").apply {
             execute(
                 mapOf(
                     "id" to dokumentEnhet.id,
@@ -197,7 +193,7 @@ class DokumentEnhetRepository(
         brevMottakerDistribusjon: BrevMottakerDistribusjon,
         dokumentEnhetId: UUID
     ) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("brevmottakerdist").apply {
+        SimpleJdbcInsert(jdbcTemplate).withTableName("document.brevmottakerdist").apply {
             execute(
                 mapOf(
                     "id" to brevMottakerDistribusjon.id,
@@ -215,9 +211,9 @@ class DokumentEnhetRepository(
     private fun insertOpplastetDokument(
         opplastetDokument: OpplastetDokument,
         dokumentEnhetId: UUID,
-        tableName: String
+        type: String
     ) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName(tableName).apply {
+        SimpleJdbcInsert(jdbcTemplate).withTableName("document.opplastetdokument").apply {
             execute(
                 mapOf(
                     "id" to opplastetDokument.id,
@@ -225,6 +221,7 @@ class DokumentEnhetRepository(
                     "opplastet" to opplastetDokument.opplastet,
                     "size" to opplastetDokument.size,
                     "name" to opplastetDokument.name,
+                    "type" to type,
                     "dokumentenhet_id" to dokumentEnhetId
                 )
             )
@@ -232,11 +229,11 @@ class DokumentEnhetRepository(
     }
 
     private fun insertBrevMottaker(brevMottaker: BrevMottaker, dokumentEnhetId: UUID) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("brevMottaker").apply {
+        SimpleJdbcInsert(jdbcTemplate).withTableName("document.brevMottaker").apply {
             execute(
                 mapOf(
                     "id" to brevMottaker.id,
-                    "part_id_type" to brevMottaker.partId.type,
+                    "part_id_type" to brevMottaker.partId.type.name,
                     "part_id_value" to brevMottaker.partId.value,
                     "navn" to brevMottaker.navn,
                     "rolle" to brevMottaker.rolle.name,
@@ -247,11 +244,11 @@ class DokumentEnhetRepository(
     }
 
     private fun insertJournalfoeringData(journalfoeringData: JournalfoeringData, dokumentEnhetId: UUID) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("journalfoeringdata").apply {
+        SimpleJdbcInsert(jdbcTemplate).withTableName("document.journalfoeringdata").apply {
             execute(
                 mapOf(
                     "id" to journalfoeringData.id,
-                    "saken_gjelder_type" to journalfoeringData.sakenGjelder.type,
+                    "saken_gjelder_type" to journalfoeringData.sakenGjelder.type.name,
                     "saken_gjelder_value" to journalfoeringData.sakenGjelder.value,
                     "tema" to journalfoeringData.tema.name,
                     "sak_fagsak_id" to journalfoeringData.sakFagsakId,
@@ -264,18 +261,17 @@ class DokumentEnhetRepository(
         }
     }
 
-    fun saveOrUpdate(dokumentEnhet: DokumentEnhet) {
+    fun saveOrUpdate(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         delete(dokumentEnhet.id)
         save(dokumentEnhet)
+        return dokumentEnhet
     }
 
     fun delete(dokumentEnhetId: UUID) {
-        jdbcTemplate.update("DELETE FROM opplastetdokument WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM vedlegg WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM hoveddokument WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM brevmottakere WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM journalfoeringdata WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM dokumentenhet WHERE id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.brevmottakere WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.journalfoeringdata WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.dokumentenhet WHERE id = ?", dokumentEnhetId)
     }
 }
