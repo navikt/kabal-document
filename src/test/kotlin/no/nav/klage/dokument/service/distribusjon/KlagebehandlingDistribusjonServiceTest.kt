@@ -16,13 +16,10 @@ import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.TokenUtil
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.TestMethodOrder
-import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -32,9 +29,6 @@ import java.util.*
 @ActiveProfiles("local")
 @Import(KlagebehandlingDistribusjonServiceTest.MyTestConfiguration::class)
 @SpringBootTest(classes = [BrevMottakerDistribusjonService::class, DokumentEnhetDistribusjonService::class, DokumentEnhetService::class, BrevMottakerDistribusjonService::class])
-@EnableJpaRepositories(basePackages = ["no.nav.klage.dokument.repositories"])
-@EntityScan("no.nav.klage.oppgave.domain")
-@AutoConfigureDataJpa
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 //@AutoConfigureTestEntityManager

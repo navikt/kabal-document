@@ -68,7 +68,7 @@ class JoarkMapper(
         } else {
             Sak(
                 sakstype = Sakstype.FAGSAK,
-                fagsaksystem = journalfoeringData.sakFagsystem.navn.let { FagsaksSystem.valueOf(it) },
+                fagsaksystem = FagsaksSystem.valueOf(journalfoeringData.sakFagsystem.name),
                 fagsakid = journalfoeringData.sakFagsakId
             )
         }

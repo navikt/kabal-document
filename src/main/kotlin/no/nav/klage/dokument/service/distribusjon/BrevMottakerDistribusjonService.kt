@@ -55,14 +55,16 @@ class BrevMottakerDistribusjonService(
     ) = dokumentEnhet.findBrevMottakerDistribusjon(brevMottaker)
         ?: createBrevMottakerDistribusjon(brevMottaker, dokumentEnhet)
 
+    //TODO vedlegg?
     private fun createBrevMottakerDistribusjon(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
     ) = BrevMottakerDistribusjon(
         brevMottakerId = brevMottaker.id,
+        opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
         journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
             brevMottaker,
-            dokumentEnhet.hovedDokument!!, //TODO vedlegg?
+            dokumentEnhet.hovedDokument,
             dokumentEnhet.journalfoeringData
         )
     )

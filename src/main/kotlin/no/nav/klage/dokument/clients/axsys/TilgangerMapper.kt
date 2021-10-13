@@ -1,17 +1,13 @@
 package no.nav.klage.dokument.clients.axsys
 
-import no.nav.klage.dokument.domain.kodeverk.LovligeTemaer
 import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.dokument.domain.saksbehandler.EnheterMedLovligeTemaer
 import no.nav.klage.dokument.util.getLogger
-import org.springframework.core.env.Environment
 import org.springframework.stereotype.Component
 
 @Component
-class TilgangerMapper(environment: Environment) {
-
-    private val lovligeTemaerIKabal = LovligeTemaer.lovligeTemaer(environment)
+class TilgangerMapper {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -24,14 +20,13 @@ class TilgangerMapper(environment: Environment) {
             EnhetMedLovligeTemaer(
                 enhet.enhetId,
                 enhet.navn,
-                enhet.temaer?.mapNotNull { mapTemaNavnToTema(it) }?.filter { lovligeTemaerIKabal.contains(it) }
-                    ?: emptyList())
+                enhet.temaer?.mapNotNull { mapTemaNavnToTema(it) } ?: emptyList())
         })
     }
 
     private fun mapTemaNavnToTema(tema: String): Tema? =
         try {
-            Tema.fromNavn(tema)
+            Tema.valueOf(tema)
         } catch (e: Exception) {
             logger.warn("Unable to map Tema $tema. Ignoring and moving on", e)
             null
