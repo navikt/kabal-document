@@ -24,17 +24,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
-    clean-on-validation-error: false
+    clean-on-validation-error: true
     schemas: flyway_history_schema,document
-  jpa:
-    open-in-view: false
-    properties:
-      hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS: 20
-      hibernate:
-        session:
-          events:
-            log:
-              LOG_QUERIES_SLOWER_THAN_MS: 20
   lifecycle:
     timeout-per-shutdown-phase: 20s
   servlet:
@@ -46,10 +37,6 @@ spring:
     max-in-memory-size: 16MB
 
 maxAttachmentSize: 8MB
-
-org:
-  hibernate:
-    SQL_SLOW: info
 
 server:
   port: 7094

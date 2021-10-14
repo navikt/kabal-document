@@ -6,7 +6,7 @@ ALTER TABLE document.dokumentenhet
 
 CREATE TABLE document.brevmottakerdist
 (
-    íd                    UUID PRIMARY KEY,
+    id                    UUID PRIMARY KEY,
     brev_mottaker_id      UUID NOT NULL,
     opplastet_dokument_id UUID NOT NULL,
     journalpost_id        TEXT NOT NULL,
@@ -20,7 +20,8 @@ CREATE TABLE document.brevmottakerdist
 
 CREATE TABLE document.opplastetdokument
 (
-    íd               UUID PRIMARY KEY,
+    id               UUID PRIMARY KEY,
+    type             TEXT      NOT NULL,
     mellomlager_id   TEXT      NOT NULL,
     opplastet        TIMESTAMP NOT NULL,
     size             BIGINT    NOT NULL,
@@ -33,7 +34,7 @@ CREATE TABLE document.opplastetdokument
 
 CREATE TABLE document.brevmottaker
 (
-    íd               UUID PRIMARY KEY,
+    id               UUID PRIMARY KEY,
     part_id_type     TEXT NOT NULL,
     part_id_value    TEXT NOT NULL,
     navn             TEXT NOT NULL,
@@ -46,7 +47,7 @@ CREATE TABLE document.brevmottaker
 
 CREATE TABLE document.journalfoeringdata
 (
-    íd                  UUID PRIMARY KEY,
+    id                  UUID PRIMARY KEY,
     saken_gjelder_type  TEXT NOT NULL,
     saken_gjelder_value TEXT NOT NULL,
     tema                TEXT NOT NULL,

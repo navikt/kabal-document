@@ -28,10 +28,13 @@ class DokumentEnhetRepository(
     }
 
     fun findById(dokumentEnhetId: UUID): DokumentEnhet? {
-        jdbcTemplate.query("SELECT id FROM document.dokumentenhet")
-        { rs: ResultSet, _: Int ->
-            rs.getObject("id", UUID::class.java)
-        }.firstOrNull() ?: return null
+        jdbcTemplate.query(
+            "SELECT id FROM document.dokumentenhet WHERE id = ?",
+            { rs: ResultSet, _: Int ->
+                rs.getObject("id", UUID::class.java)
+            },
+            dokumentEnhetId
+        ).firstOrNull() ?: return null
 
         val journalfoeringData = getJournalfoeringData(dokumentEnhetId) ?: return null
         val brevMottakere = getBrevMottakere(dokumentEnhetId)
@@ -58,7 +61,7 @@ class DokumentEnhetRepository(
         brevMottakerDistribusjoner: List<BrevMottakerDistribusjon>
     ): DokumentEnhet? {
         return jdbcTemplate.queryForObject(
-            "SELECT * FROM document.dokumentenhet WHERE dokumentenhet_id = ?",
+            "SELECT * FROM document.dokumentenhet WHERE id = ?",
             { rs: ResultSet, _: Int ->
                 DokumentEnhet(
                     id = rs.getObject("id", UUID::class.java),
@@ -134,7 +137,9 @@ class DokumentEnhetRepository(
                     ),
                     tema = Tema.valueOf(rs.getString("tema")),
                     sakFagsakId = rs.getString("sak_fagsak_id"),
-                    sakFagsystem = Fagsystem.valueOf(rs.getString("sak_fagsystem")),
+                    sakFagsystem = rs.getString("sak_fagsystem")?.let {
+                        Fagsystem.valueOf(it)
+                    },
                     kildeReferanse = rs.getString("kilde_referanse"),
                     enhet = rs.getString("enhet")
                 )
@@ -176,7 +181,7 @@ class DokumentEnhetRepository(
     }
 
     private fun insertDokumentEnhet(dokumentEnhet: DokumentEnhet) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("document.dokumentenhet").apply {
+        SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("dokumentenhet").apply {
             execute(
                 mapOf(
                     "id" to dokumentEnhet.id,
@@ -193,7 +198,7 @@ class DokumentEnhetRepository(
         brevMottakerDistribusjon: BrevMottakerDistribusjon,
         dokumentEnhetId: UUID
     ) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("document.brevmottakerdist").apply {
+        SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("brevmottakerdist").apply {
             execute(
                 mapOf(
                     "id" to brevMottakerDistribusjon.id,
@@ -213,7 +218,7 @@ class DokumentEnhetRepository(
         dokumentEnhetId: UUID,
         type: String
     ) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("document.opplastetdokument").apply {
+        SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("opplastetdokument").apply {
             execute(
                 mapOf(
                     "id" to opplastetDokument.id,
@@ -229,7 +234,7 @@ class DokumentEnhetRepository(
     }
 
     private fun insertBrevMottaker(brevMottaker: BrevMottaker, dokumentEnhetId: UUID) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("document.brevMottaker").apply {
+        SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("brevMottaker").apply {
             execute(
                 mapOf(
                     "id" to brevMottaker.id,
@@ -243,22 +248,28 @@ class DokumentEnhetRepository(
         }
     }
 
-    private fun insertJournalfoeringData(journalfoeringData: JournalfoeringData, dokumentEnhetId: UUID) {
-        SimpleJdbcInsert(jdbcTemplate).withTableName("document.journalfoeringdata").apply {
-            execute(
-                mapOf(
-                    "id" to journalfoeringData.id,
-                    "saken_gjelder_type" to journalfoeringData.sakenGjelder.type.name,
-                    "saken_gjelder_value" to journalfoeringData.sakenGjelder.value,
-                    "tema" to journalfoeringData.tema.name,
-                    "sak_fagsak_id" to journalfoeringData.sakFagsakId,
-                    "sak_fagsystem" to journalfoeringData.sakFagsystem?.name,
-                    "kilde_referanse" to journalfoeringData.kildeReferanse,
-                    "enhet" to journalfoeringData.enhet,
-                    "dokumentenhet_id" to dokumentEnhetId
+    private fun insertJournalfoeringData(
+        journalfoeringData: JournalfoeringData,
+        dokumentEnhetId: UUID
+    ) {
+        SimpleJdbcInsert(jdbcTemplate)
+            .withSchemaName("document")
+            .withTableName("journalfoeringdata")
+            .apply {
+                execute(
+                    mapOf(
+                        "id" to journalfoeringData.id,
+                        "saken_gjelder_type" to journalfoeringData.sakenGjelder.type.name,
+                        "saken_gjelder_value" to journalfoeringData.sakenGjelder.value,
+                        "tema" to journalfoeringData.tema.name,
+                        "sak_fagsak_id" to journalfoeringData.sakFagsakId,
+                        "sak_fagsystem" to journalfoeringData.sakFagsystem?.name,
+                        "kilde_referanse" to journalfoeringData.kildeReferanse,
+                        "enhet" to journalfoeringData.enhet,
+                        "dokumentenhet_id" to dokumentEnhetId
+                    )
                 )
-            )
-        }
+            }
     }
 
     fun saveOrUpdate(dokumentEnhet: DokumentEnhet): DokumentEnhet {
@@ -268,10 +279,16 @@ class DokumentEnhetRepository(
     }
 
     fun delete(dokumentEnhetId: UUID) {
-        jdbcTemplate.update("DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update(
+            "DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?",
+            dokumentEnhetId
+        )
         jdbcTemplate.update("DELETE FROM document.brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM document.brevmottakere WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM document.journalfoeringdata WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.brevmottaker WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update(
+            "DELETE FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
+            dokumentEnhetId
+        )
         jdbcTemplate.update("DELETE FROM document.dokumentenhet WHERE id = ?", dokumentEnhetId)
     }
 }
