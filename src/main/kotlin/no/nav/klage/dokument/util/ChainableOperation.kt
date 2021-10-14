@@ -1,6 +1,4 @@
-package no.nav.klage.dokument.domain
-
-import no.nav.klage.dokument.util.getLogger
+package no.nav.klage.dokument.util
 
 class ChainableOperation<I>(val value: I, private val isSuccess: Boolean) {
 
@@ -14,10 +12,9 @@ class ChainableOperation<I>(val value: I, private val isSuccess: Boolean) {
             kotlin.runCatching {
                 ChainableOperation(operation.invoke(this.value), true)
             }.onFailure {
-                logger.warn("Operation failed", it)
+                logger.warn("Chainable operation failed", it)
             }.getOrDefault(ChainableOperation(value, false))
         } else {
             this
         }
-
 }

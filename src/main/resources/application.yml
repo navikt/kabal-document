@@ -24,7 +24,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
-    clean-on-validation-error: false
+    clean-on-validation-error: true
     schemas: flyway_history_schema,document
   lifecycle:
     timeout-per-shutdown-phase: 20s

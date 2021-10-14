@@ -71,7 +71,6 @@ class DokumentEnhetRepository(
                     hovedDokument = hovedDokument,
                     vedlegg = vedlegg,
                     brevMottakerDistribusjoner = brevMottakerDistribusjoner,
-                    avsluttetAvSaksbehandler = rs.getObject("avsluttet_av_saksbehandler", LocalDateTime::class.java),
                     avsluttet = rs.getObject("avsluttet", LocalDateTime::class.java),
                     modified = rs.getObject("modified", LocalDateTime::class.java),
                 )
@@ -186,7 +185,6 @@ class DokumentEnhetRepository(
                 mapOf(
                     "id" to dokumentEnhet.id,
                     "eier" to dokumentEnhet.eier.navIdent,
-                    "avsluttet_av_saksbehandler" to dokumentEnhet.avsluttetAvSaksbehandler,
                     "avsluttet" to dokumentEnhet.avsluttet,
                     "modified" to dokumentEnhet.modified
                 )

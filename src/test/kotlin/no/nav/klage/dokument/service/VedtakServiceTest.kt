@@ -2,6 +2,7 @@ package no.nav.klage.dokument.service
 
 import io.mockk.mockk
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.service.distribusjon.DokumentEnhetDistribusjonService
 import no.nav.klage.dokument.util.AttachmentValidator
 import java.util.*
 
@@ -13,10 +14,13 @@ class VedtakServiceTest {
 
     val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
 
+    val dokumentEnhetDistribusjonService = mockk<DokumentEnhetDistribusjonService>()
+
     val dokumentEnhetService = DokumentEnhetService(
         dokumentEnhetRepository,
         attachmentValidator,
         mellomlagerService,
+        dokumentEnhetDistribusjonService
     )
     private val SAKSBEHANDLER_IDENT = "SAKSBEHANDLER_IDENT"
     private val MEDUNDERSKRIVER_IDENT = "MEDUNDERSKRIVER_IDENT"

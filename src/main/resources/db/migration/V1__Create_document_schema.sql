@@ -16,11 +16,10 @@ $$;
 
 CREATE TABLE document.dokumentenhet
 (
-    id                         UUID PRIMARY KEY,
-    eier                       TEXT NOT NULL,
-    avsluttet_av_saksbehandler TIMESTAMP,
-    avsluttet                  TIMESTAMP,
-    modified                   TIMESTAMP
+    id        UUID PRIMARY KEY,
+    eier      TEXT NOT NULL,
+    avsluttet TIMESTAMP,
+    modified  TIMESTAMP
 );
 
 CREATE TABLE document.brevmottakerdist

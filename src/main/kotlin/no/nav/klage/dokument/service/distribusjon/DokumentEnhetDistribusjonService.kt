@@ -1,8 +1,8 @@
 package no.nav.klage.dokument.service.distribusjon
 
-import no.nav.klage.dokument.domain.ChainableOperation
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.service.MellomlagerService
+import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -52,9 +52,14 @@ class DokumentEnhetDistribusjonService(
     }
 
     fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
-        logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
-        dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
-        return dokumentEnhet.copy(hovedDokument = null)
+        return try {
+            logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
+            dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
+            dokumentEnhet.copy(hovedDokument = null)
+        } catch (t: Throwable) {
+            "Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}"
+            dokumentEnhet
+        }
     }
 
     private fun DokumentEnhet.chainable() = ChainableOperation(this, true)

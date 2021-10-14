@@ -93,7 +93,6 @@ internal class DokumentEnhetRepositoryTest {
                     dokdistReferanse = UUID.randomUUID()
                 )
             ),
-            avsluttetAvSaksbehandler = LocalDateTime.now(),
             avsluttet = LocalDateTime.now(),
         )
 
@@ -122,7 +121,6 @@ internal class DokumentEnhetRepositoryTest {
             hovedDokument = null,
             vedlegg = emptyList(),
             brevMottakerDistribusjoner = emptyList(),
-            avsluttetAvSaksbehandler = null,
             avsluttet = null,
         )
 
@@ -151,7 +149,6 @@ internal class DokumentEnhetRepositoryTest {
             hovedDokument = null,
             vedlegg = emptyList(),
             brevMottakerDistribusjoner = emptyList(),
-            avsluttetAvSaksbehandler = null,
             avsluttet = null,
         )
 

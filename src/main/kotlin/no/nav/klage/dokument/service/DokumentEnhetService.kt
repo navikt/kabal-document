@@ -6,6 +6,7 @@ import no.nav.klage.dokument.exceptions.DokumentEnhetFinalizedException
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
 import no.nav.klage.dokument.exceptions.MissingTilgangException
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.service.distribusjon.DokumentEnhetDistribusjonService
 import no.nav.klage.dokument.util.AttachmentValidator
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -20,7 +21,8 @@ import java.util.*
 class DokumentEnhetService(
     private val dokumentEnhetRepository: DokumentEnhetRepository,
     private val attachmentValidator: AttachmentValidator,
-    private val mellomlagerService: MellomlagerService
+    private val mellomlagerService: MellomlagerService,
+    private val dokumentEnhetDistribusjonService: DokumentEnhetDistribusjonService,
 ) {
 
     companion object {
@@ -64,7 +66,7 @@ class DokumentEnhetService(
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
 
         attachmentValidator.validateAttachment(fil)
-        if (dokumentEnhet.avsluttetAvSaksbehandler != null) throw DokumentEnhetFinalizedException("Klagebehandlingen er avsluttet")
+        if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Klagebehandlingen er avsluttet")
 
         val mellomlagerId = mellomlagerService.uploadDocument(fil)
 
@@ -96,15 +98,18 @@ class DokumentEnhetService(
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
-        if (dokumentEnhet.avsluttetAvSaksbehandler != null) throw DokumentEnhetFinalizedException("Dokumentenheten er avsluttet")
+        if (dokumentEnhet.avsluttet != null) throw DokumentEnhetFinalizedException("Dokumentenheten er avsluttet")
 
         //Sjekker om fil er lastet opp til mellomlager
         if (dokumentEnhet.hovedDokument == null) {
             throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")
         }
 
-        //Her settes en markør som så brukes async i kallet klagebehandlingRepository.findByAvsluttetIsNullAndAvsluttetAvSaksbehandlerIsNotNull
-        return dokumentEnhetRepository.saveOrUpdate(dokumentEnhet.copy(avsluttetAvSaksbehandler = LocalDateTime.now()))
+        return dokumentEnhetRepository.saveOrUpdate(
+            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
+                dokumentEnhet
+            )
+        )
     }
 
     fun hentMellomlagretHovedDokument(dokumentEnhetId: UUID, innloggetIdent: SaksbehandlerIdent): MellomlagretDokument {

@@ -13,18 +13,23 @@ data class DokumentEnhet(
     val vedlegg: List<OpplastetDokument> = emptyList(),
 
     val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
-    val avsluttetAvSaksbehandler: LocalDateTime? = null,
     val avsluttet: LocalDateTime? = null,
     val modified: LocalDateTime = LocalDateTime.now()
 ) {
+
+    fun erAvsluttet() = avsluttet != null
+    
     fun erDistribuertTil(brevMottaker: BrevMottaker): Boolean =
         findBrevMottakerDistribusjon(brevMottaker)?.dokdistReferanse != null
+
+    fun erDistribuertTilAlle(): Boolean =
+        brevMottakere.all { erDistribuertTil(it) }
 
     fun findBrevMottakerDistribusjon(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
         brevMottakerDistribusjoner.find { it.brevMottakerId == brevMottaker.id }
 
     fun validateDistribuertTilAlle(): DokumentEnhet =
-        if (brevMottakere.all { erDistribuertTil(it) }) {
+        if (erDistribuertTilAlle()) {
             this
         } else throw RuntimeException("DokumentEnhet ikke distribuert til alle brevmottakere")
 
