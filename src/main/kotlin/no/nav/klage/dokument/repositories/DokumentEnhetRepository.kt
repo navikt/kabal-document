@@ -16,25 +16,10 @@ import java.util.*
 
 @Service
 @Transactional
-class DokumentEnhetRepository(
-    private val jdbcTemplate: JdbcTemplate
-) {
-
-    fun findDokumentEnheterForDistribusjon(): List<UUID> {
-        return jdbcTemplate.query("SELECT id FROM document.dokumentenhet WHERE avsluttet_av_saksbehandler IS NOT NULL AND avsluttet IS NULL")
-        { rs: ResultSet, _: Int ->
-            rs.getObject("id", UUID::class.java)
-        }
-    }
+class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun findById(dokumentEnhetId: UUID): DokumentEnhet? {
-        jdbcTemplate.query(
-            "SELECT id FROM document.dokumentenhet WHERE id = ?",
-            { rs: ResultSet, _: Int ->
-                rs.getObject("id", UUID::class.java)
-            },
-            dokumentEnhetId
-        ).firstOrNull() ?: return null
+        if (!exists(dokumentEnhetId)) return null
 
         val journalfoeringData = getJournalfoeringData(dokumentEnhetId) ?: return null
         val brevMottakere = getBrevMottakere(dokumentEnhetId)
@@ -51,6 +36,51 @@ class DokumentEnhetRepository(
             brevMottakerDistribusjoner
         )
     }
+
+    fun saveOrUpdate(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+        delete(dokumentEnhet.id)
+        save(dokumentEnhet)
+        return dokumentEnhet
+    }
+
+    fun save(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+        insertDokumentEnhet(dokumentEnhet)
+        insertJournalfoeringData(dokumentEnhet.journalfoeringData, dokumentEnhet.id)
+        dokumentEnhet.brevMottakere.forEach {
+            insertBrevMottaker(it, dokumentEnhet.id)
+        }
+        dokumentEnhet.hovedDokument?.let { insertOpplastetDokument(it, dokumentEnhet.id, "HOVEDDOKUMENT") }
+        dokumentEnhet.vedlegg.forEach {
+            insertOpplastetDokument(it, dokumentEnhet.id, "VEDLEGG")
+        }
+        dokumentEnhet.brevMottakerDistribusjoner.forEach {
+            insertBrevMottakerDistribusjon(it, dokumentEnhet.id)
+        }
+        return dokumentEnhet
+    }
+
+    fun delete(dokumentEnhetId: UUID) {
+        jdbcTemplate.update(
+            "DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?",
+            dokumentEnhetId
+        )
+        jdbcTemplate.update("DELETE FROM document.brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update("DELETE FROM document.brevmottaker WHERE dokumentenhet_id = ?", dokumentEnhetId)
+        jdbcTemplate.update(
+            "DELETE FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
+            dokumentEnhetId
+        )
+        jdbcTemplate.update("DELETE FROM document.dokumentenhet WHERE id = ?", dokumentEnhetId)
+    }
+
+    private fun exists(dokumentEnhetId: UUID): Boolean =
+        jdbcTemplate.query(
+            "SELECT id FROM document.dokumentenhet WHERE id = ?",
+            { rs: ResultSet, _: Int ->
+                rs.getObject("id", UUID::class.java)
+            },
+            dokumentEnhetId
+        ).firstOrNull() != null
 
     private fun getDokumentEnhet(
         dokumentEnhetId: UUID,
@@ -163,22 +193,6 @@ class DokumentEnhetRepository(
         )
     }
 
-    fun save(dokumentEnhet: DokumentEnhet): DokumentEnhet {
-        insertDokumentEnhet(dokumentEnhet)
-        insertJournalfoeringData(dokumentEnhet.journalfoeringData, dokumentEnhet.id)
-        dokumentEnhet.brevMottakere.forEach {
-            insertBrevMottaker(it, dokumentEnhet.id)
-        }
-        dokumentEnhet.hovedDokument?.let { insertOpplastetDokument(it, dokumentEnhet.id, "HOVEDDOKUMENT") }
-        dokumentEnhet.vedlegg.forEach {
-            insertOpplastetDokument(it, dokumentEnhet.id, "VEDLEGG")
-        }
-        dokumentEnhet.brevMottakerDistribusjoner.forEach {
-            insertBrevMottakerDistribusjon(it, dokumentEnhet.id)
-        }
-        return dokumentEnhet
-    }
-
     private fun insertDokumentEnhet(dokumentEnhet: DokumentEnhet) {
         SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("dokumentenhet").apply {
             execute(
@@ -268,25 +282,5 @@ class DokumentEnhetRepository(
                     )
                 )
             }
-    }
-
-    fun saveOrUpdate(dokumentEnhet: DokumentEnhet): DokumentEnhet {
-        delete(dokumentEnhet.id)
-        save(dokumentEnhet)
-        return dokumentEnhet
-    }
-
-    fun delete(dokumentEnhetId: UUID) {
-        jdbcTemplate.update(
-            "DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?",
-            dokumentEnhetId
-        )
-        jdbcTemplate.update("DELETE FROM document.brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update("DELETE FROM document.brevmottaker WHERE dokumentenhet_id = ?", dokumentEnhetId)
-        jdbcTemplate.update(
-            "DELETE FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
-            dokumentEnhetId
-        )
-        jdbcTemplate.update("DELETE FROM document.dokumentenhet WHERE id = ?", dokumentEnhetId)
     }
 }
