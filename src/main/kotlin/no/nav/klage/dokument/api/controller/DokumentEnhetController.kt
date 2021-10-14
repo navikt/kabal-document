@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.api.controller
 
 import io.swagger.annotations.Api
+import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.*
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
@@ -19,6 +20,7 @@ import java.util.*
 class DokumentEnhetController(
     private val innloggetSaksbehandlerService: InnloggetSaksbehandlerService,
     private val dokumentEnhetMapper: DokumentEnhetMapper,
+    private val dokumentEnhetInputMapper: DokumentEnhetInputMapper,
     private val dokumentEnhetService: DokumentEnhetService
 ) {
 
@@ -30,14 +32,27 @@ class DokumentEnhetController(
     @PostMapping("/")
     fun createDokumentEnhet(
         @ModelAttribute input: DokumentEnhetInput
-    ): DokumentEnhetView {
-        dokumentEnhetService.opprettDokumentEnhet(
-            innloggetSaksbehandlerService.getInnloggetIdent(),
-            input.brevMottakere,
-            input.journalfoeringData
+    ): DokumentEnhetView =
+        dokumentEnhetMapper.mapToDokumentEnhetView(
+            dokumentEnhetService.opprettDokumentEnhet(
+                innloggetSaksbehandlerService.getInnloggetIdent(),
+                dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere),
+                dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData)
+            )
         )
 
-        return DokumentEnhetView()
+    @ResponseBody
+    @GetMapping("/{dokumentEnhetId}")
+    fun getDokumentEnhet(
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
+    ): DokumentEnhetView {
+
+        return dokumentEnhetMapper.mapToDokumentEnhetView(
+            dokumentEnhetService.getDokumentEnhet(
+                dokumentEnhetId,
+                innloggetSaksbehandlerService.getInnloggetIdent()
+            )
+        )
     }
 
     @PostMapping("/{dokumentEnhetId}/innhold")
@@ -119,7 +134,7 @@ class DokumentEnhetController(
     }
 
     @DeleteMapping("/{dokumentEnhetId}/vedlegg/{vedleggId}")
-    fun deleteHovedDokument(
+    fun deleteVedlegg(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
         @PathVariable("vedleggId") vedleggId: UUID,
     ) {

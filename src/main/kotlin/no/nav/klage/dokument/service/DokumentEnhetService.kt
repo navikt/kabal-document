@@ -4,6 +4,7 @@ import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetFinalizedException
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.exceptions.MissingTilgangException
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.service.distribusjon.DokumentEnhetDistribusjonService
@@ -43,13 +44,11 @@ class DokumentEnhetService(
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
 
-        if (dokumentEnhet.hovedDokument == null) {
+        if (!dokumentEnhet.harHovedDokument()) {
             return dokumentEnhet
         }
         val oppdatertDokumentEnhet = dokumentEnhetRepository.saveOrUpdate(dokumentEnhet.copy(hovedDokument = null))
-
-        //Sletter ikke det gamle før vi vet at det nye er lagret
-        mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument.mellomlagerId)
+        mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument!!.mellomlagerId)
 
         return oppdatertDokumentEnhet
     }
@@ -82,8 +81,8 @@ class DokumentEnhetService(
         )
 
         //Sletter ikke det gamle før vi vet at det nye er lagret
-        if (dokumentEnhet.hovedDokument != null) {
-            mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument.mellomlagerId)
+        if (dokumentEnhet.harHovedDokument()) {
+            mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument!!.mellomlagerId)
         }
 
         return oppdatertDokumentEnhet
@@ -98,11 +97,11 @@ class DokumentEnhetService(
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
-        if (dokumentEnhet.avsluttet != null) throw DokumentEnhetFinalizedException("Dokumentenheten er avsluttet")
+        if (dokumentEnhet.erAvsluttet()) return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
 
         //Sjekker om fil er lastet opp til mellomlager
-        if (dokumentEnhet.hovedDokument == null) {
-            throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")
+        if (dokumentEnhet.harHovedDokument()) {
+            throw DokumentEnhetNotValidException("Hoveddokument er ikke lastet opp")
         }
 
         return dokumentEnhetRepository.saveOrUpdate(
@@ -118,11 +117,11 @@ class DokumentEnhetService(
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
 
-        if (dokumentEnhet.hovedDokument == null) {
+        if (dokumentEnhet.harHovedDokument()) {
             throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")
         }
 
-        return mellomlagerService.getUploadedDocument(dokumentEnhet.hovedDokument.mellomlagerId)
+        return mellomlagerService.getUploadedDocument(dokumentEnhet.hovedDokument!!.mellomlagerId)
     }
 
     private fun verifyTilgangTilDokumentEnhet(
@@ -152,4 +151,9 @@ class DokumentEnhetService(
             )
         )
     }
+
+    fun getDokumentEnhet(dokumentEnhetId: UUID, innloggetIdent: SaksbehandlerIdent): DokumentEnhet =
+        dokumentEnhetRepository.findById(dokumentEnhetId)
+            ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
+
 }

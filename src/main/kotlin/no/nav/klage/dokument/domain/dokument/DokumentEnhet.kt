@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.domain.dokument
 
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import java.time.LocalDateTime
 import java.util.*
 
@@ -18,7 +19,7 @@ data class DokumentEnhet(
 ) {
 
     fun erAvsluttet() = avsluttet != null
-    
+
     fun erDistribuertTil(brevMottaker: BrevMottaker): Boolean =
         findBrevMottakerDistribusjon(brevMottaker)?.dokdistReferanse != null
 
@@ -31,6 +32,8 @@ data class DokumentEnhet(
     fun validateDistribuertTilAlle(): DokumentEnhet =
         if (erDistribuertTilAlle()) {
             this
-        } else throw RuntimeException("DokumentEnhet ikke distribuert til alle brevmottakere")
+        } else throw DokumentEnhetNotValidException("DokumentEnhet ikke distribuert til alle brevmottakere")
+
+    fun harHovedDokument(): Boolean = hovedDokument != null
 
 }

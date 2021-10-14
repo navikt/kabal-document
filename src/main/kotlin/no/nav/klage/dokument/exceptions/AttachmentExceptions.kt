@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.exceptions
 
-class AttachmentTooLargeException(override val message: String = "TOO_LARGE") : RuntimeException() {
+class AttachmentTooLargeException(msg: String = "TOO_LARGE") : ValidationException(msg) {
     @Synchronized
     fun fillInStackTrace(): Throwable? {
         //Remove stacktrace
@@ -8,6 +8,6 @@ class AttachmentTooLargeException(override val message: String = "TOO_LARGE") : 
     }
 }
 
-class AttachmentEncryptedException(override val message: String = "ENCRYPTED") : RuntimeException()
-class AttachmentIsEmptyException(override val message: String = "EMPTY") : RuntimeException()
-class AttachmentHasVirusException(override val message: String = "VIRUS") : RuntimeException()
+class AttachmentEncryptedException(msg: String = "ENCRYPTED") : ValidationException(msg)
+class AttachmentIsEmptyException(msg: String = "EMPTY") : ValidationException(msg)
+class AttachmentHasVirusException(msg: String = "VIRUS") : ValidationException(msg)
