@@ -27,7 +27,7 @@ class MellomlagerService(
             standardMediaTypeInGCS
         )
 
-    fun deleteDocument(mellomlagerId: String) =
+    fun deleteDocument(mellomlagerId: String): Unit =
         fileApiClient.deleteDocument(mellomlagerId)
 
     fun getUploadedDocumentAsSystemUser(mellomlagerId: String): MellomlagretDokument =
@@ -37,7 +37,7 @@ class MellomlagerService(
             standardMediaTypeInGCS
         )
 
-    fun deleteDocumentAsSystemUser(mellomlagerId: String) =
+    fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =
         fileApiClient.deleteDocument(mellomlagerId, true)
 
     private fun getFileNameFromMellomlagerId(mellomlagerId: String): String = mellomlagerId.substring(36)

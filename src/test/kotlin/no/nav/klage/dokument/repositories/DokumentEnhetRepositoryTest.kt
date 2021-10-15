@@ -1,12 +1,13 @@
 package no.nav.klage.dokument.repositories
 
 import no.nav.klage.dokument.db.TestPostgresqlContainer
+import no.nav.klage.dokument.dokumentEnhetUtenBrevMottakereOgHovedDokument
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Fagsystem
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
+import no.nav.klage.dokument.ferdigDistribuertDokumentEnhet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
-import java.util.*
 
 @ActiveProfiles("local")
 @JdbcTest
@@ -39,62 +39,7 @@ internal class DokumentEnhetRepositoryTest {
 
         val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
 
-        val dokumentEnhet = DokumentEnhet(
-            eier = SaksbehandlerIdent(navIdent = "A10101"),
-            journalfoeringData = JournalfoeringData(
-                sakenGjelder = PartId(
-                    type = PartIdType.PERSON,
-                    value = "20022012345"
-                ),
-                tema = Tema.OMS,
-                sakFagsakId = "sakFagsakId",
-                sakFagsystem = Fagsystem.FS36,
-                kildeReferanse = "kildeReferanse",
-                enhet = "Enhet"
-            ),
-            brevMottakere = listOf(
-                BrevMottaker(
-                    partId = PartId(
-                        type = PartIdType.PERSON,
-                        value = "01011012345"
-                    ),
-                    navn = "Test Person",
-                    rolle = Rolle.SOEKER
-                ),
-                BrevMottaker(
-                    partId = PartId(
-                        type = PartIdType.PERSON,
-                        value = "20022012345"
-                    ),
-                    navn = "Mottaker Person",
-                    rolle = Rolle.PROSESSFULLMEKTIG
-                )
-            ),
-            hovedDokument = OpplastetDokument(
-                mellomlagerId = "123",
-                opplastet = LocalDateTime.now(),
-                size = 1000L,
-                name = "fil.pdf"
-            ),
-            vedlegg = listOf(
-                OpplastetDokument(
-                    mellomlagerId = "456",
-                    opplastet = LocalDateTime.now(),
-                    size = 1001L,
-                    name = "fil2.pdf"
-                )
-            ),
-            brevMottakerDistribusjoner = listOf(
-                BrevMottakerDistribusjon(
-                    brevMottakerId = UUID.randomUUID(),
-                    opplastetDokumentId = UUID.randomUUID(),
-                    journalpostId = JournalpostId("Whatever"),
-                    ferdigstiltIJoark = LocalDateTime.now(),
-                    dokdistReferanse = UUID.randomUUID()
-                )
-            ),
-            avsluttet = LocalDateTime.now(),
-        )
+        val dokumentEnhet = ferdigDistribuertDokumentEnhet()
 
         assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
     }
@@ -104,25 +49,7 @@ internal class DokumentEnhetRepositoryTest {
 
         val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
 
-        val dokumentEnhet = DokumentEnhet(
-            eier = SaksbehandlerIdent(navIdent = "A10101"),
-            journalfoeringData = JournalfoeringData(
-                sakenGjelder = PartId(
-                    type = PartIdType.PERSON,
-                    value = "20022012345"
-                ),
-                tema = Tema.OMS,
-                sakFagsakId = null,
-                sakFagsystem = null,
-                kildeReferanse = "kildeReferanse",
-                enhet = "Enhet"
-            ),
-            brevMottakere = emptyList(),
-            hovedDokument = null,
-            vedlegg = emptyList(),
-            brevMottakerDistribusjoner = emptyList(),
-            avsluttet = null,
-        )
+        val dokumentEnhet = dokumentEnhetUtenBrevMottakereOgHovedDokument()
 
         assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
     }

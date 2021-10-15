@@ -23,7 +23,7 @@ class DokumentEnhetDistribusjonService(
     }
 
     fun distribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
-        if (dokumentEnhet.avsluttet != null) {
+        if (!dokumentEnhet.erAvsluttet()) {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert")
             dokumentEnhet.chainable()
                 .chain(this::distribuerDokumentEnhetTilBrevMottakere) //May not succeed 100%
@@ -34,7 +34,7 @@ class DokumentEnhetDistribusjonService(
             dokumentEnhet
         }
 
-    fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
+    private fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         dokumentEnhet.copy(
             brevMottakerDistribusjoner = dokumentEnhet
                 .brevMottakere
@@ -46,12 +46,12 @@ class DokumentEnhetDistribusjonService(
                 })
             .validateDistribuertTilAlle()
 
-    fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+    private fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         logger.debug("Markerer dokumentEnhet ${dokumentEnhet.id} som ferdig distribuert")
         return dokumentEnhet.copy(avsluttet = LocalDateTime.now())
     }
 
-    fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+    private fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         return try {
             logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
             dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
