@@ -59,7 +59,7 @@ internal class DokumentEnhetRepositoryTest {
                         value = "01011012345"
                     ),
                     navn = "Test Person",
-                    rolle = Rolle.KLAGER
+                    rolle = Rolle.SOEKER
                 ),
                 BrevMottaker(
                     partId = PartId(
@@ -162,7 +162,7 @@ internal class DokumentEnhetRepositoryTest {
                         value = "01011012345"
                     ),
                     navn = "Test Person",
-                    rolle = Rolle.KLAGER
+                    rolle = Rolle.SOEKER
                 ),
                 BrevMottaker(
                     partId = PartId(
