@@ -41,7 +41,7 @@ class BrevMottakerDistribusjonService(
             }
         }
 
-    fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
+    private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
         brevMottakerDistribusjon.copy(
             dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
                 brevMottakerDistribusjon.journalpostId.value
