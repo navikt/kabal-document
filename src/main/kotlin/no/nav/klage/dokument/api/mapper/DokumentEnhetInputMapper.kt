@@ -1,8 +1,8 @@
 package no.nav.klage.dokument.api.mapper
 
-import no.nav.klage.dokument.api.view.BrevMottakerInput
-import no.nav.klage.dokument.api.view.JournalfoeringDataInput
-import no.nav.klage.dokument.api.view.PartIdInput
+import no.nav.klage.dokument.api.input.BrevMottakerInput
+import no.nav.klage.dokument.api.input.JournalfoeringDataInput
+import no.nav.klage.dokument.api.input.PartIdInput
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.PartId

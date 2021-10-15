@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.api.view
+package no.nav.klage.dokument.api.input
 
 data class BrevMottakerInput(
     val partId: PartIdInput,

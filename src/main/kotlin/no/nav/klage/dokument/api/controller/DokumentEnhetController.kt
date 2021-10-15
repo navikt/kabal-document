@@ -1,9 +1,15 @@
 package no.nav.klage.dokument.api.controller
 
 import io.swagger.annotations.Api
+import no.nav.klage.dokument.api.input.BrevmottakereInput
+import no.nav.klage.dokument.api.input.DokumentEnhetInput
+import no.nav.klage.dokument.api.input.FilInput
+import no.nav.klage.dokument.api.input.JournalfoeringDataInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
-import no.nav.klage.dokument.api.view.*
+import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
+import no.nav.klage.dokument.api.view.DokumentEnhetView
+import no.nav.klage.dokument.api.view.HovedDokumentEditedView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.service.saksbehandler.InnloggetSaksbehandlerService
