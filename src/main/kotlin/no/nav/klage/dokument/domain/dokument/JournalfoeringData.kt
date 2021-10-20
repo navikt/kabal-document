@@ -11,6 +11,10 @@ data class JournalfoeringData(
     val sakFagsakId: String?,
     val sakFagsystem: Fagsystem?,
     val kildeReferanse: String,
-    val enhet: String
+    val enhet: String,
+    val behandlingstema: String,
+    val tittel: String,
+    val brevKode: String,
+    val tilleggsopplysning: Tilleggsopplysning?
 )
 

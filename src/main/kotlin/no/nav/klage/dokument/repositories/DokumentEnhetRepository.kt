@@ -170,7 +170,14 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         Fagsystem.valueOf(it)
                     },
                     kildeReferanse = rs.getString("kilde_referanse"),
-                    enhet = rs.getString("enhet")
+                    enhet = rs.getString("enhet"),
+                    behandlingstema = rs.getString("behandlingstema"),
+                    tittel = rs.getString("tittel"),
+                    brevKode = rs.getString("brevKode"),
+                    tilleggsopplysning = nullSafeTilleggsopplysning(
+                        rs.getString("tilleggsopplysning_key"),
+                        rs.getString("tilleggsopplysning_value")
+                    ),
                 )
             }, dokumentEnhetId
         )
@@ -278,9 +285,20 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         "sak_fagsystem" to journalfoeringData.sakFagsystem?.name,
                         "kilde_referanse" to journalfoeringData.kildeReferanse,
                         "enhet" to journalfoeringData.enhet,
+                        "behandlingstema" to journalfoeringData.behandlingstema,
+                        "tittel" to journalfoeringData.tittel,
+                        "brevKode" to journalfoeringData.brevKode,
+                        "tilleggsopplysning_key" to journalfoeringData.tilleggsopplysning?.key,
+                        "tilleggsopplysning_value" to journalfoeringData.tilleggsopplysning?.value,
                         "dokumentenhet_id" to dokumentEnhetId
                     )
                 )
             }
     }
+
+
+    private fun nullSafeTilleggsopplysning(key: String?, value: String?): Tilleggsopplysning? =
+        if (key != null && value != null) {
+            Tilleggsopplysning(key, value)
+        } else null
 }

@@ -6,6 +6,7 @@ import no.nav.klage.dokument.api.input.PartIdInput
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
 import no.nav.klage.dokument.domain.kodeverk.Fagsystem
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
@@ -48,7 +49,11 @@ class DokumentEnhetInputMapper {
                 sakFagsakId = input.sakFagsakId,
                 sakFagsystem = input.sakFagsystem?.let { Fagsystem.valueOf(it) },
                 kildeReferanse = input.kildeReferanse,
-                enhet = input.enhet //TODO: Validering??
+                enhet = input.enhet,
+                behandlingstema = input.behandlingstema,
+                tittel = input.tittel,
+                brevKode = input.brevKode,
+                tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) }
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)

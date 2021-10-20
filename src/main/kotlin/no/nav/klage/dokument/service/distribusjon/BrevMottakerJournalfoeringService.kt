@@ -31,10 +31,11 @@ class BrevMottakerJournalfoeringService(
         opplastetDokument: OpplastetDokument,
         journalfoeringData: JournalfoeringData
     ): JournalpostId {
-        val documentInStorage = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
+        val mellomlagretDokument = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
         return joarkGateway.createJournalpostAsSystemUser(
             journalfoeringData,
-            documentInStorage,
+            opplastetDokument,
+            mellomlagretDokument,
             brevMottaker
         )
     }

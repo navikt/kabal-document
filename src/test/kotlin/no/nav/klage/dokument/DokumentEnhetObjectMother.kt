@@ -20,7 +20,11 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
         sakFagsakId = "sakFagsakId",
         sakFagsystem = Fagsystem.FS36,
         kildeReferanse = "kildeReferanse",
-        enhet = "Enhet"
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = Tilleggsopplysning("key", "value")
     ),
     brevMottakere = listOf(
         BrevMottaker(
@@ -77,7 +81,11 @@ fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
         sakFagsakId = "sakFagsakId",
         sakFagsystem = Fagsystem.FS36,
         kildeReferanse = "kildeReferanse",
-        enhet = "Enhet"
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = Tilleggsopplysning("key", "value")
     ),
     brevMottakere = listOf(
         BrevMottaker(
@@ -128,7 +136,11 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
         sakFagsakId = "sakFagsakId",
         sakFagsystem = Fagsystem.FS36,
         kildeReferanse = "kildeReferanse",
-        enhet = "Enhet"
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = Tilleggsopplysning("key", "value")
     ),
     brevMottakere = listOf(
         BrevMottaker(
@@ -181,7 +193,11 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
         sakFagsakId = "sakFagsakId",
         sakFagsystem = Fagsystem.FS36,
         kildeReferanse = "kildeReferanse",
-        enhet = "Enhet"
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = Tilleggsopplysning("key", "value")
     ),
     brevMottakere = listOf(
         BrevMottaker(
@@ -240,7 +256,11 @@ fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
         sakFagsakId = null,
         sakFagsystem = null,
         kildeReferanse = "kildeReferanse",
-        enhet = "Enhet"
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = null
     ),
     brevMottakere = emptyList(),
     hovedDokument = null,

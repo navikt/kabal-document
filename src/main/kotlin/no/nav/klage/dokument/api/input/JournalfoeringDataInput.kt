@@ -7,4 +7,8 @@ data class JournalfoeringDataInput(
     val sakFagsystem: String?,
     val kildeReferanse: String,
     val enhet: String,
+    val behandlingstema: String,
+    val tittel: String,
+    val brevKode: String,
+    val tilleggsopplysning: TilleggsopplysningInput?
 )

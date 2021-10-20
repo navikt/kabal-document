@@ -55,7 +55,7 @@ CREATE TABLE document.brevmottaker
     id               UUID PRIMARY KEY,
     part_id_type     TEXT NOT NULL,
     part_id_value    TEXT NOT NULL,
-    navn             TEXT NOT NULL,
+    navn             TEXT,
     rolle            TEXT NOT NULL,
     dokumentenhet_id UUID NOT NULL,
     CONSTRAINT fk_brevmottaker_doke
@@ -65,15 +65,21 @@ CREATE TABLE document.brevmottaker
 
 CREATE TABLE document.journalfoeringdata
 (
-    id                  UUID PRIMARY KEY,
-    saken_gjelder_type  TEXT NOT NULL,
-    saken_gjelder_value TEXT NOT NULL,
-    tema                TEXT NOT NULL,
-    sak_fagsak_id       TEXT,
-    sak_fagsystem       TEXT,
-    kilde_referanse     TEXT NOT NULL,
-    enhet               TEXT NOT NULL,
-    dokumentenhet_id    UUID NOT NULL,
+    id                       UUID PRIMARY KEY,
+    saken_gjelder_type       TEXT NOT NULL,
+    saken_gjelder_value      TEXT NOT NULL,
+    tema                     TEXT NOT NULL,
+    sak_fagsak_id            TEXT,
+    sak_fagsystem            TEXT,
+    kilde_referanse          TEXT NOT NULL,
+    enhet                    TEXT NOT NULL,
+    behandlingstema          TEXT NOT NULL,
+    tittel                   TEXT NOT NULL,
+    brevKode                 TEXT NOT NULL,
+    tilleggsopplysning_key   TEXT,
+    tilleggsopplysning_value TEXT,
+    dokumentenhet_id         UUID NOT NULL,
+
     CONSTRAINT fk_journalfoeringdata_doke
         FOREIGN KEY (dokumentenhet_id)
             REFERENCES document.dokumentenhet (id)

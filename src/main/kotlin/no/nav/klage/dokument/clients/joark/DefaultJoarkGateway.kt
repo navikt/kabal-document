@@ -1,9 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.JournalfoeringData
-import no.nav.klage.dokument.domain.dokument.JournalpostId
-import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
+import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.gateway.JoarkGateway
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -23,14 +20,16 @@ class DefaultJoarkGateway(
 
     override fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
-        document: MellomlagretDokument,
+        opplastetDokument: OpplastetDokument,
+        mellomlagretDokument: MellomlagretDokument,
         brevMottaker: BrevMottaker
     ): JournalpostId =
         JournalpostId(
             joarkClient.createJournalpostInJoarkAsSystemUser(
                 joarkMapper.createJournalpost(
                     journalfoeringData,
-                    document,
+                    opplastetDokument,
+                    mellomlagretDokument,
                     brevMottaker
                 )
             ).journalpostId

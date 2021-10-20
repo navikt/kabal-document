@@ -107,9 +107,6 @@ class DokumentEnhetController(
     fun fullfoerDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
     ): DokumentEnhetFullfoertView {
-
-        //TODO: Kan enten motta JournalfoeringData her eller i create?
-
         return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(
             dokumentEnhetService.ferdigstillDokumentEnhet(
                 dokumentEnhetId,

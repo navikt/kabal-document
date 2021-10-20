@@ -1,9 +1,9 @@
 package no.nav.klage.dokument.clients.joark
 
-import brave.Tracer
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
+import no.nav.klage.dokument.domain.dokument.OpplastetDokument
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.getLogger
@@ -12,43 +12,38 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class JoarkMapper(
-    private val tracer: Tracer,
-    private val pdfUtils: PdfUtils,
-) {
+class JoarkMapper(private val pdfUtils: PdfUtils) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val securelogger = getSecureLogger()
-
-        private const val BREV_TITTEL = "Brev fra Klageinstans"
-        private const val BREVKODE = "BREV_FRA_KLAGEINSTANS"
-        private const val BEHANDLINGSTEMA_KLAGE_KLAGEINSTANS = "ab0164"
-        private const val KLAGEBEHANDLING_ID_KEY = "klagebehandling_id"
     }
 
     fun createJournalpost(
         journalfoeringData: JournalfoeringData,
+        opplastetDokument: OpplastetDokument,
         mellomlagretDokument: MellomlagretDokument,
         brevMottaker: BrevMottaker
     ): Journalpost =
         Journalpost(
             journalposttype = JournalpostType.UTGAAENDE,
             tema = journalfoeringData.tema,
-            behandlingstema = BEHANDLINGSTEMA_KLAGE_KLAGEINSTANS,
+            behandlingstema = journalfoeringData.behandlingstema,
             avsenderMottaker = createAvsenderMottager(brevMottaker),
             sak = createSak(journalfoeringData),
-            tittel = BREV_TITTEL,
+            tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
-            eksternReferanseId = tracer.currentSpan().context().traceIdString(),
+            eksternReferanseId = journalfoeringData.kildeReferanse,
             bruker = createBruker(journalfoeringData),
-            dokumenter = createDokument(mellomlagretDokument),
-            tilleggsopplysninger = listOf(
-                Tilleggsopplysning(
-                    nokkel = KLAGEBEHANDLING_ID_KEY, verdi = journalfoeringData.kildeReferanse
+            dokumenter = createDokument(mellomlagretDokument, journalfoeringData),
+            tilleggsopplysninger = journalfoeringData.tilleggsopplysning?.let {
+                listOf(
+                    Tilleggsopplysning(
+                        nokkel = it.key, verdi = it.value
+                    )
                 )
-            )
+            } ?: emptyList()
         )
 
     private fun createAvsenderMottager(brevMottaker: BrevMottaker): AvsenderMottaker =
@@ -82,12 +77,12 @@ class JoarkMapper(
 
 
     private fun createDokument(
-        mellomlagretDokument: MellomlagretDokument
+        mellomlagretDokument: MellomlagretDokument, journalfoeringData: JournalfoeringData
     ): List<Dokument> =
         listOf(
             Dokument(
-                tittel = BREV_TITTEL,
-                brevkode = BREVKODE,
+                tittel = journalfoeringData.tittel, //TODO: Bruke navnet på dokumentet?
+                brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
                 dokumentVarianter = listOf(
                     DokumentVariant(
                         filnavn = mellomlagretDokument.title,
@@ -98,4 +93,5 @@ class JoarkMapper(
                 )
             )
         )
+
 }

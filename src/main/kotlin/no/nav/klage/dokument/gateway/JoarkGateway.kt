@@ -1,13 +1,11 @@
 package no.nav.klage.dokument.gateway
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.JournalfoeringData
-import no.nav.klage.dokument.domain.dokument.JournalpostId
-import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
+import no.nav.klage.dokument.domain.dokument.*
 
 interface JoarkGateway {
     fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
+        opplastetDokument: OpplastetDokument,
         document: MellomlagretDokument,
         brevMottaker: BrevMottaker
     ): JournalpostId

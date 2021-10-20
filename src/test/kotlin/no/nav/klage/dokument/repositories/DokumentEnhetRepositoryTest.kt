@@ -70,7 +70,11 @@ internal class DokumentEnhetRepositoryTest {
                 sakFagsakId = null,
                 sakFagsystem = null,
                 kildeReferanse = "kildeReferanse",
-                enhet = "Enhet"
+                enhet = "Enhet",
+                behandlingstema = "behandlingstema",
+                tittel = "Tittel",
+                brevKode = "brevKode",
+                tilleggsopplysning = Tilleggsopplysning("key", "value")
             ),
             brevMottakere = emptyList(),
             hovedDokument = null,

@@ -53,7 +53,7 @@ internal class BrevMottakerDistribusjonServiceTest {
     private fun assertFerdigDistribuert(brevMottakerDistribusjon: BrevMottakerDistribusjon?) {
         assertThat(brevMottakerDistribusjon).isNotNull
         assertThat(brevMottakerDistribusjon!!.ferdigstiltIJoark).isNotNull
-        assertThat(brevMottakerDistribusjon!!.dokdistReferanse).isNotNull
+        assertThat(brevMottakerDistribusjon.dokdistReferanse).isNotNull
     }
 
 }
