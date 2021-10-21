@@ -268,3 +268,27 @@ fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
     brevMottakerDistribusjoner = emptyList(),
     avsluttet = null,
 )
+
+fun dokumentEnhetForIntegrasjonstest() = DokumentEnhet(
+    eier = SaksbehandlerIdent(navIdent = "A10101"),
+    journalfoeringData = JournalfoeringData(
+        sakenGjelder = PartId(
+            type = PartIdType.PERSON,
+            value = "20022012345"
+        ),
+        tema = Tema.OMS,
+        sakFagsakId = null,
+        sakFagsystem = null,
+        kildeReferanse = "kildeReferanse",
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = null
+    ),
+    brevMottakere = emptyList(),
+    hovedDokument = null,
+    vedlegg = emptyList(),
+    brevMottakerDistribusjoner = emptyList(),
+    avsluttet = null,
+)
