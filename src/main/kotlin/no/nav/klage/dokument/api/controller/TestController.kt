@@ -79,8 +79,7 @@ class TestController(
         FileInputStream(file).use { input -> fileItem.outputStream.use { out -> input.transferTo(out) } }
         return CommonsMultipartFile(fileItem)
     }
-
-    //TODO: Trenger litt bedre data
+    
     fun journalfoeringData() = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -96,7 +95,7 @@ class TestController(
         brevKode = BREVKODE,
         tilleggsopplysning = Tilleggsopplysning(KLAGEBEHANDLING_ID_KEY, UUID.randomUUID().toString())
     )
-    
+
     fun brevMottakere() = listOf(
         BrevMottaker(
             partId = PartId(
