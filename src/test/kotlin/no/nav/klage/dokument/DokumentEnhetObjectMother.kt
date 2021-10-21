@@ -33,7 +33,7 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.SOEKER
+            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
@@ -41,7 +41,7 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
                 value = "20022012345"
             ),
             navn = "Mottaker Person",
-            rolle = Rolle.PROSESSFULLMEKTIG
+            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(
@@ -94,7 +94,7 @@ fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.SOEKER
+            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
@@ -102,7 +102,7 @@ fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
                 value = "20022012345"
             ),
             navn = "Mottaker Person",
-            rolle = Rolle.PROSESSFULLMEKTIG
+            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(
@@ -150,7 +150,7 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.SOEKER
+            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(
@@ -207,7 +207,7 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.SOEKER
+            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
@@ -215,7 +215,7 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
                 value = "20022012345"
             ),
             navn = "Mottaker Person",
-            rolle = Rolle.PROSESSFULLMEKTIG
+            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(

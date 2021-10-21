@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.api.controller
 
+import no.nav.fnrgen.FnrGen.singleFnr
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
@@ -30,18 +31,16 @@ class TestController(
 ) {
 
     companion object {
-
-        private val logger = getLogger(javaClass.enclosingClass)
+        private val logger = getLogger(TestController::class.java)
 
         private const val BREV_TITTEL = "Brev fra Klageinstans"
         private const val BREVKODE = "BREV_FRA_KLAGEINSTANS"
         private const val BEHANDLINGSTEMA_KLAGE_KLAGEINSTANS = "ab0164"
         private const val KLAGEBEHANDLING_ID_KEY = "klagebehandling_id"
 
-        //TODO Trenger skikkelig ident
-        private val testSaksbehandler = SaksbehandlerIdent("")
+        private val testSaksbehandler = SaksbehandlerIdent("Z994488")
     }
-    
+
     @Unprotected
     @PostMapping("/integration")
     fun lagreOgDistribuerDokumentEnhet(): DokumentEnhetFullfoertView {
@@ -85,36 +84,35 @@ class TestController(
     fun journalfoeringData() = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
-            value = "20022012345"
+            value = singleFnr()
         ),
         tema = Tema.OMS,
         sakFagsakId = null,
         sakFagsystem = null,
         kildeReferanse = UUID.randomUUID().toString(),
-        enhet = "Enhet",
+        enhet = "4291",
         behandlingstema = BEHANDLINGSTEMA_KLAGE_KLAGEINSTANS,
         tittel = BREV_TITTEL,
         brevKode = BREVKODE,
         tilleggsopplysning = Tilleggsopplysning(KLAGEBEHANDLING_ID_KEY, UUID.randomUUID().toString())
     )
-
-    //TODO: Trenger litt bedre data
+    
     fun brevMottakere() = listOf(
         BrevMottaker(
             partId = PartId(
                 type = PartIdType.PERSON,
-                value = "01011012345"
+                value = singleFnr()
             ),
-            navn = "Test Person",
-            rolle = Rolle.SOEKER
+            navn = "Klager Person",
+            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
                 type = PartIdType.PERSON,
-                value = "20022012345"
+                value = singleFnr()
             ),
-            navn = "Mottaker Person",
-            rolle = Rolle.PROSESSFULLMEKTIG
+            navn = "Prosessfullmektig Person",
+            rolle = Rolle.HOVEDADRESSAT
         )
     )
 }
