@@ -6,6 +6,8 @@ import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
+import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Service
@@ -17,6 +19,12 @@ import java.util.*
 @Service
 @Transactional
 class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
+
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        private val logger = getLogger(javaClass.enclosingClass)
+        private val secureLogger = getSecureLogger()
+    }
 
     fun findById(dokumentEnhetId: UUID): DokumentEnhet? {
         if (!exists(dokumentEnhetId)) return null
@@ -125,18 +133,23 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     private fun getHovedDokument(dokumentEnhetId: UUID): OpplastetDokument? {
-        return jdbcTemplate.queryForObject(
-            "SELECT * FROM document.opplastetdokument WHERE type = 'HOVEDDOKUMENT' AND  dokumentenhet_id = ?",
-            { rs: ResultSet, _: Int ->
-                OpplastetDokument(
-                    id = rs.getObject("id", UUID::class.java),
-                    mellomlagerId = rs.getString("mellomlager_id"),
-                    opplastet = rs.getObject("opplastet", LocalDateTime::class.java),
-                    size = rs.getLong("size"),
-                    name = rs.getString("name"),
-                )
-            }, dokumentEnhetId
-        )
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM document.opplastetdokument WHERE type = 'HOVEDDOKUMENT' AND  dokumentenhet_id = ?",
+                { rs: ResultSet, _: Int ->
+                    OpplastetDokument(
+                        id = rs.getObject("id", UUID::class.java),
+                        mellomlagerId = rs.getString("mellomlager_id"),
+                        opplastet = rs.getObject("opplastet", LocalDateTime::class.java),
+                        size = rs.getLong("size"),
+                        name = rs.getString("name"),
+                    )
+                }, dokumentEnhetId
+            )
+        } catch (t: Throwable) {
+            logger.info("Feil i getHovedDokument", t)
+            return null
+        }
     }
 
     private fun getVedlegg(dokumentEnhetId: UUID): List<OpplastetDokument> {
@@ -155,32 +168,37 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     private fun getJournalfoeringData(dokumentEnhetId: UUID): JournalfoeringData? {
-        return jdbcTemplate.queryForObject(
-            "SELECT * FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
-            { rs: ResultSet, _: Int ->
-                JournalfoeringData(
-                    id = rs.getObject("id", UUID::class.java),
-                    sakenGjelder = PartId(
-                        type = PartIdType.valueOf(rs.getString("saken_gjelder_type")),
-                        value = rs.getString("saken_gjelder_value")
-                    ),
-                    tema = Tema.valueOf(rs.getString("tema")),
-                    sakFagsakId = rs.getString("sak_fagsak_id"),
-                    sakFagsystem = rs.getString("sak_fagsystem")?.let {
-                        Fagsystem.valueOf(it)
-                    },
-                    kildeReferanse = rs.getString("kilde_referanse"),
-                    enhet = rs.getString("enhet"),
-                    behandlingstema = rs.getString("behandlingstema"),
-                    tittel = rs.getString("tittel"),
-                    brevKode = rs.getString("brevKode"),
-                    tilleggsopplysning = nullSafeTilleggsopplysning(
-                        rs.getString("tilleggsopplysning_key"),
-                        rs.getString("tilleggsopplysning_value")
-                    ),
-                )
-            }, dokumentEnhetId
-        )
+        try {
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM document.journalfoeringdata WHERE dokumentenhet_id = ?",
+                { rs: ResultSet, _: Int ->
+                    JournalfoeringData(
+                        id = rs.getObject("id", UUID::class.java),
+                        sakenGjelder = PartId(
+                            type = PartIdType.valueOf(rs.getString("saken_gjelder_type")),
+                            value = rs.getString("saken_gjelder_value")
+                        ),
+                        tema = Tema.valueOf(rs.getString("tema")),
+                        sakFagsakId = rs.getString("sak_fagsak_id"),
+                        sakFagsystem = rs.getString("sak_fagsystem")?.let {
+                            Fagsystem.valueOf(it)
+                        },
+                        kildeReferanse = rs.getString("kilde_referanse"),
+                        enhet = rs.getString("enhet"),
+                        behandlingstema = rs.getString("behandlingstema"),
+                        tittel = rs.getString("tittel"),
+                        brevKode = rs.getString("brevKode"),
+                        tilleggsopplysning = nullSafeTilleggsopplysning(
+                            rs.getString("tilleggsopplysning_key"),
+                            rs.getString("tilleggsopplysning_value")
+                        ),
+                    )
+                }, dokumentEnhetId
+            )
+        } catch (t: Throwable) {
+            logger.info("Feil i getJournalfoeringData", t)
+            return null
+        }
     }
 
     private fun getBrevMottakere(dokumentEnhetId: UUID): List<BrevMottaker> {

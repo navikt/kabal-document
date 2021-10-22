@@ -56,7 +56,8 @@ class DokumentEnhetService(
     fun mellomlagreNyttHovedDokument(
         dokumentEnhetId: UUID,
         fil: MultipartFile,
-        innloggetIdent: SaksbehandlerIdent
+        innloggetIdent: SaksbehandlerIdent,
+        systemUser: Boolean = false
     ): DokumentEnhet {
 
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
@@ -67,7 +68,11 @@ class DokumentEnhetService(
         attachmentValidator.validateAttachment(fil)
         if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Klagebehandlingen er avsluttet")
 
-        val mellomlagerId = mellomlagerService.uploadDocument(fil)
+        val mellomlagerId = if (systemUser) {
+            mellomlagerService.uploadDocumentAsSystemUser(fil)
+        } else {
+            mellomlagerService.uploadDocument(fil)
+        }
 
         val oppdatertDokumentEnhet = dokumentEnhetRepository.saveOrUpdate(
             dokumentEnhet.copy(
@@ -82,7 +87,11 @@ class DokumentEnhetService(
 
         //Sletter ikke det gamle før vi vet at det nye er lagret
         if (dokumentEnhet.harHovedDokument()) {
-            mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument!!.mellomlagerId)
+            if (systemUser) {
+                mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhet.hovedDokument!!.mellomlagerId)
+            } else {
+                mellomlagerService.deleteDocument(dokumentEnhet.hovedDokument!!.mellomlagerId)
+            }
         }
 
         return oppdatertDokumentEnhet
@@ -100,7 +109,7 @@ class DokumentEnhetService(
         if (dokumentEnhet.erAvsluttet()) return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
 
         //Sjekker om fil er lastet opp til mellomlager
-        if (dokumentEnhet.harHovedDokument()) {
+        if (!dokumentEnhet.harHovedDokument()) {
             throw DokumentEnhetNotValidException("Hoveddokument er ikke lastet opp")
         }
 

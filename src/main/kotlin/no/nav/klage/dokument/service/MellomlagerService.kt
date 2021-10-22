@@ -40,5 +40,8 @@ class MellomlagerService(
     fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =
         fileApiClient.deleteDocument(mellomlagerId, true)
 
+    fun uploadDocumentAsSystemUser(file: MultipartFile): String =
+        fileApiClient.uploadDocument(file.bytes, file.name, true)
+
     private fun getFileNameFromMellomlagerId(mellomlagerId: String): String = mellomlagerId.substring(36)
 }

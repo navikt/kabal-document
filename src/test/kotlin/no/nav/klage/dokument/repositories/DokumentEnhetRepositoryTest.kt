@@ -93,7 +93,7 @@ internal class DokumentEnhetRepositoryTest {
                         value = "01011012345"
                     ),
                     navn = "Test Person",
-                    rolle = Rolle.SOEKER
+                    rolle = Rolle.KOPIADRESSAT
                 ),
                 BrevMottaker(
                     partId = PartId(
@@ -101,7 +101,7 @@ internal class DokumentEnhetRepositoryTest {
                         value = "20022012345"
                     ),
                     navn = "Mottaker Person",
-                    rolle = Rolle.PROSESSFULLMEKTIG
+                    rolle = Rolle.HOVEDADRESSAT
                 )
             ),
             hovedDokument = OpplastetDokument(

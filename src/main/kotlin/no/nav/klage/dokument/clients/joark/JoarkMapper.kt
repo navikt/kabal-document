@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class JoarkMapper(private val pdfUtils: PdfUtils) {
+class JoarkMapper(
+    private val pdfUtils: PdfUtils
+) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -34,7 +36,7 @@ class JoarkMapper(private val pdfUtils: PdfUtils) {
             sak = createSak(journalfoeringData),
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
-            eksternReferanseId = journalfoeringData.kildeReferanse,
+            eksternReferanseId = "${opplastetDokument.id}_${brevMottaker.id}",
             bruker = createBruker(journalfoeringData),
             dokumenter = createDokument(mellomlagretDokument, journalfoeringData),
             tilleggsopplysninger = journalfoeringData.tilleggsopplysning?.let {

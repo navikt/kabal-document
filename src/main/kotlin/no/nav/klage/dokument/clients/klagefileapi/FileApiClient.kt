@@ -32,7 +32,7 @@ class FileApiClient(
 
         return this.fileWebClient.get()
             .uri { it.path("/document/{id}").build(id) }
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${token}")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
             .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
             .retrieve()
             .bodyToMono<ByteArray>()
@@ -51,7 +51,7 @@ class FileApiClient(
         val deletedInGCS = fileWebClient
             .delete()
             .uri("/document/$id")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${token}")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
             .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
             .retrieve()
             .bodyToMono<Boolean>()
@@ -64,15 +64,21 @@ class FileApiClient(
         }
     }
 
-    fun uploadDocument(bytes: ByteArray, originalFilename: String): String {
+    fun uploadDocument(bytes: ByteArray, originalFilename: String, systemUser: Boolean = false): String {
         logger.debug("Uploading document to storage")
+
+        val token = if (systemUser) {
+            tokenUtil.getAppAccessTokenWithKabalFileApiScope()
+        } else {
+            tokenUtil.getSaksbehandlerAccessTokenWithKabalFileApiScope()
+        }
 
         val bodyBuilder = MultipartBodyBuilder()
         bodyBuilder.part("file", bytes).filename(originalFilename)
         val response = fileWebClient
             .post()
             .uri("/document")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithKabalFileApiScope()}")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
             .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
             .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
             .retrieve()

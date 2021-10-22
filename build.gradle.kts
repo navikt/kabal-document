@@ -34,6 +34,7 @@ repositories {
     }
     jcenter()
     maven("https://packages.confluent.io/maven/")
+    maven("https://jitpack.io")
 }
 
 plugins {
@@ -61,7 +62,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
-    
+
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
 
@@ -94,6 +95,9 @@ dependencies {
     implementation("org.verapdf:validation-model:$verapdfVersion")
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.apache.tika:tika-core:$tikaVersion")
+
+    implementation("commons-io:commons-io:2.11.0")
+    implementation("commons-fileupload:commons-fileupload:1.4")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
