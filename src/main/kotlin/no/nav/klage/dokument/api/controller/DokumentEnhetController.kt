@@ -109,8 +109,7 @@ class DokumentEnhetController(
     ): DokumentEnhetFullfoertView {
         return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(
             dokumentEnhetService.ferdigstillDokumentEnhet(
-                dokumentEnhetId,
-                innloggetSaksbehandlerService.getInnloggetIdent()
+                dokumentEnhetId
             )
         )
     }

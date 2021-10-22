@@ -98,8 +98,7 @@ class DokumentEnhetService(
     }
 
     fun ferdigstillDokumentEnhet(
-        dokumentEnhetId: UUID,
-        innloggetIdent: SaksbehandlerIdent
+        dokumentEnhetId: UUID
     ): DokumentEnhet {
 
         val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
