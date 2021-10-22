@@ -37,7 +37,7 @@ class DokumentEnhetController(
 
     @PostMapping
     fun createDokumentEnhet(
-        @ModelAttribute input: DokumentEnhetInput
+        @RequestBody input: DokumentEnhetInput
     ): DokumentEnhetView =
         dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhet(
