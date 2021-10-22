@@ -66,7 +66,7 @@ class DokumentEnhetService(
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
 
         attachmentValidator.validateAttachment(fil)
-        if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Klagebehandlingen er avsluttet")
+        if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Dokumentenheten er journalført og kan ikke endres")
 
         val mellomlagerId = if (systemUser) {
             mellomlagerService.uploadDocumentAsSystemUser(fil)
@@ -124,6 +124,8 @@ class DokumentEnhetService(
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
+
+        if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Dokumentenheten er journalført, hent dokumentet fra SAF i stedet")
 
         if (dokumentEnhet.harHovedDokument()) {
             throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")

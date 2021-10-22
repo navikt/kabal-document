@@ -52,14 +52,13 @@ class DokumentEnhetDistribusjonService(
     }
 
     private fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
-        return try {
+        try {
             logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
             dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
-            dokumentEnhet.copy(hovedDokument = null)
         } catch (t: Throwable) {
             "Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}"
-            dokumentEnhet
         }
+        return dokumentEnhet
     }
 
     private fun DokumentEnhet.chainable() = ChainableOperation(this, true)

@@ -38,21 +38,23 @@ class DokumentEnhetController(
     @PostMapping
     fun createDokumentEnhet(
         @RequestBody input: DokumentEnhetInput
-    ): DokumentEnhetView =
-        dokumentEnhetMapper.mapToDokumentEnhetView(
+    ): DokumentEnhetView {
+        logger.debug("Kall mottatt på createDokumentEnhet")
+        return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhet(
                 innloggetSaksbehandlerService.getInnloggetIdent(),
                 dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere),
                 dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData)
             )
         )
+    }
 
     @ResponseBody
     @GetMapping("/{dokumentEnhetId}")
     fun getDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): DokumentEnhetView {
-
+        logger.debug("Kall mottatt på getDokumentEnhet")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.getDokumentEnhet(
                 dokumentEnhetId,
@@ -66,7 +68,7 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
         @ModelAttribute input: FilInput
     ): HovedDokumentEditedView? {
-
+        logger.debug("Kall mottatt på uploadHovedDokument")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
             dokumentEnhetService.mellomlagreNyttHovedDokument(
                 dokumentEnhetId,
@@ -81,7 +83,7 @@ class DokumentEnhetController(
     fun getHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): ResponseEntity<ByteArray> {
-
+        logger.debug("Kall mottatt på getHovedDokument")
         return dokumentEnhetMapper.mapToByteArray(
             dokumentEnhetService.hentMellomlagretHovedDokument(
                 dokumentEnhetId,
@@ -94,7 +96,7 @@ class DokumentEnhetController(
     fun deleteHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): HovedDokumentEditedView {
-
+        logger.debug("Kall mottatt på deleteHovedDokument")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
             dokumentEnhetService.slettMellomlagretHovedDokument(
                 dokumentEnhetId,
@@ -107,6 +109,7 @@ class DokumentEnhetController(
     fun fullfoerDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
     ): DokumentEnhetFullfoertView {
+        logger.debug("Kall mottatt på fullfoerDokumentEnhet")
         return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(
             dokumentEnhetService.ferdigstillDokumentEnhet(
                 dokumentEnhetId
