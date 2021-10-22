@@ -109,7 +109,7 @@ class DokumentEnhetService(
         if (dokumentEnhet.erAvsluttet()) return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
 
         //Sjekker om fil er lastet opp til mellomlager
-        if (dokumentEnhet.harHovedDokument()) {
+        if (!dokumentEnhet.harHovedDokument()) {
             throw DokumentEnhetNotValidException("Hoveddokument er ikke lastet opp")
         }
 
