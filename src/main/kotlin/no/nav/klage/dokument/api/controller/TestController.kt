@@ -12,14 +12,11 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.security.token.support.core.api.Unprotected
 import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.springframework.context.annotation.Profile
-import org.springframework.core.io.ClassPathResource
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import java.io.FileInputStream
-import java.nio.file.Files
 import java.util.*
 
 
@@ -71,15 +68,14 @@ class TestController(
     }
 
     private fun getMultipartFile(): MultipartFile {
-        val file = ClassPathResource("/testdata/test.pdf").file
+        val inputStream = TestController::class.java.getResourceAsStream("/testdata/test.pdf")
         val fileItem = DiskFileItemFactory().createItem(
-            "file",
-            Files.probeContentType(file.toPath()), false, file.name
+            "file", "application/pdf", false, "test.pdf"
         )
-        FileInputStream(file).use { input -> fileItem.outputStream.use { out -> input.transferTo(out) } }
+        inputStream.use { input -> fileItem.outputStream.use { out -> input.transferTo(out) } }
         return CommonsMultipartFile(fileItem)
     }
-    
+
     fun journalfoeringData() = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
