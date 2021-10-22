@@ -55,8 +55,7 @@ class TestController(
             )
 
             val ferdigstiltDokumentEnhet: DokumentEnhet = dokumentEnhetService.ferdigstillDokumentEnhet(
-                oppdatertDokumentEnhet.id,
-                testSaksbehandler
+                oppdatertDokumentEnhet.id
             )
             logger.info("Integrasjontest ferdig, resultat ${ferdigstiltDokumentEnhet.erAvsluttet()}")
             return DokumentEnhetFullfoertView(ferdigstiltDokumentEnhet.erAvsluttet())
