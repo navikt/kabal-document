@@ -28,9 +28,11 @@ class BrevMottakerDistribusjonService(
         dokumentEnhet: DokumentEnhet
     ): BrevMottakerDistribusjon? =
         if (dokumentEnhet.erDistribuertTil(brevMottaker)) {
+            logger.info("Dokumentenhet ${dokumentEnhet.id} er allerede distribuert til brevmottaker ${brevMottaker.id}")
             dokumentEnhet.findBrevMottakerDistribusjon(brevMottaker)!!
         } else {
             try {
+                logger.info("Skal distribuere dokumentenhet ${dokumentEnhet.id} til brevmottaker ${brevMottaker.id}")
                 findOrCreateBrevMottakerDistribusjon(brevMottaker, dokumentEnhet).chainable()
                     .chain(brevMottakerJournalfoeringService::ferdigstillJournalpostForBrevMottaker)
                     .chain(this::distribuerJournalpostTilMottaker)

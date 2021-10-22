@@ -25,6 +25,7 @@ class DokDistFordelingClient(
     lateinit var applicationName: String
 
     fun distribuerJournalpost(journalpostId: String): DistribuerJournalpostResponse {
+        logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = DistribuerJournalpostRequestTo(
             journalpostId = journalpostId,
             bestillendeFagSystem = applicationName,

@@ -31,6 +31,7 @@ class BrevMottakerJournalfoeringService(
         opplastetDokument: OpplastetDokument,
         journalfoeringData: JournalfoeringData
     ): JournalpostId {
+        logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${opplastetDokument.id}")
         val mellomlagretDokument = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
         return joarkGateway.createJournalpostAsSystemUser(
             journalfoeringData,

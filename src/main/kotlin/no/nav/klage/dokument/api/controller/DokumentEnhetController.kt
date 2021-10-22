@@ -54,7 +54,7 @@ class DokumentEnhetController(
     fun getDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): DokumentEnhetView {
-        logger.debug("Kall mottatt på getDokumentEnhet")
+        logger.debug("Kall mottatt på getDokumentEnhet for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.getDokumentEnhet(
                 dokumentEnhetId,
@@ -68,7 +68,7 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
         @ModelAttribute input: FilInput
     ): HovedDokumentEditedView? {
-        logger.debug("Kall mottatt på uploadHovedDokument")
+        logger.debug("Kall mottatt på uploadHovedDokument for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
             dokumentEnhetService.mellomlagreNyttHovedDokument(
                 dokumentEnhetId,
@@ -83,7 +83,7 @@ class DokumentEnhetController(
     fun getHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): ResponseEntity<ByteArray> {
-        logger.debug("Kall mottatt på getHovedDokument")
+        logger.debug("Kall mottatt på getHovedDokument for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToByteArray(
             dokumentEnhetService.hentMellomlagretHovedDokument(
                 dokumentEnhetId,
@@ -96,7 +96,7 @@ class DokumentEnhetController(
     fun deleteHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): HovedDokumentEditedView {
-        logger.debug("Kall mottatt på deleteHovedDokument")
+        logger.debug("Kall mottatt på deleteHovedDokument for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
             dokumentEnhetService.slettMellomlagretHovedDokument(
                 dokumentEnhetId,
@@ -109,7 +109,7 @@ class DokumentEnhetController(
     fun fullfoerDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
     ): DokumentEnhetFullfoertView {
-        logger.debug("Kall mottatt på fullfoerDokumentEnhet")
+        logger.debug("Kall mottatt på fullfoerDokumentEnhet for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(
             dokumentEnhetService.ferdigstillDokumentEnhet(
                 dokumentEnhetId

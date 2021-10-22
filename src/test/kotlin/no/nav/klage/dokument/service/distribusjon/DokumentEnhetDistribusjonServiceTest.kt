@@ -116,6 +116,6 @@ internal class DokumentEnhetDistribusjonServiceTest {
             assertThat(it.ferdigstiltIJoark).isNotNull
             assertThat(it.dokdistReferanse).isNotNull
         }
-        assertThat(dokumentEnhet.hovedDokument).isNull()
+        assertThat(dokumentEnhet.hovedDokument).isNotNull
     }
 }
