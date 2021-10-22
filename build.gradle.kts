@@ -18,7 +18,6 @@ val threeTenExtraVersion = "1.6.0"
 val shedlockVersion = "4.23.0"
 val archunitVersion = "0.19.0"
 val verapdfVersion = "1.18.8"
-val fnrGenVersion = "2.0.0"
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -99,7 +98,6 @@ dependencies {
 
     implementation("commons-io:commons-io:2.11.0")
     implementation("commons-fileupload:commons-fileupload:1.4")
-    implementation("com.github.navikt:fnr-gen-test:$fnrGenVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")

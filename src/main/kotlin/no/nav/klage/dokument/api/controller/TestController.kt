@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.api.controller
 
-import no.nav.fnrgen.FnrGen.singleFnr
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.PartIdType
@@ -79,7 +78,7 @@ class TestController(
     fun journalfoeringData() = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
-            value = singleFnr()
+            value = randomFnr()
         ),
         tema = Tema.OMS,
         sakFagsakId = null,
@@ -96,7 +95,7 @@ class TestController(
         BrevMottaker(
             partId = PartId(
                 type = PartIdType.PERSON,
-                value = singleFnr()
+                value = randomFnr()
             ),
             navn = "Klager Person",
             rolle = Rolle.KOPIADRESSAT
@@ -104,10 +103,25 @@ class TestController(
         BrevMottaker(
             partId = PartId(
                 type = PartIdType.PERSON,
-                value = singleFnr()
+                value = randomFnr()
             ),
             navn = "Prosessfullmektig Person",
             rolle = Rolle.HOVEDADRESSAT
         )
     )
+
+    fun randomFnr(): String = listOf(
+        "02446701749",
+        "29437117843",
+        "25438301286",
+        "18496900509",
+        "28416904490",
+        "17457337760",
+        "16498818653",
+        "20467938577",
+        "14437830275",
+        "18418507701",
+        "12518603068"
+    ).shuffled().first()
+
 }
