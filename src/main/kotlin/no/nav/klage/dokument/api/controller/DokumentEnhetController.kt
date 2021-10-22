@@ -35,7 +35,7 @@ class DokumentEnhetController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @PostMapping("/")
+    @PostMapping
     fun createDokumentEnhet(
         @ModelAttribute input: DokumentEnhetInput
     ): DokumentEnhetView =
