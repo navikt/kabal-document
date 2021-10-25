@@ -18,7 +18,10 @@ class MellomlagerService(
     }
 
     fun uploadDocument(file: MultipartFile): String =
-        fileApiClient.uploadDocument(file.bytes, file.name)
+        fileApiClient.uploadDocument(
+            file.bytes,
+            file.originalFilename ?: throw RuntimeException("missing original filename")
+        )
 
     fun getUploadedDocument(mellomlagerId: String): MellomlagretDokument =
         MellomlagretDokument(
