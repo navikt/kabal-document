@@ -80,7 +80,7 @@ class DokumentEnhetService(
                     mellomlagerId = mellomlagerId,
                     opplastet = LocalDateTime.now(),
                     size = fil.size,
-                    name = fil.name
+                    name = fil.originalFilename ?: throw RuntimeException("missing original filename")
                 )
             )
         )
