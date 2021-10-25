@@ -127,7 +127,7 @@ class DokumentEnhetService(
 
         if (dokumentEnhet.erAvsluttet()) throw DokumentEnhetFinalizedException("Dokumentenheten er journalført, hent dokumentet fra SAF i stedet")
 
-        if (dokumentEnhet.harHovedDokument()) {
+        if (!dokumentEnhet.harHovedDokument()) {
             throw DokumentEnhetNotFoundException("Hoveddokument er ikke lastet opp")
         }
 
