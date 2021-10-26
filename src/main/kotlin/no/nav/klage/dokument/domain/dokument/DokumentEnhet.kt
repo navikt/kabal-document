@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.domain.dokument
 
+import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import java.time.LocalDateTime
@@ -36,4 +37,7 @@ data class DokumentEnhet(
 
     fun harHovedDokument(): Boolean = hovedDokument != null
 
+    fun getJournalpostIdHovedadressat(): String =
+        findBrevMottakerDistribusjon(brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }!!)?.journalpostId?.value
+            ?: throw RuntimeException("Could not find journalpostId for hovedadressat")
 }

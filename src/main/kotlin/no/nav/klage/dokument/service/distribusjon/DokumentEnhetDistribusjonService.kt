@@ -18,8 +18,6 @@ class DokumentEnhetDistribusjonService(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
-        const val SYSTEMBRUKER = "SYSTEMBRUKER" //TODO ??
-        const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
     }
 
     fun distribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
@@ -56,7 +54,7 @@ class DokumentEnhetDistribusjonService(
             logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
             dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
         } catch (t: Throwable) {
-            "Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}"
+            logger.warn("Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}")
         }
         return dokumentEnhet
     }

@@ -56,10 +56,10 @@ class BrevMottakerDistribusjonService(
         dokumentEnhet: DokumentEnhet
     ): BrevMottakerDistribusjon =
         dokumentEnhet.findBrevMottakerDistribusjon(brevMottaker)
-            ?: createBrevMottakerDistribusjon(brevMottaker, dokumentEnhet)
+            ?: createBrevMottakerDistribusjonWithJournalpost(brevMottaker, dokumentEnhet)
 
     //TODO vedlegg?
-    private fun createBrevMottakerDistribusjon(
+    private fun createBrevMottakerDistribusjonWithJournalpost(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
     ): BrevMottakerDistribusjon =

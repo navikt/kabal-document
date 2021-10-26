@@ -27,7 +27,9 @@ class DokumentEnhetMapper {
         )
 
     fun mapToDokumentEnhetFullfoertView(dokumentEnhet: DokumentEnhet): DokumentEnhetFullfoertView =
-        DokumentEnhetFullfoertView(dokumentEnhet.erAvsluttet())
+        DokumentEnhetFullfoertView(
+            journalpostIdHovedadressat = dokumentEnhet.getJournalpostIdHovedadressat()
+        )
 
     fun mapToByteArray(mellomlagretDokument: MellomlagretDokument): ResponseEntity<ByteArray> =
         ResponseEntity(
