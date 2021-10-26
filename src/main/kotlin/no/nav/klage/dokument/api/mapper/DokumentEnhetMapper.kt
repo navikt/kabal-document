@@ -26,11 +26,6 @@ class DokumentEnhetMapper {
             fileMetadata = getOpplastetFilMetadataView(dokumentEnhet.hovedDokument)
         )
 
-    fun mapToDokumentEnhetFullfoertView(dokumentEnhet: DokumentEnhet): DokumentEnhetFullfoertView =
-        DokumentEnhetFullfoertView(
-            journalpostIdHovedadressat = dokumentEnhet.getJournalpostIdHovedadressat()
-        )
-
     fun mapToByteArray(mellomlagretDokument: MellomlagretDokument): ResponseEntity<ByteArray> =
         ResponseEntity(
             mellomlagretDokument.content,
@@ -54,6 +49,7 @@ class DokumentEnhetMapper {
             },
             avsluttet = dokumentEnhet.avsluttet,
             modified = dokumentEnhet.modified,
+            journalpostIdHovedadressat = dokumentEnhet.getJournalpostIdHovedadressat()
         )
     }
 

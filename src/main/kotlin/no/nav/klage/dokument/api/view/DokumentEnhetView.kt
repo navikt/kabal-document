@@ -11,5 +11,6 @@ data class DokumentEnhetView(
     val vedlegg: List<OpplastetDokumentView>,
     val brevMottakerDistribusjoner: List<BrevMottakerDistribusjonView>,
     val avsluttet: LocalDateTime?,
-    val modified: LocalDateTime
+    val modified: LocalDateTime,
+    val journalpostIdHovedadressat: String? = null
 )

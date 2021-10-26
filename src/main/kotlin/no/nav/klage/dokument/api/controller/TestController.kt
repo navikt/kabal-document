@@ -39,7 +39,7 @@ class TestController(
 
     @Unprotected
     @PostMapping("/integration")
-    fun lagreOgDistribuerDokumentEnhet(): DokumentEnhetFullfoertView {
+    fun lagreOgDistribuerDokumentEnhet() {
         try {
             val dokumentEnhet: DokumentEnhet = dokumentEnhetService.opprettDokumentEnhet(
                 testSaksbehandler,
@@ -58,10 +58,8 @@ class TestController(
                 oppdatertDokumentEnhet.id
             )
             logger.info("Integrasjontest ferdig, resultat ${ferdigstiltDokumentEnhet.erAvsluttet()}")
-            return DokumentEnhetFullfoertView(ferdigstiltDokumentEnhet.erAvsluttet())
         } catch (t: Throwable) {
             logger.error("Integrasjontest feilet", t)
-            return DokumentEnhetFullfoertView(false)
         }
     }
 

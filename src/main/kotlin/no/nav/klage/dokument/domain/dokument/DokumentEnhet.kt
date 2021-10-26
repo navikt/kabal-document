@@ -37,7 +37,7 @@ data class DokumentEnhet(
 
     fun harHovedDokument(): Boolean = hovedDokument != null
 
-    fun getJournalpostIdHovedadressat(): String =
-        findBrevMottakerDistribusjon(brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }!!)?.journalpostId?.value
-            ?: throw RuntimeException("Could not find journalpostId for hovedadressat")
+    fun getJournalpostIdHovedadressat(): String? =
+        brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }
+            ?.let { findBrevMottakerDistribusjon(it)?.journalpostId?.value }
 }
