@@ -7,7 +7,6 @@ import no.nav.klage.dokument.api.input.FilInput
 import no.nav.klage.dokument.api.input.JournalfoeringDataInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
-import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.api.view.HovedDokumentEditedView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
@@ -55,10 +54,11 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): DokumentEnhetView {
         logger.debug("Kall mottatt på getDokumentEnhet for $dokumentEnhetId")
+        val ident = runCatching { innloggetSaksbehandlerService.getInnloggetIdent() }.getOrNull()
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.getDokumentEnhet(
                 dokumentEnhetId,
-                innloggetSaksbehandlerService.getInnloggetIdent()
+                ident
             )
         )
     }

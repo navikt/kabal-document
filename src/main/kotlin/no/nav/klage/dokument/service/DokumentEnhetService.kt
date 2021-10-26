@@ -136,7 +136,7 @@ class DokumentEnhetService(
 
     private fun verifyTilgangTilDokumentEnhet(
         dokumentEnhet: DokumentEnhet,
-        innloggetIdent: SaksbehandlerIdent
+        innloggetIdent: SaksbehandlerIdent?
     ) {
         if (dokumentEnhet.eier != innloggetIdent) {
             secureLogger.error(
@@ -162,7 +162,7 @@ class DokumentEnhetService(
         )
     }
 
-    fun getDokumentEnhet(dokumentEnhetId: UUID, innloggetIdent: SaksbehandlerIdent): DokumentEnhet =
+    fun getDokumentEnhet(dokumentEnhetId: UUID, innloggetIdent: SaksbehandlerIdent?): DokumentEnhet =
         dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
