@@ -241,7 +241,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "id" to brevMottakerDistribusjon.id,
                     "brev_mottaker_id" to brevMottakerDistribusjon.brevMottakerId,
                     "opplastet_dokument_id" to brevMottakerDistribusjon.opplastetDokumentId,
-                    "journalpost_id" to brevMottakerDistribusjon.journalpostId,
+                    "journalpost_id" to brevMottakerDistribusjon.journalpostId.value,
                     "ferdigstilt_i_joark" to brevMottakerDistribusjon.ferdigstiltIJoark,
                     "dokdist_referanse" to brevMottakerDistribusjon.dokdistReferanse,
                     "dokumentenhet_id" to dokumentEnhetId
