@@ -23,12 +23,18 @@ class DokumentEnhetDistribusjonService(
     fun distribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         if (!dokumentEnhet.erAvsluttet()) {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert")
-            dokumentEnhet.chainable()
-                .chain(this::distribuerDokumentEnhetTilBrevMottakere) //May not succeed 100%
-                .chain(this::markerDokumentEnhetSomFerdigDistribuert)
-                .chain(this::slettMellomlagretDokumentHvisDistribuert)
-                .value
+            val oppdatertDokumentEnhet = distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet)
+            if (oppdatertDokumentEnhet.erDistribuertTilAlle()) {
+                logger.debug("dokumentEnhet ${dokumentEnhet.id} er distribuert til alle, markerer som ferdig")
+                val ferdigDistribuertDokumentEnhet = markerDokumentEnhetSomFerdigDistribuert(oppdatertDokumentEnhet)
+                slettMellomlagretDokumentHvisDistribuert(ferdigDistribuertDokumentEnhet)
+                ferdigDistribuertDokumentEnhet
+            } else {
+                logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
+                oppdatertDokumentEnhet
+            }
         } else {
+            logger.debug("dokumentEnhet ${dokumentEnhet.id} er allerede distribuert")
             dokumentEnhet
         }
 
@@ -42,7 +48,6 @@ class DokumentEnhetDistribusjonService(
                         dokumentEnhet
                     )
                 })
-            .validateDistribuertTilAlle()
 
     private fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         logger.debug("Markerer dokumentEnhet ${dokumentEnhet.id} som ferdig distribuert")
