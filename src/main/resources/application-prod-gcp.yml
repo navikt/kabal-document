@@ -13,7 +13,7 @@ AXSYS_NAMESPACE: org
 AXSYS_APP: axsys
 
 SAF_BASE_URL: https://saf.prod-fss-pub.nais.io/
-SAF_APP_CLIENT_ID: dev-fss.teamdokumenthandtering.saf
+SAF_APP_CLIENT_ID: prod-fss.teamdokumenthandtering.saf
 
 DOKARKIV_CLIENT_ID: 162b3255-2f72-4399-8f7a-244add9ffaac
 
