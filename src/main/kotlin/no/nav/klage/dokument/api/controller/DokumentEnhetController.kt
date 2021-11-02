@@ -52,7 +52,6 @@ class DokumentEnhetController(
     fun createDokumentEnhetAndUploadHoveddokument(
         @RequestBody body: DokumentEnhetInput,
         @ModelAttribute input: FilInput
-        //@ModelAttribute input: FilOgDokumentEnhetInput
     ): DokumentEnhetView {
         logger.debug("Kall mottatt på createDokumentEnhet")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
