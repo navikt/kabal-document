@@ -166,4 +166,14 @@ class DokumentEnhetService(
         dokumentEnhetRepository.findById(dokumentEnhetId)
             ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
 
+    fun opprettDokumentEnhetOgMellomlagreNyttHoveddokument(
+        innloggetIdent: SaksbehandlerIdent,
+        brevMottakere: List<BrevMottaker>,
+        journalfoeringData: JournalfoeringData,
+        fil: MultipartFile
+    ): DokumentEnhet {
+        val dokumentEnhet = opprettDokumentEnhet(innloggetIdent, brevMottakere, journalfoeringData)
+        return mellomlagreNyttHovedDokument(dokumentEnhet.id, fil, innloggetIdent)
+    }
+
 }
