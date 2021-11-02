@@ -53,7 +53,7 @@ class DokumentEnhetController(
         @RequestBody body: DokumentEnhetInput,
         @ModelAttribute input: FilInput
     ): DokumentEnhetView {
-        logger.debug("Kall mottatt på createDokumentEnhet")
+        logger.debug("Kall mottatt på createDokumentEnhetAndUploadHoveddokument")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetOgMellomlagreNyttHoveddokument(
                 innloggetSaksbehandlerService.getInnloggetIdent(),
