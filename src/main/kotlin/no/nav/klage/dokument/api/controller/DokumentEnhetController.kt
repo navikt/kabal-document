@@ -48,6 +48,23 @@ class DokumentEnhetController(
         )
     }
 
+    @PostMapping("/innhold")
+    fun createDokumentEnhetAndUploadHoveddokument(
+        @RequestBody body: DokumentEnhetInput,
+        @ModelAttribute input: FilInput
+        //@ModelAttribute input: FilOgDokumentEnhetInput
+    ): DokumentEnhetView {
+        logger.debug("Kall mottatt på createDokumentEnhet")
+        return dokumentEnhetMapper.mapToDokumentEnhetView(
+            dokumentEnhetService.opprettDokumentEnhetOgMellomlagreNyttHoveddokument(
+                innloggetSaksbehandlerService.getInnloggetIdent(),
+                dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
+                dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
+                input.file
+            )
+        )
+    }
+
     @ResponseBody
     @GetMapping("/{dokumentEnhetId}")
     fun getDokumentEnhet(
