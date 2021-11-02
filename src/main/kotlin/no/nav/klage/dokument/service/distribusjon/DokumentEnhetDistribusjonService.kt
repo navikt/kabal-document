@@ -2,7 +2,6 @@ package no.nav.klage.dokument.service.distribusjon
 
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.service.MellomlagerService
-import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
@@ -22,12 +21,12 @@ class DokumentEnhetDistribusjonService(
 
     fun distribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         if (!dokumentEnhet.erAvsluttet()) {
-            logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert")
+            logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke avsluttet")
             val oppdatertDokumentEnhet = distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet)
             if (oppdatertDokumentEnhet.erDistribuertTilAlle()) {
                 logger.debug("dokumentEnhet ${dokumentEnhet.id} er distribuert til alle, markerer som ferdig")
                 val ferdigDistribuertDokumentEnhet = markerDokumentEnhetSomFerdigDistribuert(oppdatertDokumentEnhet)
-                slettMellomlagretDokumentHvisDistribuert(ferdigDistribuertDokumentEnhet)
+                slettMellomlagretDokument(ferdigDistribuertDokumentEnhet)
                 ferdigDistribuertDokumentEnhet
             } else {
                 logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
@@ -54,17 +53,14 @@ class DokumentEnhetDistribusjonService(
         return dokumentEnhet.copy(avsluttet = LocalDateTime.now())
     }
 
-    private fun slettMellomlagretDokumentHvisDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+    private fun slettMellomlagretDokument(dokumentEnhet: DokumentEnhet) {
         try {
             logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
             dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
         } catch (t: Throwable) {
             logger.warn("Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}")
         }
-        return dokumentEnhet
     }
-
-    private fun DokumentEnhet.chainable() = ChainableOperation(this, true)
 }
 
 
