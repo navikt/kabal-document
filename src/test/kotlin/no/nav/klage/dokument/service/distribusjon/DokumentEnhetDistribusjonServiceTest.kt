@@ -109,12 +109,51 @@ internal class DokumentEnhetDistribusjonServiceTest {
         assertFerdigDistribuert(dokumentEnhetDistribusjonService.distribuerDokumentEnhet(dokumentEnhetTilDist))
     }
 
+    @Test
+    fun `ikke-distribuert dokumentEnhet skal lagres korrekt når feil oppstår`() {
+
+        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedToBrevMottakere()
+        val brevMottakerSlot = slot<BrevMottaker>()
+        val dokumentEnhetSlot = slot<DokumentEnhet>()
+
+        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
+        every {
+            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+                capture(brevMottakerSlot),
+                capture(dokumentEnhetSlot)
+            )
+        } answers {
+            BrevMottakerDistribusjon(
+                brevMottakerId = brevMottakerSlot.captured.id,
+                opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
+                journalpostId = JournalpostId("random"),
+                ferdigstiltIJoark = LocalDateTime.now(),
+                dokdistReferanse = null
+            )
+        }
+
+        assertHarBrevmottakerDistribusjoner(
+            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
+                dokumentEnhetTilDist
+            )
+        )
+    }
+
     private fun assertFerdigDistribuert(dokumentEnhet: DokumentEnhet) {
         assertThat(dokumentEnhet.erAvsluttet())
         assertThat(dokumentEnhet.brevMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.brevMottakere.size)
         dokumentEnhet.brevMottakerDistribusjoner.forEach {
             assertThat(it.ferdigstiltIJoark).isNotNull
             assertThat(it.dokdistReferanse).isNotNull
+        }
+        assertThat(dokumentEnhet.hovedDokument).isNotNull
+    }
+
+    private fun assertHarBrevmottakerDistribusjoner(dokumentEnhet: DokumentEnhet) {
+        assertThat(dokumentEnhet.brevMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.brevMottakere.size)
+        dokumentEnhet.brevMottakerDistribusjoner.forEach {
+            assertThat(it.ferdigstiltIJoark).isNotNull
+            assertThat(it.dokdistReferanse).isNull()
         }
         assertThat(dokumentEnhet.hovedDokument).isNotNull
     }
