@@ -45,9 +45,10 @@ class DokumentEnhetInputMapper {
         try {
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
-                tema = Tema.valueOf(input.tema),
+                tema = if (input.temaId != null) Tema.of(input.temaId) else Tema.valueOf(input.tema!!),
                 sakFagsakId = input.sakFagsakId,
-                sakFagsystem = input.sakFagsystem?.let { Fagsystem.valueOf(it) },
+                sakFagsystem = if (input.sakFagsystemId != null) Fagsystem.of(input.sakFagsystemId) else
+                    input.sakFagsystem?.let { Fagsystem.valueOf(it) },
                 kildeReferanse = input.kildeReferanse,
                 enhet = input.enhet,
                 behandlingstema = input.behandlingstema,
@@ -63,7 +64,8 @@ class DokumentEnhetInputMapper {
     private fun mapPartIdInput(partIdInput: PartIdInput) =
         try {
             PartId(
-                type = PartIdType.valueOf(partIdInput.type),
+                type = if (partIdInput.partIdTypeId != null) PartIdType.of(partIdInput.partIdTypeId)
+                else PartIdType.valueOf(partIdInput.type!!),
                 value = partIdInput.value
             )
         } catch (iae: IllegalArgumentException) {
