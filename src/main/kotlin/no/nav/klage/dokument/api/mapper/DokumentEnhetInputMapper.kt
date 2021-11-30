@@ -7,13 +7,13 @@ import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.PartId
 import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
-import no.nav.klage.dokument.domain.kodeverk.Fagsystem
-import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
-import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.Fagsystem
+import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Tema
 import org.springframework.stereotype.Service
 
 @Service

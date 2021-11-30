@@ -1,9 +1,9 @@
 package no.nav.klage.dokument.clients.axsys
 
-import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.EnhetMedLovligeTemaer
 import no.nav.klage.dokument.domain.saksbehandler.EnheterMedLovligeTemaer
 import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.kodeverk.Tema
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,11 +1,11 @@
 package no.nav.klage.dokument
 
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Fagsystem
-import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
-import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
+import no.nav.klage.kodeverk.Fagsystem
+import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Tema
 import java.time.LocalDateTime
 import java.util.*
 

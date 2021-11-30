@@ -1,10 +1,10 @@
 package no.nav.klage.dokument.service.saksbehandler
 
-import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.EnheterMedLovligeTemaer
 import no.nav.klage.dokument.gateway.AxsysGateway
 import no.nav.klage.dokument.gateway.AzureGateway
 import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.kodeverk.Tema
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import kotlin.system.measureTimeMillis
