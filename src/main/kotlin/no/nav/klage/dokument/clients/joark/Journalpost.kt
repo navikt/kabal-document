@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.kodeverk.Tema
+import no.nav.klage.kodeverk.Tema
 
 data class Journalpost(
     val journalposttype: JournalpostType? = null,

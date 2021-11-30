@@ -4,10 +4,10 @@ import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
-import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.PartIdType
 import org.springframework.stereotype.Service
 import java.util.*
 

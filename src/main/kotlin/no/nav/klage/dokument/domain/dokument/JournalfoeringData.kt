@@ -1,7 +1,7 @@
 package no.nav.klage.dokument.domain.dokument
 
-import no.nav.klage.dokument.domain.kodeverk.Fagsystem
-import no.nav.klage.dokument.domain.kodeverk.Tema
+import no.nav.klage.kodeverk.Fagsystem
+import no.nav.klage.kodeverk.Tema
 import java.util.*
 
 data class JournalfoeringData(

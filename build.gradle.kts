@@ -18,6 +18,7 @@ val threeTenExtraVersion = "1.6.0"
 val shedlockVersion = "4.23.0"
 val archunitVersion = "0.19.0"
 val verapdfVersion = "1.18.8"
+val kabalKodeverkVersion = "2021.11.30-13.39.e1352e11bbb3"
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -38,10 +39,10 @@ repositories {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.10"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
     id("org.springframework.boot") version "2.4.2"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.4.21"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.4.21"
+    id("org.jetbrains.kotlin.plugin.spring") version "1.6.0"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.6.0"
     idea
 }
 
@@ -62,6 +63,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
+
+    implementation("com.github.navikt:kabal-kodeverk:$kabalKodeverkVersion")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")

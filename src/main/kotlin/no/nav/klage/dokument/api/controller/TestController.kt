@@ -1,13 +1,12 @@
 package no.nav.klage.dokument.api.controller
 
-import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.PartIdType
 import no.nav.klage.dokument.domain.kodeverk.Rolle
-import no.nav.klage.dokument.domain.kodeverk.Tema
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Tema
 import no.nav.security.token.support.core.api.Unprotected
 import org.apache.commons.fileupload.disk.DiskFileItemFactory
 import org.springframework.context.annotation.Profile
