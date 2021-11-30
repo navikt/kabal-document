@@ -5,10 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import io.mockk.every
-import no.nav.klage.dokument.api.input.BrevMottakerInput
-import no.nav.klage.dokument.api.input.DokumentEnhetInput
-import no.nav.klage.dokument.api.input.JournalfoeringDataInput
-import no.nav.klage.dokument.api.input.PartIdInput
+import no.nav.klage.dokument.api.input.TilleggsopplysningInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetView
@@ -64,16 +61,16 @@ internal class DokumentEnhetControllerTest {
             )
         } returns ikkeDistribuertDokumentEnhetMedToBrevMottakere
 
-        val dokumentEnhetInput = DokumentEnhetInput(
+        val dokumentEnhetInput = GammelDokumentEnhetInput(
             brevMottakere = listOf(
-                BrevMottakerInput(
-                    partId = PartIdInput(type = "PERSON", value = "20022012345"),
+                GammelDokumentEnhetInput.GammelBrevMottakerInput(
+                    partId = GammelDokumentEnhetInput.GammelPartIdInput(type = "PERSON", value = "20022012345"),
                     navn = "Mottaker Person",
                     rolle = "HOVEDADRESSAT"
                 )
             ),
-            journalfoeringData = JournalfoeringDataInput(
-                sakenGjelder = PartIdInput(
+            journalfoeringData = GammelDokumentEnhetInput.GammelJournalfoeringDataInput(
+                sakenGjelder = GammelDokumentEnhetInput.GammelPartIdInput(
                     type = "PERSON",
                     value = "01011012345"
                 ),
@@ -106,4 +103,36 @@ internal class DokumentEnhetControllerTest {
         assertThat(dokumentEnhet).isNotNull
         assertThat(dokumentEnhet.id).isEqualTo(ikkeDistribuertDokumentEnhetMedToBrevMottakere.id.toString())
     }
+}
+
+data class GammelDokumentEnhetInput(
+    val brevMottakere: List<GammelBrevMottakerInput>,
+    val journalfoeringData: GammelJournalfoeringDataInput
+) {
+    data class GammelBrevmottakereInput(
+        val brevMottakere: List<GammelBrevMottakerInput>
+    )
+
+    data class GammelBrevMottakerInput(
+        val partId: GammelPartIdInput,
+        val navn: String?,
+        val rolle: String,
+    )
+
+    data class GammelJournalfoeringDataInput(
+        val sakenGjelder: GammelPartIdInput,
+        val tema: String,
+        val sakFagsakId: String?,
+        val sakFagsystem: String?,
+        val kildeReferanse: String,
+        val enhet: String,
+        val behandlingstema: String,
+        val tittel: String,
+        val brevKode: String,
+        val tilleggsopplysning: TilleggsopplysningInput?
+    )
+
+
+    data class GammelPartIdInput(val type: String, val value: String)
+
 }
