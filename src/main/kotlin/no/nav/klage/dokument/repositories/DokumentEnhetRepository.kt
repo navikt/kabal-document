@@ -175,13 +175,13 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     JournalfoeringData(
                         id = rs.getObject("id", UUID::class.java),
                         sakenGjelder = PartId(
-                            type = PartIdType.valueOf(rs.getString("saken_gjelder_type")),
+                            type = PartIdType.of(rs.getString("saken_gjelder_type_id")),
                             value = rs.getString("saken_gjelder_value")
                         ),
-                        tema = Tema.valueOf(rs.getString("tema")),
+                        tema = Tema.of(rs.getString("tema_id")),
                         sakFagsakId = rs.getString("sak_fagsak_id"),
-                        sakFagsystem = rs.getString("sak_fagsystem")?.let {
-                            Fagsystem.valueOf(it)
+                        sakFagsystem = rs.getString("sak_fagsystem_id")?.let {
+                            Fagsystem.of(it)
                         },
                         kildeReferanse = rs.getString("kilde_referanse"),
                         enhet = rs.getString("enhet"),
@@ -208,7 +208,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                 BrevMottaker(
                     id = rs.getObject("id", UUID::class.java),
                     partId = PartId(
-                        type = PartIdType.valueOf(rs.getString("part_id_type")),
+                        type = PartIdType.of(rs.getString("part_id_type_id")),
                         value = rs.getString("part_id_value")
                     ),
                     navn = rs.getString("navn"),
