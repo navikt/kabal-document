@@ -275,6 +275,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
             execute(
                 mapOf(
                     "id" to brevMottaker.id,
+                    "part_id_type_id" to brevMottaker.partId.type.id,
                     "part_id_type" to brevMottaker.partId.type.name,
                     "part_id_value" to brevMottaker.partId.value,
                     "navn" to brevMottaker.navn,
@@ -296,10 +297,13 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                 execute(
                     mapOf(
                         "id" to journalfoeringData.id,
+                        "saken_gjelder_type_id" to journalfoeringData.sakenGjelder.type.id,
                         "saken_gjelder_type" to journalfoeringData.sakenGjelder.type.name,
                         "saken_gjelder_value" to journalfoeringData.sakenGjelder.value,
+                        "tema_id" to journalfoeringData.tema.id,
                         "tema" to journalfoeringData.tema.name,
                         "sak_fagsak_id" to journalfoeringData.sakFagsakId,
+                        "sak_fagsystem_id" to journalfoeringData.sakFagsystem?.id,
                         "sak_fagsystem" to journalfoeringData.sakFagsystem?.name,
                         "kilde_referanse" to journalfoeringData.kildeReferanse,
                         "enhet" to journalfoeringData.enhet,
