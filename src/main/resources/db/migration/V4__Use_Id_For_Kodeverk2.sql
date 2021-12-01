@@ -18,7 +18,14 @@ UPDATE document.journalfoeringdata
 SET tema_id = '27'
 WHERE tema = 'OMS';
 
---TODO: Hvilke trenger vi her?
+UPDATE document.journalfoeringdata
+SET tema_id = '12'
+WHERE tema = 'FOR';
+
+UPDATE document.journalfoeringdata
+SET tema_id = '43'
+WHERE tema = 'SYK';
+
 UPDATE document.journalfoeringdata
 SET sak_fagsystem_id = '1'
 WHERE sak_fagsystem = 'FS36';
@@ -38,6 +45,10 @@ WHERE sak_fagsystem = 'OMSORGSPENGER';
 UPDATE document.journalfoeringdata
 SET sak_fagsystem_id = '18'
 WHERE sak_fagsystem = 'MANUELL';
+
+UPDATE document.journalfoeringdata
+SET sak_fagsystem_id = '7'
+WHERE sak_fagsystem = 'IT01';
 
 ALTER TABLE document.brevmottaker
     ALTER COLUMN part_id_type_id SET NOT NULL;
