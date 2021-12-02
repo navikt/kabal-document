@@ -50,6 +50,10 @@ UPDATE document.journalfoeringdata
 SET sak_fagsystem_id = '7'
 WHERE sak_fagsystem = 'IT01';
 
+UPDATE document.journalfoeringdata
+SET sak_fagsystem_id = '4'
+WHERE sak_fagsystem = 'AO11';
+
 ALTER TABLE document.brevmottaker
     ALTER COLUMN part_id_type_id SET NOT NULL;
 
