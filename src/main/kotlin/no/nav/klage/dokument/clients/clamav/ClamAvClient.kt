@@ -18,19 +18,24 @@ class ClamAvClient(private val clamAvWebClient: WebClient) {
                 .retrieve()
                 .bodyToMono<List<ScanResult>>()
                 .block()
-        } catch(ex: Throwable) {
+        } catch (ex: Throwable) {
             logger.warn("Error from clamAV", ex)
             listOf(ScanResult("Unknown", ClamAvResult.ERROR))
         }
 
-        if(response.size != 1) {
+        if (response == null) {
+            logger.warn("No response from virus scan.")
+            return false
+        }
+
+        if (response.size != 1) {
             logger.warn("Wrong size response from virus scan.")
             return false
         }
 
         val (filename, result) = response[0]
         logger.debug("$filename ${result.name}")
-        return when(result) {
+        return when (result) {
             ClamAvResult.OK -> true
             ClamAvResult.FOUND -> {
                 logger.warn("$filename has virus")
