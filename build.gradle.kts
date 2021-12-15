@@ -18,10 +18,12 @@ val threeTenExtraVersion = "1.6.0"
 val shedlockVersion = "4.23.0"
 val archunitVersion = "0.19.0"
 val verapdfVersion = "1.18.8"
-val kabalKodeverkVersion = "2021.11.30-13.39.e1352e11bbb3"
+val kabalKodeverkVersion = "2021.12.14-15.39.5f6715f05a9d"
 
 val githubUser: String by project
 val githubPassword: String by project
+
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -39,17 +41,17 @@ repositories {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.6.0"
-    id("org.springframework.boot") version "2.4.2"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.6.0"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.6.0"
+    kotlin("jvm") version "1.6.0"
+    kotlin("plugin.spring") version "1.6.0"
+    kotlin("plugin.jpa") version "1.6.0"
+    id("org.springframework.boot") version "2.5.7"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     idea
 }
 
-apply(plugin = "io.spring.dependency-management")
-
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     //temporary fix:
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
@@ -122,7 +124,10 @@ idea {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
 }
 
 tasks.withType<Test> {
@@ -135,9 +140,3 @@ tasks.withType<Test> {
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     this.archiveFileName.set("app.jar")
 }
-
-kotlin.sourceSets["main"].kotlin.srcDirs("src/main/kotlin")
-kotlin.sourceSets["test"].kotlin.srcDirs("src/test/kotlin")
-
-sourceSets["main"].resources.srcDirs("src/main/resources")
-sourceSets["test"].resources.srcDirs("src/test/resources")
