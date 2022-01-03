@@ -138,10 +138,12 @@ internal class DokumentEnhetRepositoryTest {
         println("documentEnhet after findById: $documentEnhetFoundById")
         println("documentEnhet.modified after findById: ${documentEnhetFoundById?.modified}")
 
-        assertThat(documentEnhetFoundById).isEqualTo(oppdatertDokumentEnhet)
-
+        //Check precision
         val d = LocalDateTime.now()
         println("LocalDateTime.now() = $d")
+
+        assertThat(documentEnhetFoundById).isEqualTo(oppdatertDokumentEnhet)
+
     }
 
 }
