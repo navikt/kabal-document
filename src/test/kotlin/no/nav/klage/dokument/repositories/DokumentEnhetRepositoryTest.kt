@@ -122,10 +122,7 @@ internal class DokumentEnhetRepositoryTest {
 
         assertThat(dokumentEnhetRepository.saveOrUpdate(oppdatertDokumentEnhet)).isEqualTo(oppdatertDokumentEnhet)
 
-        val dokumentEnhetFoundById = dokumentEnhetRepository.findById(dokumentEnhet.id)
-        println(dokumentEnhetFoundById)
-        println(oppdatertDokumentEnhet)
-        assertThat(dokumentEnhetFoundById).isEqualTo(oppdatertDokumentEnhet)
+        assertThat(dokumentEnhetRepository.findById(dokumentEnhet.id)).isEqualTo(oppdatertDokumentEnhet)
     }
 
 }
