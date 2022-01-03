@@ -56,7 +56,6 @@ internal class DokumentEnhetRepositoryTest {
 
     @Test
     fun `save, update and get works`() {
-
         val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
 
         val dokumentEnhet = DokumentEnhet(
@@ -83,7 +82,13 @@ internal class DokumentEnhetRepositoryTest {
             avsluttet = null,
         )
 
+        println("dokumentEnhet before save: $dokumentEnhet")
+        println("dokumentEnhet.modified before save: ${dokumentEnhet.modified}")
+
         assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
+
+        println("dokumentEnhet after save: $dokumentEnhet")
+        println("dokumentEnhet.modified after save: ${dokumentEnhet.modified}")
 
         val oppdatertDokumentEnhet = dokumentEnhet.copy(
             brevMottakere = listOf(
@@ -120,12 +125,18 @@ internal class DokumentEnhetRepositoryTest {
             )
         )
 
+        println("oppdatertDokumentEnhet before save: $oppdatertDokumentEnhet")
+        println("oppdatertDokumentEnhet.modified before save: ${oppdatertDokumentEnhet.modified}")
+
         assertThat(dokumentEnhetRepository.saveOrUpdate(oppdatertDokumentEnhet)).isEqualTo(oppdatertDokumentEnhet)
+
+        println("oppdatertDokumentEnhet after save: $oppdatertDokumentEnhet")
+        println("oppdatertDokumentEnhet.modified after save: ${oppdatertDokumentEnhet.modified}")
 
         val documentEnhetFoundById = dokumentEnhetRepository.findById(dokumentEnhet.id)
 
-        println("documentEnhetFoundById: $documentEnhetFoundById")
-        println("oppdatertDokumentEnhet: $oppdatertDokumentEnhet")
+        println("documentEnhet after findById: $documentEnhetFoundById")
+        println("documentEnhet.modified after findById: ${documentEnhetFoundById?.modified}")
 
         assertThat(documentEnhetFoundById).isEqualTo(oppdatertDokumentEnhet)
     }
