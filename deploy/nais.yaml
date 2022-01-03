@@ -86,6 +86,7 @@ spec:
       rules:
         - application: kabal-frontend
         - application: kabal-api
+        - application: kabal-anke-api
     outbound:
       rules:
         - application: kabal-file-api
