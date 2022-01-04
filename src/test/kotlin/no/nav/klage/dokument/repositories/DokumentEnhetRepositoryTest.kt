@@ -125,25 +125,9 @@ internal class DokumentEnhetRepositoryTest {
             )
         )
 
-        println("oppdatertDokumentEnhet before save: $oppdatertDokumentEnhet")
-        println("oppdatertDokumentEnhet.modified before save: ${oppdatertDokumentEnhet.modified}")
-
         assertThat(dokumentEnhetRepository.saveOrUpdate(oppdatertDokumentEnhet)).isEqualTo(oppdatertDokumentEnhet)
 
-        println("oppdatertDokumentEnhet after save: $oppdatertDokumentEnhet")
-        println("oppdatertDokumentEnhet.modified after save: ${oppdatertDokumentEnhet.modified}")
-
-        val documentEnhetFoundById = dokumentEnhetRepository.findById(dokumentEnhet.id)
-
-        println("documentEnhet after findById: $documentEnhetFoundById")
-        println("documentEnhet.modified after findById: ${documentEnhetFoundById?.modified}")
-
-        //Check precision
-        val d = LocalDateTime.now()
-        println("LocalDateTime.now() = $d")
-
-        assertThat(documentEnhetFoundById).isEqualTo(oppdatertDokumentEnhet)
-
+        assertThat(dokumentEnhetRepository.findById(dokumentEnhet.id)).isEqualTo(oppdatertDokumentEnhet)
     }
 
 }
