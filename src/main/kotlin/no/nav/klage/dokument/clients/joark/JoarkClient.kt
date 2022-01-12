@@ -24,6 +24,8 @@ class JoarkClient(
     fun createJournalpostInJoarkAsSystemUser(
         journalpost: Journalpost
     ): JournalpostResponse {
+        logger.debug("Hei Øyvind, se her!")
+        logger.debug(journalpost.toString())
         val journalpostResponse = joarkWebClient.post()
             .uri("?forsoekFerdigstill=true")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getStsSystembrukerToken()}")
