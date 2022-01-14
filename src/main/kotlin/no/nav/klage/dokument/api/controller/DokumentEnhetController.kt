@@ -7,6 +7,7 @@ import no.nav.klage.dokument.api.input.FilInput
 import no.nav.klage.dokument.api.input.JournalfoeringDataInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
+import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.api.view.HovedDokumentEditedView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
@@ -124,13 +125,13 @@ class DokumentEnhetController(
     @PostMapping("/{dokumentEnhetId}/fullfoer")
     fun fullfoerDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
-    ) {
+    ): DokumentEnhetFullfoertView {
         logger.debug("Kall mottatt på fullfoerDokumentEnhet for $dokumentEnhetId")
         val dokumentEnhet = dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetId)
-
         if (!dokumentEnhet.erAvsluttet()) {
             throw RuntimeException("DokumentEnhet (id: $dokumentEnhetId) feilet under fullføring. Se logger.")
         }
+        return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(dokumentEnhet)
     }
 
     @PutMapping("/{dokumentEnhetId}/brevmottakere")
