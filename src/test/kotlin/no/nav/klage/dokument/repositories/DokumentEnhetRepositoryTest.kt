@@ -56,7 +56,6 @@ internal class DokumentEnhetRepositoryTest {
 
     @Test
     fun `save, update and get works`() {
-
         val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
 
         val dokumentEnhet = DokumentEnhet(
@@ -85,7 +84,13 @@ internal class DokumentEnhetRepositoryTest {
             avsluttet = null,
         )
 
+        println("dokumentEnhet before save: $dokumentEnhet")
+        println("dokumentEnhet.modified before save: ${dokumentEnhet.modified}")
+
         assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
+
+        println("dokumentEnhet after save: $dokumentEnhet")
+        println("dokumentEnhet.modified after save: ${dokumentEnhet.modified}")
 
         val oppdatertDokumentEnhet = dokumentEnhet.copy(
             brevMottakere = listOf(
@@ -128,6 +133,5 @@ internal class DokumentEnhetRepositoryTest {
 
         assertThat(dokumentEnhetRepository.findById(dokumentEnhet.id)).isEqualTo(oppdatertDokumentEnhet)
     }
-
 
 }

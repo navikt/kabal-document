@@ -4,6 +4,7 @@ import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 data class DokumentEnhet(
@@ -48,6 +49,25 @@ data class DokumentEnhet(
     fun getJournalpostIdHovedadressat(): String? =
         brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }
             ?.let { findBrevMottakerDistribusjon(it)?.journalpostId?.value }
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
+        other as DokumentEnhet
 
+        if (id != other.id) return false
+        if (eier != other.eier) return false
+        if (journalfoeringData != other.journalfoeringData) return false
+        if (brevMottakere != other.brevMottakere) return false
+        if (hovedDokument != other.hovedDokument) return false
+        if (vedlegg != other.vedlegg) return false
+        if (brevMottakerDistribusjoner != other.brevMottakerDistribusjoner) return false
+        if (avsluttet?.truncatedTo(ChronoUnit.MILLIS) != other.avsluttet?.truncatedTo(ChronoUnit.MILLIS)) return false
+        if (modified.truncatedTo(ChronoUnit.MILLIS) != other.modified.truncatedTo(ChronoUnit.MILLIS)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int = id.hashCode()
 }

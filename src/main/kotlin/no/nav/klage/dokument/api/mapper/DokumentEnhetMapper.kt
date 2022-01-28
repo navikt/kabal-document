@@ -53,6 +53,20 @@ class DokumentEnhetMapper {
         )
     }
 
+    fun mapToDokumentEnhetFullfoertView(dokumentEnhet: DokumentEnhet): DokumentEnhetFullfoertView =
+        DokumentEnhetFullfoertView(
+            dokumentEnhet.brevMottakere.map {
+                val brevMottakerDistribusjon = dokumentEnhet.findBrevMottakerDistribusjon(it)
+                BrevMottakerWithJoarkAndDokDistInfo(
+                    it.partId,
+                    it.navn,
+                    it.rolle,
+                    brevMottakerDistribusjon!!.journalpostId,
+                    brevMottakerDistribusjon.dokdistReferanse
+                )
+            }
+        )
+
     private fun mapToJournalfoeringDataView(journalfoeringData: JournalfoeringData) =
         JournalfoeringDataView(
             sakenGjelder = mapToPartIdView(journalfoeringData.sakenGjelder),
