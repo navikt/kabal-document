@@ -40,7 +40,7 @@ class DokumentEnhetMapper {
         return DokumentEnhetView(
             id = dokumentEnhet.id.toString(),
             eier = dokumentEnhet.eier.navIdent,
-            journalfoeringData = mapToJournalfoeringDataView(dokumentEnhet.journalfoeringData),
+            journalfoeringData = mapToJournalfoeringDataView(dokumentEnhet.journalfoeringData!!),
             brevMottakere = dokumentEnhet.brevMottakere.map { mapToBrevMottakerView(it) },
             hovedDokument = dokumentEnhet.hovedDokument?.let { mapToOpplastetDokumentView(it) },
             vedlegg = dokumentEnhet.vedlegg.map { mapToOpplastetDokumentView(it) },
@@ -62,6 +62,23 @@ class DokumentEnhetMapper {
             kildeReferanse = journalfoeringData.kildeReferanse,
             enhet = journalfoeringData.enhet
         )
+
+    fun mapToDokumentEnhetViewV2(dokumentEnhet: DokumentEnhet): DokumentEnhetViewV2 {
+        return DokumentEnhetViewV2(
+            id = dokumentEnhet.id.toString(),
+            eier = dokumentEnhet.eier.navIdent,
+            journalfoeringData = dokumentEnhet.journalfoeringData?.let { mapToJournalfoeringDataView(it) },
+            brevMottakere = dokumentEnhet.brevMottakere.map { mapToBrevMottakerView(it) },
+            hovedDokument = dokumentEnhet.hovedDokument?.let { mapToOpplastetDokumentView(it) },
+            vedlegg = dokumentEnhet.vedlegg.map { mapToOpplastetDokumentView(it) },
+            brevMottakerDistribusjoner = dokumentEnhet.brevMottakerDistribusjoner.map {
+                mapToBrevMottakerDistribusjonView(it)
+            },
+            avsluttet = dokumentEnhet.avsluttet,
+            modified = dokumentEnhet.modified,
+            journalpostIdHovedadressat = dokumentEnhet.getJournalpostIdHovedadressat()
+        )
+    }
 
     private fun mapToPartIdView(partId: PartId): PartIdView =
         PartIdView(

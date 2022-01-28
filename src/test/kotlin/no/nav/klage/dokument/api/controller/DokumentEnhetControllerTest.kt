@@ -57,6 +57,8 @@ internal class DokumentEnhetControllerTest {
                 any(),
                 any(),
                 any(),
+                any(),
+                any(),
                 any()
             )
         } returns ikkeDistribuertDokumentEnhetMedToBrevMottakere

@@ -69,7 +69,7 @@ class BrevMottakerDistribusjonService(
             journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
                 brevMottaker,
                 dokumentEnhet.hovedDokument,
-                dokumentEnhet.journalfoeringData
+                dokumentEnhet.journalfoeringData!! //Skal være validert på forhånd
             )
         )
 

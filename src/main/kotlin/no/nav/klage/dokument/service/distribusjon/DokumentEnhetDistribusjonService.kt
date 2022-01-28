@@ -39,8 +39,7 @@ class DokumentEnhetDistribusjonService(
 
     private fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         dokumentEnhet.copy(
-            brevMottakerDistribusjoner = dokumentEnhet
-                .brevMottakere
+            brevMottakerDistribusjoner = dokumentEnhet.brevMottakere
                 .mapNotNull { brevMottaker ->
                     brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                         brevMottaker,

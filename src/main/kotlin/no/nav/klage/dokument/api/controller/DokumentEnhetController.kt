@@ -42,6 +42,8 @@ class DokumentEnhetController(
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhet(
                 innloggetSaksbehandlerService.getInnloggetIdent(),
+                input.dokumentType,
+                input.eksternReferanse,
                 dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere),
                 dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData)
             )
@@ -56,10 +58,12 @@ class DokumentEnhetController(
         logger.debug("Kall mottatt på createDokumentEnhetAndUploadHoveddokument")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetOgMellomlagreNyttHoveddokument(
-                innloggetSaksbehandlerService.getInnloggetIdent(),
-                dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
-                dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
-                input.file
+                innloggetIdent = innloggetSaksbehandlerService.getInnloggetIdent(),
+                dokumentType = body.dokumentType,
+                eksternReferanse = body.eksternReferanse,
+                brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
+                journalfoeringData = dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
+                fil = input.file
             )
         )
     }

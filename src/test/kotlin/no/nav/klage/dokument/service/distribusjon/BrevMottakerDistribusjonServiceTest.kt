@@ -35,7 +35,7 @@ internal class BrevMottakerDistribusjonServiceTest {
             brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
                 brevMottaker,
                 dokumentEnhet.hovedDokument!!,
-                dokumentEnhet.journalfoeringData
+                dokumentEnhet.journalfoeringData!!
             )
         } returns JournalpostId("journalpostId")
 

@@ -53,7 +53,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun save(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         insertDokumentEnhet(dokumentEnhet)
-        insertJournalfoeringData(dokumentEnhet.journalfoeringData, dokumentEnhet.id)
+        dokumentEnhet.journalfoeringData?.let { insertJournalfoeringData(it, dokumentEnhet.id) }
         dokumentEnhet.brevMottakere.forEach {
             insertBrevMottaker(it, dokumentEnhet.id)
         }
@@ -90,6 +90,15 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
             dokumentEnhetId
         ).firstOrNull() != null
 
+    private fun findDokumentEnhetIder(eksternReferanse: String): List<UUID> =
+        jdbcTemplate.query(
+            "SELECT id FROM document.dokumentenhet WHERE ekstern_referanse = ?",
+            { rs: ResultSet, _: Int ->
+                rs.getObject("id", UUID::class.java)
+            },
+            eksternReferanse
+        )
+
     private fun getDokumentEnhet(
         dokumentEnhetId: UUID,
         journalfoeringData: JournalfoeringData,
@@ -111,6 +120,8 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     brevMottakerDistribusjoner = brevMottakerDistribusjoner,
                     avsluttet = rs.getObject("avsluttet", LocalDateTime::class.java),
                     modified = rs.getObject("modified", LocalDateTime::class.java),
+                    eksternReferanse = rs.getString("ekstern_referanse"),
+                    dokumentType = rs.getString("dokument_type"),
                 )
             }, dokumentEnhetId
         )
@@ -143,6 +154,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         opplastet = rs.getObject("opplastet", LocalDateTime::class.java),
                         size = rs.getLong("size"),
                         name = rs.getString("name"),
+                        dokumentType = rs.getString("dokument_type"),
                     )
                 }, dokumentEnhetId
             )
@@ -162,6 +174,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     opplastet = rs.getObject("opplastet", LocalDateTime::class.java),
                     size = rs.getLong("size"),
                     name = rs.getString("name"),
+                    dokumentType = rs.getString("dokument_type"),
                 )
             }, dokumentEnhetId
         )
@@ -225,7 +238,9 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "id" to dokumentEnhet.id,
                     "eier" to dokumentEnhet.eier.navIdent,
                     "avsluttet" to dokumentEnhet.avsluttet,
-                    "modified" to dokumentEnhet.modified
+                    "modified" to dokumentEnhet.modified,
+                    "ekstern_referanse" to dokumentEnhet.eksternReferanse,
+                    "dokument_type" to dokumentEnhet.dokumentType
                 )
             )
         }
@@ -263,6 +278,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "opplastet" to opplastetDokument.opplastet,
                     "size" to opplastetDokument.size,
                     "name" to opplastetDokument.name,
+                    "dokument_type" to opplastetDokument.dokumentType,
                     "type" to type,
                     "dokumentenhet_id" to dokumentEnhetId
                 )
@@ -319,4 +335,8 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
         if (key != null && value != null) {
             Tilleggsopplysning(key, value)
         } else null
+
+    fun findByEksternReferanse(eksternReferanse: String): List<DokumentEnhet> {
+        return findDokumentEnhetIder(eksternReferanse).map { findById(it)!! }
+    }
 }

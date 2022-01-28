@@ -42,6 +42,8 @@ class TestController(
         try {
             val dokumentEnhet: DokumentEnhet = dokumentEnhetService.opprettDokumentEnhet(
                 testSaksbehandler,
+                "dokumentType",
+                "eksternReferanse",
                 brevMottakere(),
                 journalfoeringData()
             )

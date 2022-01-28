@@ -9,14 +9,16 @@ import java.util.*
 data class DokumentEnhet(
     val id: UUID = UUID.randomUUID(),
     val eier: SaksbehandlerIdent,
-    val journalfoeringData: JournalfoeringData,
+    val journalfoeringData: JournalfoeringData?,
     val brevMottakere: List<BrevMottaker>,
     val hovedDokument: OpplastetDokument? = null,
     val vedlegg: List<OpplastetDokument> = emptyList(),
 
     val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
     val avsluttet: LocalDateTime? = null,
-    val modified: LocalDateTime = LocalDateTime.now()
+    val modified: LocalDateTime = LocalDateTime.now(),
+    val eksternReferanse: String?,
+    val dokumentType: String?,
 ) {
 
     fun erAvsluttet() = avsluttet != null
@@ -37,7 +39,15 @@ data class DokumentEnhet(
 
     fun harHovedDokument(): Boolean = hovedDokument != null
 
+    fun harJournalfoeringData(): Boolean = journalfoeringData != null
+
+    fun harMinstEnBrevMottaker(): Boolean = brevMottakere.isNotEmpty()
+
+    fun harVedlegg(): Boolean = vedlegg.isNotEmpty()
+
     fun getJournalpostIdHovedadressat(): String? =
         brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }
             ?.let { findBrevMottakerDistribusjon(it)?.journalpostId?.value }
+
+
 }

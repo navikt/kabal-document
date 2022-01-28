@@ -14,3 +14,16 @@ data class DokumentEnhetView(
     val modified: LocalDateTime,
     val journalpostIdHovedadressat: String?
 )
+
+data class DokumentEnhetViewV2(
+    val id: String,
+    val eier: String,
+    val journalfoeringData: JournalfoeringDataView?,
+    val brevMottakere: List<BrevMottakerView>,
+    val hovedDokument: OpplastetDokumentView?,
+    val vedlegg: List<OpplastetDokumentView>,
+    val brevMottakerDistribusjoner: List<BrevMottakerDistribusjonView>,
+    val avsluttet: LocalDateTime?,
+    val modified: LocalDateTime,
+    val journalpostIdHovedadressat: String?
+)

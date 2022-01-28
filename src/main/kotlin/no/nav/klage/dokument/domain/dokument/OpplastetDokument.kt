@@ -8,5 +8,7 @@ data class OpplastetDokument(
     val mellomlagerId: String,
     val opplastet: LocalDateTime,
     val size: Long,
-    val name: String
+    val name: String,
+    val smartEditorId: UUID? = null,
+    val dokumentType: String?,
 )

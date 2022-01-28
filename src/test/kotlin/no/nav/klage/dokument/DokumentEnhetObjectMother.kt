@@ -11,6 +11,8 @@ import java.util.*
 
 fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -48,14 +50,16 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
         mellomlagerId = "123",
         opplastet = LocalDateTime.now(),
         size = 1000L,
-        name = "fil.pdf"
+        name = "fil.pdf",
+        dokumentType = "dokumentType",
     ),
     vedlegg = listOf(
         OpplastetDokument(
             mellomlagerId = "456",
             opplastet = LocalDateTime.now(),
             size = 1001L,
-            name = "fil2.pdf"
+            name = "fil2.pdf",
+            dokumentType = "dokumentType",
         )
     ),
     brevMottakerDistribusjoner = listOf(
@@ -72,6 +76,8 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
 
 fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -109,14 +115,16 @@ fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
         mellomlagerId = "123",
         opplastet = LocalDateTime.now(),
         size = 1000L,
-        name = "fil.pdf"
+        name = "fil.pdf",
+        dokumentType = "dokumentType",
     ),
     vedlegg = listOf(
         OpplastetDokument(
             mellomlagerId = "456",
             opplastet = LocalDateTime.now(),
             size = 1001L,
-            name = "fil2.pdf"
+            name = "fil2.pdf",
+            dokumentType = "dokumentType",
         )
     ),
     brevMottakerDistribusjoner = listOf(),
@@ -127,6 +135,8 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
     brevMottakerId: UUID, dokumentId: UUID
 ) = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -158,14 +168,16 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
         mellomlagerId = "123",
         opplastet = LocalDateTime.now(),
         size = 1000L,
-        name = "fil.pdf"
+        name = "fil.pdf",
+        dokumentType = "dokumentType",
     ),
     vedlegg = listOf(
         OpplastetDokument(
             mellomlagerId = "456",
             opplastet = LocalDateTime.now(),
             size = 1001L,
-            name = "fil2.pdf"
+            name = "fil2.pdf",
+            dokumentType = "dokumentType",
         )
     ),
     brevMottakerDistribusjoner = listOf(
@@ -184,6 +196,8 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
     brevMottakerId: UUID, dokumentId: UUID
 ) = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -223,14 +237,16 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
         mellomlagerId = "123",
         opplastet = LocalDateTime.now(),
         size = 1000L,
-        name = "fil.pdf"
+        name = "fil.pdf",
+        dokumentType = "dokumentType",
     ),
     vedlegg = listOf(
         OpplastetDokument(
             mellomlagerId = "456",
             opplastet = LocalDateTime.now(),
             size = 1001L,
-            name = "fil2.pdf"
+            name = "fil2.pdf",
+            dokumentType = "dokumentType",
         )
     ),
     brevMottakerDistribusjoner = listOf(
@@ -247,6 +263,8 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
 
 fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,
@@ -271,6 +289,8 @@ fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
 
 fun dokumentEnhetForIntegrasjonstest() = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
+    dokumentType = "dokumentType",
+    eksternReferanse = "eksternReferanse",
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
             type = PartIdType.PERSON,

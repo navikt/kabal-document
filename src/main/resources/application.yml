@@ -26,6 +26,7 @@ spring:
     enabled: true
     clean-on-validation-error: true
     schemas: flyway_history_schema,document
+    connect-retries: 2
   lifecycle:
     timeout-per-shutdown-phase: 20s
   servlet:

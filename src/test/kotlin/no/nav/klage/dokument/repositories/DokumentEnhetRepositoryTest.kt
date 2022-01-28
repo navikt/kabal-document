@@ -61,6 +61,8 @@ internal class DokumentEnhetRepositoryTest {
 
         val dokumentEnhet = DokumentEnhet(
             eier = SaksbehandlerIdent(navIdent = "A10101"),
+            dokumentType = "dokumentType",
+            eksternReferanse = "eksternReferanse",
             journalfoeringData = JournalfoeringData(
                 sakenGjelder = PartId(
                     type = PartIdType.PERSON,
@@ -108,14 +110,16 @@ internal class DokumentEnhetRepositoryTest {
                 mellomlagerId = "123",
                 opplastet = LocalDateTime.now(),
                 size = 1000L,
-                name = "fil.pdf"
+                name = "fil.pdf",
+                dokumentType = "dokumentType",
             ),
             vedlegg = listOf(
                 OpplastetDokument(
                     mellomlagerId = "456",
                     opplastet = LocalDateTime.now(),
                     size = 1001L,
-                    name = "fil2.pdf"
+                    name = "fil2.pdf",
+                    dokumentType = "dokumentType",
                 )
             )
         )
