@@ -102,7 +102,7 @@ class DokumentEnhetControllerV2(
     @PostMapping("/{dokumentEnhetId}/smarteditorid")
     fun uploadSmartEditorHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
-        @RequestBody input: SmartEditorDokumentInput
+        @RequestBody input: SmartEditorDokumentInput //TODO: Denne inneholder nå for mange felter, må få svar på noen spørsmål før jeg gjør noe med det
     ): HovedDokumentEditedView? {
         logger.debug("Kall mottatt på uploadHovedDokument for $dokumentEnhetId")
         return dokumentEnhetMapper.mapToHovedDokumentEditedView(
@@ -115,7 +115,7 @@ class DokumentEnhetControllerV2(
     }
 
     @ResponseBody
-    @GetMapping("/{dokumentEnhetId}/innhold")
+    @GetMapping("/{dokumentEnhetId}/hoveddokument")
     fun getHovedDokument(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): ResponseEntity<ByteArray> {
@@ -128,7 +128,7 @@ class DokumentEnhetControllerV2(
         )
     }
 
-    @DeleteMapping("/{dokumentEnhetId}/innhold")
+    @DeleteMapping("/{dokumentEnhetId}")
     fun deleteDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ) {
@@ -137,7 +137,6 @@ class DokumentEnhetControllerV2(
             dokumentEnhetId = dokumentEnhetId,
             innloggetIdent = innloggetSaksbehandlerService.getInnloggetIdent()
         )
-
     }
 
     @PostMapping("/{dokumentEnhetId}/fullfoer")
