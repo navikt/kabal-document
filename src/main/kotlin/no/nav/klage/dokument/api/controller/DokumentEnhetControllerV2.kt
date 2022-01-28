@@ -41,13 +41,8 @@ class DokumentEnhetControllerV2(
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetOgMellomlagreNyttHoveddokument(
                 innloggetIdent = innloggetSaksbehandlerService.getInnloggetIdent(),
-                brevMottakere = body.brevMottakere?.let { dokumentEnhetInputMapper.mapBrevMottakereInput(it) }
-                    ?: emptyList(),
-                journalfoeringData = body.journalfoeringData?.let {
-                    dokumentEnhetInputMapper.mapJournalfoeringDataInput(
-                        it
-                    )
-                },
+                brevMottakere = emptyList(),
+                journalfoeringData = null,
                 dokumentType = body.dokumentType,
                 eksternReferanse = body.eksternReferanse,
                 fil = input.file
