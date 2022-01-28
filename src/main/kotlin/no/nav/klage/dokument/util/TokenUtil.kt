@@ -125,4 +125,11 @@ class TokenUtil(
     private fun getClaim(name: String) =
         tokenValidationContextHolder.tokenValidationContext.getJwtToken(SecurityConfiguration.ISSUER_AAD)
             .jwtTokenClaims?.getStringClaim(name)
+
+    fun getSaksbehandlerAccessTokenWithSmartEditorScope(): String {
+        val clientProperties =
+            clientConfigurationProperties.registration["kabal-smart-editor-api-onbehalfof"] //TODO: Må legges til
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.accessToken
+    }
 }

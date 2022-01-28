@@ -54,7 +54,7 @@ open class HovedDokument(
     @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
-    var vedlegg: List<Vedlegg>,
+    var vedlegg: List<Vedlegg> = emptyList(),
     var dokumentEnhetId: UUID? = null,
 ) : Dokument(
     id = id,

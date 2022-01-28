@@ -163,6 +163,7 @@ class DokumentEnhetService(
                     brevMottakere = brevMottakere,
                     journalfoeringData = journalfoeringData,
                     hovedDokument = OpplastetDokument(
+                        id = hovedDokument.id, //Er denne kontroversiell? Er strengt tatt ikke nødvendig, men kan gjøre det enklere å feilsøke i db?
                         mellomlagerId = hovedDokument.mellomlagerId,
                         opplastet = hovedDokument.opplastet,
                         size = hovedDokument.size,
@@ -170,6 +171,7 @@ class DokumentEnhetService(
                     ),
                     vedlegg = hovedDokument.vedlegg.map {
                         OpplastetDokument(
+                            id = it.id, //Er denne kontroversiell? Er strengt tatt ikke nødvendig, men kan gjøre det enklere å feilsøke i db?
                             mellomlagerId = it.mellomlagerId,
                             opplastet = it.opplastet,
                             size = it.size,
