@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument2.HovedDokument
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetFinalizedException
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
@@ -24,6 +25,7 @@ class DokumentEnhetService(
     private val attachmentValidator: AttachmentValidator,
     private val mellomlagerService: MellomlagerService,
     private val dokumentEnhetDistribusjonService: DokumentEnhetDistribusjonService,
+    private val dokumentService: DokumentService,
 ) {
 
     companion object {
@@ -146,6 +148,36 @@ class DokumentEnhetService(
             )
             throw MissingTilgangException("Vedtak kan kun ferdigstilles av eier")
         }
+    }
+
+    fun finnEllerOpprettDokumentEnhetFraHovedDokument(
+        eier: SaksbehandlerIdent,
+        brevMottakere: List<BrevMottaker>,
+        journalfoeringData: JournalfoeringData,
+        hovedDokument: HovedDokument,
+    ): DokumentEnhet {
+        return hovedDokument.dokumentEnhetId?.let { dokumentEnhetRepository.findById(it) }
+            ?: dokumentEnhetRepository.save(
+                DokumentEnhet(
+                    eier = eier,
+                    brevMottakere = brevMottakere,
+                    journalfoeringData = journalfoeringData,
+                    hovedDokument = OpplastetDokument(
+                        mellomlagerId = hovedDokument.mellomlagerId,
+                        opplastet = hovedDokument.opplastet,
+                        size = hovedDokument.size,
+                        name = hovedDokument.name,
+                    ),
+                    vedlegg = hovedDokument.vedlegg.map {
+                        OpplastetDokument(
+                            mellomlagerId = it.mellomlagerId,
+                            opplastet = it.opplastet,
+                            size = it.size,
+                            name = it.name,
+                        )
+                    }
+                )
+            ).also { hovedDokument.dokumentEnhetId = it.id }
     }
 
     fun opprettDokumentEnhet(
