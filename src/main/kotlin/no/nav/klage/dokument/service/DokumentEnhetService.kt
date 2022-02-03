@@ -176,4 +176,22 @@ class DokumentEnhetService(
         return mellomlagreNyttHovedDokument(dokumentEnhet.id, fil, innloggetIdent)
     }
 
+    fun opprettDokumentEnhetMedDokumentreferanser(
+        innloggetIdent: SaksbehandlerIdent,
+        brevMottakere: List<BrevMottaker>,
+        journalfoeringData: JournalfoeringData,
+        hovedokument: OpplastetDokument,
+        vedlegg: List<OpplastetDokument>,
+    ): DokumentEnhet {
+        return dokumentEnhetRepository.save(
+            DokumentEnhet(
+                eier = innloggetIdent,
+                brevMottakere = brevMottakere,
+                journalfoeringData = journalfoeringData,
+                hovedDokument = hovedokument,
+                vedlegg = vedlegg,
+            )
+        )
+    }
+
 }

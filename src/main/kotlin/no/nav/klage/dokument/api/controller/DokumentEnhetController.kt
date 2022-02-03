@@ -1,10 +1,7 @@
 package no.nav.klage.dokument.api.controller
 
 import io.swagger.annotations.Api
-import no.nav.klage.dokument.api.input.BrevmottakereInput
-import no.nav.klage.dokument.api.input.DokumentEnhetInput
-import no.nav.klage.dokument.api.input.FilInput
-import no.nav.klage.dokument.api.input.JournalfoeringDataInput
+import no.nav.klage.dokument.api.input.*
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
@@ -61,6 +58,24 @@ class DokumentEnhetController(
                 dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
                 dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
                 input.file
+            )
+        )
+    }
+
+    @PostMapping("/meddokumentreferanser")
+    fun createDokumentEnhetWithDokumentreferanser(
+        @RequestBody body: DokumentEnhetWithDokumentreferanserInput,
+    ): DokumentEnhetView {
+        logger.debug("Kall mottatt på createDokumentEnhetWithDokumentreferanser")
+        return dokumentEnhetMapper.mapToDokumentEnhetView(
+            dokumentEnhetService.opprettDokumentEnhetMedDokumentreferanser(
+                innloggetIdent = innloggetSaksbehandlerService.getInnloggetIdent(),
+                brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
+                journalfoeringData = dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
+                hovedokument = dokumentEnhetInputMapper.mapDokumentInput(body.dokumentreferanser.hoveddokument),
+                vedlegg = body.dokumentreferanser.vedlegg?.map {
+                    dokumentEnhetInputMapper.mapDokumentInput(it)
+                } ?: emptyList()
             )
         )
     }

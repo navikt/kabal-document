@@ -1,12 +1,10 @@
 package no.nav.klage.dokument.api.mapper
 
 import no.nav.klage.dokument.api.input.BrevMottakerInput
+import no.nav.klage.dokument.api.input.DokumentInput
 import no.nav.klage.dokument.api.input.JournalfoeringDataInput
 import no.nav.klage.dokument.api.input.PartIdInput
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.JournalfoeringData
-import no.nav.klage.dokument.domain.dokument.PartId
-import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
+import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
@@ -60,6 +58,14 @@ class DokumentEnhetInputMapper {
             logger.warn("Data fra klient er ikke gyldig", iae)
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
+
+    fun mapDokumentInput(dokument: DokumentInput.Dokument): OpplastetDokument =
+        OpplastetDokument(
+            mellomlagerId = dokument.mellomlagerId,
+            opplastet = dokument.opplastet,
+            size = dokument.size,
+            name = dokument.name
+        )
 
     private fun mapPartIdInput(partIdInput: PartIdInput) =
         try {
