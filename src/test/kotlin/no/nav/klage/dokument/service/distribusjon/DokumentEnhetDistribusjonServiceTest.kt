@@ -8,7 +8,7 @@ import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.domain.dokument.JournalpostId
-import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedToBrevMottakere
+import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere
 import no.nav.klage.dokument.service.MellomlagerService
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +30,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
     @Test
     fun `ikke-distribuert dokumentEnhet skal distribueres korrekt`() {
 
-        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedToBrevMottakere()
+        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 
@@ -112,7 +112,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
     @Test
     fun `ikke-distribuert dokumentEnhet skal lagres korrekt når feil oppstår`() {
 
-        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedToBrevMottakere()
+        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 

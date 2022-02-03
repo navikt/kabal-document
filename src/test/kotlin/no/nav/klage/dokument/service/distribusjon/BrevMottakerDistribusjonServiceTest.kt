@@ -7,7 +7,8 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DistribuerJournalpostRespo
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.JournalpostId
-import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedToBrevMottakere
+import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
+import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -25,17 +26,44 @@ internal class BrevMottakerDistribusjonServiceTest {
     )
 
     @Test
-    fun distribuerDokumentEnhetTilBrevMottaker() {
+    fun distribuerDokumentEnhetMedVedleggTilBrevMottaker() {
 
-        val dokumentEnhet = ikkeDistribuertDokumentEnhetMedToBrevMottakere()
+        val dokumentEnhet = ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
         val brevMottaker = dokumentEnhet.brevMottakere.first()
 
         val brevMottakerDistribusjonSlot = slot<BrevMottakerDistribusjon>()
         every {
             brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
-                brevMottaker,
-                dokumentEnhet.hovedDokument!!,
-                dokumentEnhet.journalfoeringData
+                brevMottaker = brevMottaker,
+                hoveddokument = dokumentEnhet.hovedDokument!!,
+                vedleggDokumentList = dokumentEnhet.vedlegg,
+                journalfoeringData = dokumentEnhet.journalfoeringData
+            )
+        } returns JournalpostId("journalpostId")
+
+        every {
+            brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
+        } answers { brevMottakerDistribusjonSlot.captured.copy(ferdigstiltIJoark = LocalDateTime.now()) }
+
+        every { dokDistFordelingClient.distribuerJournalpost(any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+
+        val brevMottakerDistribusjon =
+            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
+        assertFerdigDistribuert(brevMottakerDistribusjon)
+    }
+
+    @Test
+    fun distribuerDokumentEnhetUtenVedleggTilBrevMottaker() {
+
+        val dokumentEnhet = ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere()
+        val brevMottaker = dokumentEnhet.brevMottakere.first()
+
+        val brevMottakerDistribusjonSlot = slot<BrevMottakerDistribusjon>()
+        every {
+            brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
+                brevMottaker = brevMottaker,
+                hoveddokument = dokumentEnhet.hovedDokument!!,
+                journalfoeringData = dokumentEnhet.journalfoeringData
             )
         } returns JournalpostId("journalpostId")
 

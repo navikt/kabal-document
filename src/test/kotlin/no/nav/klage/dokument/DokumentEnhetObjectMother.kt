@@ -70,7 +70,7 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
     avsluttet = LocalDateTime.now(),
 )
 
-fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
+fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere() = DokumentEnhet(
     eier = SaksbehandlerIdent(navIdent = "A10101"),
     journalfoeringData = JournalfoeringData(
         sakenGjelder = PartId(
@@ -118,6 +118,51 @@ fun ikkeDistribuertDokumentEnhetMedToBrevMottakere() = DokumentEnhet(
             size = 1001L,
             name = "fil2.pdf"
         )
+    ),
+    brevMottakerDistribusjoner = listOf(),
+    avsluttet = null,
+)
+
+fun ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere() = DokumentEnhet(
+    eier = SaksbehandlerIdent(navIdent = "A10101"),
+    journalfoeringData = JournalfoeringData(
+        sakenGjelder = PartId(
+            type = PartIdType.PERSON,
+            value = "20022012345"
+        ),
+        tema = Tema.OMS,
+        sakFagsakId = "sakFagsakId",
+        sakFagsystem = Fagsystem.FS36,
+        kildeReferanse = "kildeReferanse",
+        enhet = "Enhet",
+        behandlingstema = "behandlingstema",
+        tittel = "Tittel",
+        brevKode = "brevKode",
+        tilleggsopplysning = Tilleggsopplysning("key", "value")
+    ),
+    brevMottakere = listOf(
+        BrevMottaker(
+            partId = PartId(
+                type = PartIdType.PERSON,
+                value = "01011012345"
+            ),
+            navn = "Test Person",
+            rolle = Rolle.KOPIADRESSAT
+        ),
+        BrevMottaker(
+            partId = PartId(
+                type = PartIdType.PERSON,
+                value = "20022012345"
+            ),
+            navn = "Mottaker Person",
+            rolle = Rolle.HOVEDADRESSAT
+        )
+    ),
+    hovedDokument = OpplastetDokument(
+        mellomlagerId = "123",
+        opplastet = LocalDateTime.now(),
+        size = 1000L,
+        name = "fil.pdf"
     ),
     brevMottakerDistribusjoner = listOf(),
     avsluttet = null,

@@ -21,16 +21,18 @@ class DefaultJoarkGateway(
     override fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
-        mellomlagretDokument: MellomlagretDokument,
+        hoveddokument: MellomlagretDokument,
+        vedleggDokumentList: List<MellomlagretDokument>,
         brevMottaker: BrevMottaker
     ): JournalpostId =
         JournalpostId(
             joarkClient.createJournalpostInJoarkAsSystemUser(
                 joarkMapper.createJournalpost(
-                    journalfoeringData,
-                    opplastetDokument,
-                    mellomlagretDokument,
-                    brevMottaker
+                    journalfoeringData = journalfoeringData,
+                    opplastetDokument = opplastetDokument,
+                    hovedDokument = hoveddokument,
+                    vedleggDokumentList = vedleggDokumentList,
+                    brevMottaker = brevMottaker
                 )
             ).journalpostId
         )
