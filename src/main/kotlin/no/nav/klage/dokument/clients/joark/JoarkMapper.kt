@@ -86,7 +86,7 @@ class JoarkMapper(
         mellomlagretDokument: MellomlagretDokument, journalfoeringData: JournalfoeringData
     ): Dokument =
             Dokument(
-                tittel = mellomlagretDokument.title, //TODO: Bruke navnet på dokumentet?
+                tittel = mellomlagretDokument.title,
                 brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
                 dokumentVarianter = listOf(
                     DokumentVariant(
