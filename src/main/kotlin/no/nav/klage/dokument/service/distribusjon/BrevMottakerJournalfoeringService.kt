@@ -28,16 +28,19 @@ class BrevMottakerJournalfoeringService(
 
     fun opprettJournalpostForBrevMottaker(
         brevMottaker: BrevMottaker,
-        opplastetDokument: OpplastetDokument,
+        hoveddokument: OpplastetDokument,
+        vedleggDokumentList: List<OpplastetDokument> = emptyList(),
         journalfoeringData: JournalfoeringData
     ): JournalpostId {
-        logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${opplastetDokument.id}")
-        val mellomlagretDokument = mellomlagerService.getUploadedDocumentAsSystemUser(opplastetDokument.mellomlagerId)
+        logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
+        val mellomlagretDokument = mellomlagerService.getUploadedDocumentAsSystemUser(hoveddokument.mellomlagerId)
+        val mellomlagredeVedleggDokument = vedleggDokumentList.map { mellomlagerService.getUploadedDocumentAsSystemUser(it.mellomlagerId) }
         return joarkGateway.createJournalpostAsSystemUser(
-            journalfoeringData,
-            opplastetDokument,
-            mellomlagretDokument,
-            brevMottaker
+            journalfoeringData = journalfoeringData,
+            opplastetDokument = hoveddokument,
+            hoveddokument = mellomlagretDokument,
+            vedleggDokumentList = mellomlagredeVedleggDokument,
+            brevMottaker = brevMottaker
         )
     }
 

@@ -10,7 +10,7 @@ import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
-import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedToBrevMottakere
+import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.service.saksbehandler.InnloggetSaksbehandlerService
 import org.assertj.core.api.Assertions.assertThat
@@ -50,7 +50,7 @@ internal class DokumentEnhetControllerTest {
     @Test
     fun createDokumentEnhetAndUploadHoveddokument() {
 
-        val ikkeDistribuertDokumentEnhetMedToBrevMottakere = ikkeDistribuertDokumentEnhetMedToBrevMottakere()
+        val ikkeDistribuertDokumentEnhetMedToBrevMottakere = ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
         every { innloggetSaksbehandlerService.getInnloggetIdent() } returns SaksbehandlerIdent("IDENT")
         every {
             dokumentEnhetService.opprettDokumentEnhetOgMellomlagreNyttHoveddokument(

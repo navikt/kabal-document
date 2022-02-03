@@ -58,7 +58,6 @@ class BrevMottakerDistribusjonService(
         dokumentEnhet.findBrevMottakerDistribusjon(brevMottaker)
             ?: createBrevMottakerDistribusjonWithJournalpost(brevMottaker, dokumentEnhet)
 
-    //TODO vedlegg?
     private fun createBrevMottakerDistribusjonWithJournalpost(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
@@ -67,9 +66,10 @@ class BrevMottakerDistribusjonService(
             brevMottakerId = brevMottaker.id,
             opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
             journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
-                brevMottaker,
-                dokumentEnhet.hovedDokument,
-                dokumentEnhet.journalfoeringData
+                brevMottaker = brevMottaker,
+                hoveddokument = dokumentEnhet.hovedDokument,
+                vedleggDokumentList = dokumentEnhet.vedlegg,
+                journalfoeringData = dokumentEnhet.journalfoeringData
             )
         )
 

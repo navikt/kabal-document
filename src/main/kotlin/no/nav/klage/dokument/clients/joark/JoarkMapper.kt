@@ -25,7 +25,8 @@ class JoarkMapper(
     fun createJournalpost(
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
-        mellomlagretDokument: MellomlagretDokument,
+        hovedDokument: MellomlagretDokument,
+        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
     ): Journalpost =
         Journalpost(
@@ -38,7 +39,11 @@ class JoarkMapper(
             journalfoerendeEnhet = journalfoeringData.enhet,
             eksternReferanseId = "${opplastetDokument.id}_${brevMottaker.id}",
             bruker = createBruker(journalfoeringData),
-            dokumenter = createDokument(mellomlagretDokument, journalfoeringData),
+            dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
+                hoveddokument = hovedDokument,
+                vedleggList = vedleggDokumentList,
+                journalfoeringData = journalfoeringData
+            ),
             tilleggsopplysninger = journalfoeringData.tilleggsopplysning?.let {
                 listOf(
                     Tilleggsopplysning(
@@ -77,13 +82,11 @@ class JoarkMapper(
             if (journalfoeringData.sakenGjelder.type == PartIdType.VIRKSOMHET) BrukerIdType.ORGNR else BrukerIdType.FNR
         )
 
-
     private fun createDokument(
         mellomlagretDokument: MellomlagretDokument, journalfoeringData: JournalfoeringData
-    ): List<Dokument> =
-        listOf(
+    ): Dokument =
             Dokument(
-                tittel = journalfoeringData.tittel, //TODO: Bruke navnet på dokumentet?
+                tittel = mellomlagretDokument.title, //TODO: Bruke navnet på dokumentet?
                 brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
                 dokumentVarianter = listOf(
                     DokumentVariant(
@@ -94,6 +97,14 @@ class JoarkMapper(
                     )
                 )
             )
-        )
 
+    private fun createDokumentListFromHoveddokumentAndVedleggList(
+        hoveddokument: MellomlagretDokument,
+        vedleggList: List<MellomlagretDokument> = emptyList(),
+        journalfoeringData: JournalfoeringData
+    ): List<Dokument> {
+        val documents = mutableListOf(createDokument(hoveddokument, journalfoeringData))
+        documents.addAll(vedleggList.map { createDokument(it, journalfoeringData) })
+        return documents
+    }
 }

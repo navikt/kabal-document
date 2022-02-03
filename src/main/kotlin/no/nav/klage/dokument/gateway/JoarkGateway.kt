@@ -6,7 +6,8 @@ interface JoarkGateway {
     fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
-        mellomlagretDokument: MellomlagretDokument,
+        hoveddokument: MellomlagretDokument,
+        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
     ): JournalpostId
 
