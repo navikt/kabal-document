@@ -31,13 +31,13 @@ class JoarkClient(
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(journalpost)
             .retrieve()
-            .bodyToMono(JournalpostResponse::class.java)
+            .bodyToMono(Map::class.java)
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
-        logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
+        logger.debug("Journalpost successfully created in Joark: {}.", journalpostResponse)
 
-        return journalpostResponse
+        return JournalpostResponse(journalpostResponse["journalpostId"]!!.toString())
     }
 
     fun cancelJournalpost(journalpostId: String): String {
