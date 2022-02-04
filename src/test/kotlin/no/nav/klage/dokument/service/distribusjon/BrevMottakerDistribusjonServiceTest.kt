@@ -7,6 +7,7 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DistribuerJournalpostRespo
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.JournalpostId
+import no.nav.klage.dokument.domain.dokument.JournalpostIdOgDokumentInfo
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
 import org.assertj.core.api.Assertions.assertThat
@@ -39,7 +40,7 @@ internal class BrevMottakerDistribusjonServiceTest {
                 vedleggDokumentList = dokumentEnhet.vedlegg,
                 journalfoeringData = dokumentEnhet.journalfoeringData
             )
-        } returns JournalpostId("journalpostId")
+        } returns JournalpostIdOgDokumentInfo(journalpostId = JournalpostId("journalpostId"), dokumentInfoIdList = emptyList())
 
         every {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
@@ -65,7 +66,7 @@ internal class BrevMottakerDistribusjonServiceTest {
                 hoveddokument = dokumentEnhet.hovedDokument!!,
                 journalfoeringData = dokumentEnhet.journalfoeringData
             )
-        } returns JournalpostId("journalpostId")
+        } returns JournalpostIdOgDokumentInfo(journalpostId = JournalpostId("journalpostId"), dokumentInfoIdList = emptyList())
 
         every {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))

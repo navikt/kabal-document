@@ -35,7 +35,7 @@ class JoarkClient(
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
-        logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
+        logger.debug("Journalpost successfully created in Joark: {}.", journalpostResponse)
 
         return journalpostResponse
     }

@@ -64,7 +64,8 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
             opplastetDokumentId = UUID.randomUUID(),
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = UUID.randomUUID()
+            dokdistReferanse = UUID.randomUUID(),
+            dokumentInfoList = emptyList(),
         )
     ),
     avsluttet = LocalDateTime.now(),
@@ -219,7 +220,8 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
             opplastetDokumentId = dokumentId,
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = null
+            dokdistReferanse = null,
+            dokumentInfoList = emptyList(),
         )
     ),
     avsluttet = null,
@@ -284,7 +286,8 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
             opplastetDokumentId = dokumentId,
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = UUID.randomUUID()
+            dokdistReferanse = UUID.randomUUID(),
+            dokumentInfoList = emptyList(),
         )
     ),
     avsluttet = null,

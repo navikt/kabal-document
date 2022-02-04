@@ -9,6 +9,7 @@ data class BrevMottakerDistribusjon(
     val brevMottakerId: UUID,
     val opplastetDokumentId: UUID,
     val journalpostId: JournalpostId,
+    val dokumentInfoList: List<DokumentInfo>,
     val ferdigstiltIJoark: LocalDateTime? = null,
     val dokdistReferanse: UUID? = null
 ) {
@@ -30,3 +31,10 @@ data class BrevMottakerDistribusjon(
 
     override fun hashCode(): Int = id.hashCode()
 }
+
+data class DokumentInfo(
+    val id: UUID = UUID.randomUUID(),
+    val dokumentInfoId: String,
+    /** We need to know which document is which. First is hoveddokument */
+    val documentOrder: Int,
+)

@@ -4,6 +4,7 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.DokumentInfo
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -61,17 +62,27 @@ class BrevMottakerDistribusjonService(
     private fun createBrevMottakerDistribusjonWithJournalpost(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
-    ): BrevMottakerDistribusjon =
-        BrevMottakerDistribusjon(
-            brevMottakerId = brevMottaker.id,
-            opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
-            journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
-                brevMottaker = brevMottaker,
-                hoveddokument = dokumentEnhet.hovedDokument,
-                vedleggDokumentList = dokumentEnhet.vedlegg,
-                journalfoeringData = dokumentEnhet.journalfoeringData
-            )
+    ): BrevMottakerDistribusjon {
+        val journalpostIdOgDokumentInfo = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
+            brevMottaker = brevMottaker,
+            hoveddokument = dokumentEnhet.hovedDokument!!,
+            vedleggDokumentList = dokumentEnhet.vedlegg,
+            journalfoeringData = dokumentEnhet.journalfoeringData
         )
+        //Preserve order
+        var documentCounter = 0
+        return BrevMottakerDistribusjon(
+            brevMottakerId = brevMottaker.id,
+            opplastetDokumentId = dokumentEnhet.hovedDokument.id,
+            journalpostId = journalpostIdOgDokumentInfo.journalpostId,
+            dokumentInfoList = journalpostIdOgDokumentInfo.dokumentInfoIdList.map {
+                DokumentInfo(
+                    dokumentInfoId = it,
+                    documentOrder = documentCounter++
+                )
+            }
+        )
+    }
 
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)
 }
