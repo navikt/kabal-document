@@ -8,6 +8,7 @@ import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.api.view.HovedDokumentEditedView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.service.saksbehandler.InnloggetSaksbehandlerService
 import no.nav.klage.dokument.util.getLogger
@@ -26,10 +27,10 @@ class DokumentEnhetController(
     private val dokumentEnhetInputMapper: DokumentEnhetInputMapper,
     private val dokumentEnhetService: DokumentEnhetService
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        const val SYSTEMBRUKER = "SYSTEMBRUKER" //TODO ??
     }
 
     @PostMapping
@@ -69,7 +70,7 @@ class DokumentEnhetController(
         logger.debug("Kall mottatt på createDokumentEnhetWithDokumentreferanser")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetMedDokumentreferanser(
-                innloggetIdent = innloggetSaksbehandlerService.getInnloggetIdent(),
+                innloggetIdent = SaksbehandlerIdent(navIdent = SYSTEMBRUKER),
                 brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
                 journalfoeringData = dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
                 hovedokument = dokumentEnhetInputMapper.mapDokumentInput(body.dokumentreferanser.hoveddokument),
