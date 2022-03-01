@@ -9,7 +9,9 @@ import java.time.temporal.ChronoUnit
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 
-
+/**
+ * Not used yet
+ */
 fun toXml(arkivmelding: Arkivmelding): String {
     return xml("arkivmelding") {
         xmlns = "http://www.arkivverket.no/standarder/noark5/arkivmelding"
