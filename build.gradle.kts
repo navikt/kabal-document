@@ -92,9 +92,7 @@ dependencies {
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
 
-    implementation("no.nav.slackposter:simple-slack-poster:5")
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
-    implementation("no.finn.unleash:unleash-client-java:$unleashVersion")
     implementation("org.zalando:problem-spring-web-starter:$problemSpringWebStartVersion")
 
     implementation("org.verapdf:validation-model:$verapdfVersion")

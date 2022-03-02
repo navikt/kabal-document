@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.config.problem
 
-import no.nav.klage.dokument.exceptions.MissingTilgangException
 import no.nav.klage.dokument.exceptions.ValidationException
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.http.HttpStatus
@@ -31,10 +30,6 @@ interface OurOwnExceptionAdviceTrait : AdviceTrait {
         request: NativeWebRequest
     ): ResponseEntity<Problem> =
         create(Status.BAD_REQUEST, ex, request)
-
-    @ExceptionHandler
-    fun handleMissingTilgang(ex: MissingTilgangException, request: NativeWebRequest): ResponseEntity<Problem> =
-        create(Status.FORBIDDEN, ex, request)
 
     @ExceptionHandler
     fun handleResponseStatusException(

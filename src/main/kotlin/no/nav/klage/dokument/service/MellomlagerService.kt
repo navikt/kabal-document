@@ -5,7 +5,6 @@ import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
 
 @Service
 class MellomlagerService(
@@ -17,22 +16,6 @@ class MellomlagerService(
         private val standardMediaTypeInGCS = MediaType.valueOf("application/pdf")
     }
 
-    fun uploadDocument(file: MultipartFile): String =
-        fileApiClient.uploadDocument(
-            file.bytes,
-            file.originalFilename ?: throw RuntimeException("missing original filename")
-        )
-
-    fun getUploadedDocument(mellomlagerId: String): MellomlagretDokument =
-        MellomlagretDokument(
-            getFileNameFromMellomlagerId(mellomlagerId),
-            fileApiClient.getDocument(mellomlagerId),
-            standardMediaTypeInGCS
-        )
-
-    fun deleteDocument(mellomlagerId: String): Unit =
-        fileApiClient.deleteDocument(mellomlagerId)
-
     fun getUploadedDocumentAsSystemUser(mellomlagerId: String): MellomlagretDokument =
         MellomlagretDokument(
             getFileNameFromMellomlagerId(mellomlagerId),
@@ -42,9 +25,6 @@ class MellomlagerService(
 
     fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =
         fileApiClient.deleteDocument(mellomlagerId, true)
-
-    fun uploadDocumentAsSystemUser(file: MultipartFile): String =
-        fileApiClient.uploadDocument(file.bytes, file.name, true)
 
     private fun getFileNameFromMellomlagerId(mellomlagerId: String): String = mellomlagerId.substring(36)
 }
