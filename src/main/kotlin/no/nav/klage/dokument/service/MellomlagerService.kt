@@ -13,18 +13,11 @@ class MellomlagerService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val standardMediaTypeInGCS = MediaType.valueOf("application/pdf")
     }
 
-    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): MellomlagretDokument =
-        MellomlagretDokument(
-            getFileNameFromMellomlagerId(mellomlagerId),
-            fileApiClient.getDocument(mellomlagerId, true),
-            standardMediaTypeInGCS
-        )
+    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): ByteArray =
+        fileApiClient.getDocument(mellomlagerId, true)
 
     fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =
         fileApiClient.deleteDocument(mellomlagerId, true)
-
-    private fun getFileNameFromMellomlagerId(mellomlagerId: String): String = mellomlagerId.substring(36)
 }

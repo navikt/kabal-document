@@ -8,6 +8,7 @@ import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.service.MellomlagerService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -33,8 +34,20 @@ class BrevMottakerJournalfoeringService(
         journalfoeringData: JournalfoeringData
     ): JournalpostId {
         logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
-        val mellomlagretDokument = mellomlagerService.getUploadedDocumentAsSystemUser(hoveddokument.mellomlagerId)
-        val mellomlagredeVedleggDokument = vedleggDokumentList.map { mellomlagerService.getUploadedDocumentAsSystemUser(it.mellomlagerId) }
+        val mellomlagretDokument = MellomlagretDokument(
+            title = hoveddokument.name,
+            content = mellomlagerService.getUploadedDocumentAsSystemUser(hoveddokument.mellomlagerId),
+            contentType = MediaType.APPLICATION_PDF
+        )
+        val mellomlagredeVedleggDokument =
+            vedleggDokumentList.map {
+                MellomlagretDokument(
+                    title = it.name,
+                    content = mellomlagerService.getUploadedDocumentAsSystemUser(it.mellomlagerId),
+                    contentType = MediaType.APPLICATION_PDF
+                )
+            }
+
         return joarkGateway.createJournalpostAsSystemUser(
             journalfoeringData = journalfoeringData,
             opplastetDokument = hoveddokument,
