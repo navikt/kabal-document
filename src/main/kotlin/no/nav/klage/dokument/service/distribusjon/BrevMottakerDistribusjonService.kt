@@ -1,18 +1,22 @@
 package no.nav.klage.dokument.service.distribusjon
 
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
+import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
 
 @Service
 class BrevMottakerDistribusjonService(
     private val brevMottakerJournalfoeringService: BrevMottakerJournalfoeringService,
-    private val dokDistFordelingClient: DokDistFordelingClient
+    private val dokDistFordelingClient: DokDistFordelingClient,
+    private val safClient: SafGraphQlClient,
 ) {
 
     companion object {
@@ -43,12 +47,23 @@ class BrevMottakerDistribusjonService(
             }
         }
 
-    private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
-        brevMottakerDistribusjon.copy(
+    private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon {
+        val dokumentType =
+            safClient.getJournalpostAsSystembruker(brevMottakerDistribusjon.journalpostId.value)?.tittel?.let {
+                DokumentType.fromBeskrivelse(
+                    it
+                )
+            }
+                ?: throw JournalpostNotFoundException("Journalpost med id ${brevMottakerDistribusjon.journalpostId.value} finnes ikke")
+
+        return brevMottakerDistribusjon.copy(
             dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
-                brevMottakerDistribusjon.journalpostId.value
+                journalpostId = brevMottakerDistribusjon.journalpostId.value,
+                dokumentType = dokumentType
             ).bestillingsId
         )
+    }
+
 
     //This first call is the only one allowed to throw exception
     private fun findOrCreateBrevMottakerDistribusjon(
