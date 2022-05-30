@@ -11,6 +11,7 @@ import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
+import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
@@ -24,12 +25,13 @@ internal class BrevMottakerDistribusjonServiceTest {
     private val brevMottakerJournalfoeringService = mockk<BrevMottakerJournalfoeringService>()
     private val dokDistFordelingClient = mockk<DokDistFordelingClient>()
     private val safClient = mockk<SafGraphQlClient>()
-    private val dokumentEnhetService = mockk<DokumentEnhetService>()
+    private val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
+
 
     private val brevMottakerDistribusjonService = BrevMottakerDistribusjonService(
         brevMottakerJournalfoeringService = brevMottakerJournalfoeringService,
         dokDistFordelingClient = dokDistFordelingClient,
-        dokumentEnhetService = dokumentEnhetService,
+        dokumentEnhetRepository = dokumentEnhetRepository
     )
 
     @Test
@@ -56,7 +58,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetService.getDocumentTypeBasedOnBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -86,7 +88,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetService.getDocumentTypeBasedOnBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
