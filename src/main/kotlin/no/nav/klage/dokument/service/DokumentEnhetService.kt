@@ -14,7 +14,6 @@ import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.w3c.dom.DocumentType
 import java.util.*
 
 @Service
@@ -53,12 +52,6 @@ class DokumentEnhetService(
             )
         )
     }
-
-    fun getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): DokumentType =
-        DokumentType.of(dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon(brevMottakerDistribusjonId)
-            ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on BrevMottakerDistribusjonId $brevMottakerDistribusjonId")
-        )
-
 
     fun getDokumentEnhet(dokumentEnhetId: UUID): DokumentEnhet =
         dokumentEnhetRepository.findById(dokumentEnhetId)

@@ -4,17 +4,20 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
-import no.nav.klage.dokument.service.DokumentEnhetService
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
+import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class BrevMottakerDistribusjonService(
     private val brevMottakerJournalfoeringService: BrevMottakerJournalfoeringService,
     private val dokDistFordelingClient: DokDistFordelingClient,
-    private val dokumentEnhetService: DokumentEnhetService,
+    private val dokumentEnhetRepository: DokumentEnhetRepository,
 ) {
 
     companion object {
@@ -49,7 +52,7 @@ class BrevMottakerDistribusjonService(
         brevMottakerDistribusjon.copy(
             dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
                 brevMottakerDistribusjon.journalpostId.value,
-                dokumentEnhetService.getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjon.id)
+                getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjon.id),
             ).bestillingsId
         )
 
@@ -77,4 +80,9 @@ class BrevMottakerDistribusjonService(
         )
 
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)
+
+    private fun getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): DokumentType =
+        DokumentType.of(dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon(brevMottakerDistribusjonId)
+            ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on BrevMottakerDistribusjonId $brevMottakerDistribusjonId")
+        )
 }
