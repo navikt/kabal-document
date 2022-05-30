@@ -3,6 +3,7 @@ package no.nav.klage.dokument.domain.dokument
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
+import no.nav.klage.kodeverk.DokumentType
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -14,6 +15,7 @@ data class DokumentEnhet(
     val brevMottakere: List<BrevMottaker>,
     val hovedDokument: OpplastetDokument? = null,
     val vedlegg: List<OpplastetDokument> = emptyList(),
+    val dokumentType: DokumentType,
 
     val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
     val avsluttet: LocalDateTime? = null,

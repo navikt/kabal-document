@@ -11,6 +11,7 @@ import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere
 import no.nav.klage.dokument.service.MellomlagerService
+import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -46,7 +47,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
             )
         }
 
@@ -74,7 +75,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
             )
         }
 
@@ -102,7 +103,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
             )
         }
 
@@ -128,7 +129,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = null
+                dokdistReferanse = null,
             )
         }
 

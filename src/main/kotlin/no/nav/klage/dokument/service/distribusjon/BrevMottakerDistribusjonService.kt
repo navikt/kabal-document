@@ -4,6 +4,7 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service
 @Service
 class BrevMottakerDistribusjonService(
     private val brevMottakerJournalfoeringService: BrevMottakerJournalfoeringService,
-    private val dokDistFordelingClient: DokDistFordelingClient
+    private val dokDistFordelingClient: DokDistFordelingClient,
+    private val dokumentEnhetService: DokumentEnhetService,
 ) {
 
     companion object {
@@ -46,7 +48,8 @@ class BrevMottakerDistribusjonService(
     private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
         brevMottakerDistribusjon.copy(
             dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
-                brevMottakerDistribusjon.journalpostId.value
+                brevMottakerDistribusjon.journalpostId.value,
+                dokumentEnhetService.getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjon.id)
             ).bestillingsId
         )
 
@@ -70,7 +73,7 @@ class BrevMottakerDistribusjonService(
                 hoveddokument = dokumentEnhet.hovedDokument,
                 vedleggDokumentList = dokumentEnhet.vedlegg,
                 journalfoeringData = dokumentEnhet.journalfoeringData
-            )
+            ),
         )
 
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)

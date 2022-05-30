@@ -10,6 +10,7 @@ import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.kodeverk.DokumentType
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -42,7 +43,8 @@ class DokumentEnhetController(
                 hovedokument = dokumentEnhetInputMapper.mapDokumentInput(body.dokumentreferanser.hoveddokument),
                 vedlegg = body.dokumentreferanser.vedlegg?.map {
                     dokumentEnhetInputMapper.mapDokumentInput(it)
-                } ?: emptyList()
+                } ?: emptyList(),
+                dokumentType = DokumentType.of(body.dokumentTypeId),
             )
         )
     }

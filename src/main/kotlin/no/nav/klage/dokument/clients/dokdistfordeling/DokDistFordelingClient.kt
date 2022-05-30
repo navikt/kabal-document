@@ -4,6 +4,7 @@ import brave.Tracer
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
@@ -24,12 +25,17 @@ class DokDistFordelingClient(
     @Value("\${spring.application.name}")
     lateinit var applicationName: String
 
-    fun distribuerJournalpost(journalpostId: String): DistribuerJournalpostResponse {
+    fun distribuerJournalpost(
+        journalpostId: String,
+        dokumentType: DokumentType,
+    ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = DistribuerJournalpostRequestTo(
             journalpostId = journalpostId,
             bestillendeFagSystem = applicationName,
-            dokumentProdApp = applicationName
+            dokumentProdApp = applicationName,
+            distribusjonstype = dokumentType.toDistribusjonsType(),
+            distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt()
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
