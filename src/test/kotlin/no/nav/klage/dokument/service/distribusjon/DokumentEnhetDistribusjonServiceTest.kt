@@ -46,7 +46,8 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
+                dokumentInfoList = emptyList(),
             )
         }
 
@@ -74,7 +75,8 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
+                dokumentInfoList = emptyList(),
             )
         }
 
@@ -102,7 +104,8 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = UUID.randomUUID()
+                dokdistReferanse = UUID.randomUUID(),
+                dokumentInfoList = emptyList(),
             )
         }
 
@@ -128,7 +131,8 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
-                dokdistReferanse = null
+                dokdistReferanse = null,
+                dokumentInfoList = emptyList(),
             )
         }
 

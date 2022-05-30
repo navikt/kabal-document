@@ -14,5 +14,6 @@ data class BrevMottakerWithJoarkAndDokDistInfo(
     val navn: String?,
     val rolle: Rolle,
     val journalpostId: JournalpostId,
+    val dokumentInfoIdList: List<String>,
     val dokdistReferanse: UUID?
 )

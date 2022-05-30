@@ -24,18 +24,23 @@ class DefaultJoarkGateway(
         hoveddokument: MellomlagretDokument,
         vedleggDokumentList: List<MellomlagretDokument>,
         brevMottaker: BrevMottaker
-    ): JournalpostId =
-        JournalpostId(
-            joarkClient.createJournalpostInJoarkAsSystemUser(
-                joarkMapper.createJournalpost(
-                    journalfoeringData = journalfoeringData,
-                    opplastetDokument = opplastetDokument,
-                    hovedDokument = hoveddokument,
-                    vedleggDokumentList = vedleggDokumentList,
-                    brevMottaker = brevMottaker
-                )
-            ).journalpostId
+    ): JournalpostIdOgDokumentInfo {
+        val journalpostResponse = joarkClient.createJournalpostInJoarkAsSystemUser(
+            joarkMapper.createJournalpost(
+                journalfoeringData = journalfoeringData,
+                opplastetDokument = opplastetDokument,
+                hovedDokument = hoveddokument,
+                vedleggDokumentList = vedleggDokumentList,
+                brevMottaker = brevMottaker
+            )
         )
+        return JournalpostIdOgDokumentInfo(
+            journalpostId = JournalpostId(
+                journalpostResponse.journalpostId
+            ),
+            dokumentInfoIdList = journalpostResponse.dokumenter.map { it.dokumentInfoId }
+        )
+    }
 
 
     override fun cancelJournalpost(journalpostId: JournalpostId): String {

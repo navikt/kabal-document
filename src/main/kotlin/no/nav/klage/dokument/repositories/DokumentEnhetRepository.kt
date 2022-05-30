@@ -61,8 +61,12 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
         dokumentEnhet.vedlegg.forEach {
             insertOpplastetDokument(it, dokumentEnhet.id, "VEDLEGG")
         }
-        dokumentEnhet.brevMottakerDistribusjoner.forEach {
-            insertBrevMottakerDistribusjon(it, dokumentEnhet.id)
+        dokumentEnhet.brevMottakerDistribusjoner.forEach { distribusjon ->
+            insertBrevMottakerDistribusjon(distribusjon, dokumentEnhet.id)
+
+            distribusjon.dokumentInfoList.forEach { dokumentInfo ->
+                insertDokumentInfo(dokumentInfo, dokumentEnhet.id)
+            }
         }
         return dokumentEnhet
     }
@@ -72,6 +76,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
             "DELETE FROM document.opplastetdokument WHERE dokumentenhet_id = ?",
             dokumentEnhetId
         )
+        jdbcTemplate.update("DELETE FROM document.dokument_info WHERE dokumentenhet_id = ?", dokumentEnhetId)
         jdbcTemplate.update("DELETE FROM document.brevmottakerdist WHERE dokumentenhet_id = ?", dokumentEnhetId)
         jdbcTemplate.update("DELETE FROM document.brevmottaker WHERE dokumentenhet_id = ?", dokumentEnhetId)
         jdbcTemplate.update(
@@ -126,7 +131,21 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     opplastetDokumentId = rs.getObject("opplastet_dokument_id", UUID::class.java),
                     journalpostId = JournalpostId(value = rs.getString("journalpost_id")),
                     ferdigstiltIJoark = rs.getObject("ferdigstilt_i_joark", LocalDateTime::class.java),
-                    dokdistReferanse = rs.getObject("dokdist_referanse", UUID::class.java)
+                    dokdistReferanse = rs.getObject("dokdist_referanse", UUID::class.java),
+                    dokumentInfoList = getDokumentInfoList(dokumentEnhetId),
+                )
+            }, dokumentEnhetId
+        )
+    }
+
+    private fun getDokumentInfoList(dokumentEnhetId: UUID): List<DokumentInfo> {
+        return jdbcTemplate.query(
+            "SELECT * FROM document.dokument_info WHERE dokumentenhet_id = ? ORDER BY document_order",
+            { rs: ResultSet, _: Int ->
+                DokumentInfo(
+                    id = rs.getObject("id", UUID::class.java),
+                    dokumentInfoId = rs.getObject("dokument_info_id", String::class.java),
+                    documentOrder = rs.getObject("document_order", Int::class.java),
                 )
             }, dokumentEnhetId
         )
@@ -244,6 +263,23 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "journalpost_id" to brevMottakerDistribusjon.journalpostId.value,
                     "ferdigstilt_i_joark" to brevMottakerDistribusjon.ferdigstiltIJoark,
                     "dokdist_referanse" to brevMottakerDistribusjon.dokdistReferanse,
+                    "dokumentenhet_id" to dokumentEnhetId
+                )
+            )
+        }
+
+    }
+
+    private fun insertDokumentInfo(
+        dokumentInfo: DokumentInfo,
+        dokumentEnhetId: UUID
+    ) {
+        SimpleJdbcInsert(jdbcTemplate).withSchemaName("document").withTableName("dokument_info").apply {
+            execute(
+                mapOf(
+                    "id" to dokumentInfo.id,
+                    "dokument_info_id" to dokumentInfo.dokumentInfoId,
+                    "document_order" to dokumentInfo.documentOrder,
                     "dokumentenhet_id" to dokumentEnhetId
                 )
             )

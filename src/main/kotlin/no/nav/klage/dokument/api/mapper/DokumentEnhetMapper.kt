@@ -58,11 +58,12 @@ class DokumentEnhetMapper {
             dokumentEnhet.brevMottakere.map {
                 val brevMottakerDistribusjon = dokumentEnhet.findBrevMottakerDistribusjon(it)
                 BrevMottakerWithJoarkAndDokDistInfo(
-                    it.partId,
-                    it.navn,
-                    it.rolle,
-                    brevMottakerDistribusjon!!.journalpostId,
-                    brevMottakerDistribusjon.dokdistReferanse
+                    partId = it.partId,
+                    navn = it.navn,
+                    rolle = it.rolle,
+                    journalpostId = brevMottakerDistribusjon!!.journalpostId,
+                    dokumentInfoIdList = brevMottakerDistribusjon.dokumentInfoList.map { d -> d.dokumentInfoId },
+                    dokdistReferanse = brevMottakerDistribusjon.dokdistReferanse
                 )
             }
         )

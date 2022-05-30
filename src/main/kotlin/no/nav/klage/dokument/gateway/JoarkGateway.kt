@@ -9,7 +9,7 @@ interface JoarkGateway {
         hoveddokument: MellomlagretDokument,
         vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
-    ): JournalpostId
+    ): JournalpostIdOgDokumentInfo
 
     fun cancelJournalpost(journalpostId: JournalpostId): String
     fun finalizeJournalpostAsSystemUser(journalpostId: JournalpostId, journalfoerendeEnhet: String): String

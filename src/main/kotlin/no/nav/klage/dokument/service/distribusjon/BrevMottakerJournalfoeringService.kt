@@ -32,7 +32,7 @@ class BrevMottakerJournalfoeringService(
         hoveddokument: OpplastetDokument,
         vedleggDokumentList: List<OpplastetDokument> = emptyList(),
         journalfoeringData: JournalfoeringData
-    ): JournalpostId {
+    ): JournalpostIdOgDokumentInfo {
         logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
         val mellomlagretDokument = MellomlagretDokument(
             title = hoveddokument.name,
