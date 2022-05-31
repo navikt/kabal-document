@@ -3,6 +3,7 @@ package no.nav.klage.dokument
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
+import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -64,10 +65,11 @@ fun ferdigDistribuertDokumentEnhet() = DokumentEnhet(
             opplastetDokumentId = UUID.randomUUID(),
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = UUID.randomUUID()
+            dokdistReferanse = UUID.randomUUID(),
         )
     ),
     avsluttet = LocalDateTime.now(),
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere() = DokumentEnhet(
@@ -121,6 +123,7 @@ fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere() = DokumentEnhet(
     ),
     brevMottakerDistribusjoner = listOf(),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere() = DokumentEnhet(
@@ -166,6 +169,7 @@ fun ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere() = DokumentEnhet(
     ),
     brevMottakerDistribusjoner = listOf(),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
@@ -219,10 +223,11 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
             opplastetDokumentId = dokumentId,
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = null
+            dokdistReferanse = null,
         )
     ),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
@@ -284,10 +289,11 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
             opplastetDokumentId = dokumentId,
             journalpostId = JournalpostId("Whatever"),
             ferdigstiltIJoark = LocalDateTime.now(),
-            dokdistReferanse = UUID.randomUUID()
+            dokdistReferanse = UUID.randomUUID(),
         )
     ),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
@@ -312,6 +318,7 @@ fun dokumentEnhetUtenBrevMottakereOgHovedDokument() = DokumentEnhet(
     vedlegg = emptyList(),
     brevMottakerDistribusjoner = emptyList(),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )
 
 fun dokumentEnhetForIntegrasjonstest() = DokumentEnhet(
@@ -336,4 +343,5 @@ fun dokumentEnhetForIntegrasjonstest() = DokumentEnhet(
     vedlegg = emptyList(),
     brevMottakerDistribusjoner = emptyList(),
     avsluttet = null,
+    dokumentType = DokumentType.VEDTAK,
 )

@@ -6,6 +6,7 @@ import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.ferdigDistribuertDokumentEnhet
+import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
@@ -80,6 +81,7 @@ internal class DokumentEnhetRepositoryTest {
             vedlegg = emptyList(),
             brevMottakerDistribusjoner = emptyList(),
             avsluttet = null,
+            dokumentType = DokumentType.VEDTAK,
         )
 
         println("dokumentEnhet before save: $dokumentEnhet")

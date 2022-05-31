@@ -11,6 +11,7 @@ import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.service.distribusjon.DokumentEnhetDistribusjonService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -62,6 +63,7 @@ class DokumentEnhetService(
         journalfoeringData: JournalfoeringData,
         hovedokument: OpplastetDokument,
         vedlegg: List<OpplastetDokument>,
+        dokumentType: DokumentType,
     ): DokumentEnhet {
         return dokumentEnhetRepository.save(
             DokumentEnhet(
@@ -70,6 +72,7 @@ class DokumentEnhetService(
                 journalfoeringData = journalfoeringData,
                 hovedDokument = hovedokument,
                 vedlegg = vedlegg,
+                dokumentType = dokumentType,
             )
         )
     }

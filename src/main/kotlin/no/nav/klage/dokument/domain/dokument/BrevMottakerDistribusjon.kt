@@ -10,7 +10,7 @@ data class BrevMottakerDistribusjon(
     val opplastetDokumentId: UUID,
     val journalpostId: JournalpostId,
     val ferdigstiltIJoark: LocalDateTime? = null,
-    val dokdistReferanse: UUID? = null
+    val dokdistReferanse: UUID? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

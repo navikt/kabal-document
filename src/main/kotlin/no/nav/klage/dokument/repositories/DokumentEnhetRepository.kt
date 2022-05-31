@@ -5,6 +5,7 @@ import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -41,7 +42,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
             brevMottakere,
             hovedDokument,
             vedlegg,
-            brevMottakerDistribusjoner
+            brevMottakerDistribusjoner,
         )
     }
 
@@ -108,6 +109,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     brevMottakere = brevMottakere,
                     hovedDokument = hovedDokument,
                     vedlegg = vedlegg,
+                    dokumentType = DokumentType.of(rs.getString("dokument_type_id")),
                     brevMottakerDistribusjoner = brevMottakerDistribusjoner,
                     avsluttet = rs.getObject("avsluttet", LocalDateTime::class.java),
                     modified = rs.getObject("modified", LocalDateTime::class.java),
@@ -126,10 +128,23 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     opplastetDokumentId = rs.getObject("opplastet_dokument_id", UUID::class.java),
                     journalpostId = JournalpostId(value = rs.getString("journalpost_id")),
                     ferdigstiltIJoark = rs.getObject("ferdigstilt_i_joark", LocalDateTime::class.java),
-                    dokdistReferanse = rs.getObject("dokdist_referanse", UUID::class.java)
+                    dokdistReferanse = rs.getObject("dokdist_referanse", UUID::class.java),
                 )
             }, dokumentEnhetId
         )
+    }
+
+    fun getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): String? {
+        return jdbcTemplate.query(
+            "SELECT de.dokument_type_id FROM document.dokumentenhet AS de " +
+                    "INNER JOIN document.brevmottakerdist AS bmd " +
+                    "ON bmd.dokumentenhet_id = de.id " +
+                    "WHERE bmd.id = ? ",
+            { rs: ResultSet, _: Int ->
+                rs.getString("dokument_type_id")
+
+            }, brevMottakerDistribusjonId
+        ).firstOrNull()
     }
 
     private fun getHovedDokument(dokumentEnhetId: UUID): OpplastetDokument? {
@@ -212,7 +227,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         value = rs.getString("part_id_value")
                     ),
                     navn = rs.getString("navn"),
-                    rolle = Rolle.valueOf(rs.getString("rolle"))
+                    rolle = Rolle.valueOf(rs.getString("rolle")),
                 )
             }, dokumentEnhetId
         )
@@ -225,7 +240,8 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "id" to dokumentEnhet.id,
                     "eier" to dokumentEnhet.eier.navIdent,
                     "avsluttet" to dokumentEnhet.avsluttet,
-                    "modified" to dokumentEnhet.modified
+                    "modified" to dokumentEnhet.modified,
+                    "dokument_type_id" to dokumentEnhet.dokumentType.id,
                 )
             )
         }
@@ -244,7 +260,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "journalpost_id" to brevMottakerDistribusjon.journalpostId.value,
                     "ferdigstilt_i_joark" to brevMottakerDistribusjon.ferdigstiltIJoark,
                     "dokdist_referanse" to brevMottakerDistribusjon.dokdistReferanse,
-                    "dokumentenhet_id" to dokumentEnhetId
+                    "dokumentenhet_id" to dokumentEnhetId,
                 )
             )
         }
@@ -264,7 +280,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "size" to opplastetDokument.size,
                     "name" to opplastetDokument.name,
                     "type" to type,
-                    "dokumentenhet_id" to dokumentEnhetId
+                    "dokumentenhet_id" to dokumentEnhetId,
                 )
             )
         }
@@ -279,7 +295,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "part_id_value" to brevMottaker.partId.value,
                     "navn" to brevMottaker.navn,
                     "rolle" to brevMottaker.rolle.name,
-                    "dokumentenhet_id" to dokumentEnhetId
+                    "dokumentenhet_id" to dokumentEnhetId,
                 )
             )
         }
@@ -308,7 +324,7 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         "brevKode" to journalfoeringData.brevKode,
                         "tilleggsopplysning_key" to journalfoeringData.tilleggsopplysning?.key,
                         "tilleggsopplysning_value" to journalfoeringData.tilleggsopplysning?.value,
-                        "dokumentenhet_id" to dokumentEnhetId
+                        "dokumentenhet_id" to dokumentEnhetId,
                     )
                 )
             }

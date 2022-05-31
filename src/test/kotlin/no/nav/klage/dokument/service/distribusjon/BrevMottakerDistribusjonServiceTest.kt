@@ -5,10 +5,14 @@ import io.mockk.mockk
 import io.mockk.slot
 import no.nav.klage.dokument.clients.dokdistfordeling.DistribuerJournalpostResponse
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
+import no.nav.klage.dokument.clients.saf.graphql.Journalpost
+import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
+import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -19,10 +23,14 @@ internal class BrevMottakerDistribusjonServiceTest {
 
     private val brevMottakerJournalfoeringService = mockk<BrevMottakerJournalfoeringService>()
     private val dokDistFordelingClient = mockk<DokDistFordelingClient>()
+    private val safClient = mockk<SafGraphQlClient>()
+    private val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
+
 
     private val brevMottakerDistribusjonService = BrevMottakerDistribusjonService(
         brevMottakerJournalfoeringService = brevMottakerJournalfoeringService,
-        dokDistFordelingClient = dokDistFordelingClient
+        dokDistFordelingClient = dokDistFordelingClient,
+        dokumentEnhetRepository = dokumentEnhetRepository
     )
 
     @Test
@@ -45,7 +53,11 @@ internal class BrevMottakerDistribusjonServiceTest {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
         } answers { brevMottakerDistribusjonSlot.captured.copy(ferdigstiltIJoark = LocalDateTime.now()) }
 
-        every { dokDistFordelingClient.distribuerJournalpost(any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+        every { dokDistFordelingClient.distribuerJournalpost(any(), any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+
+        every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
+
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -71,7 +83,11 @@ internal class BrevMottakerDistribusjonServiceTest {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
         } answers { brevMottakerDistribusjonSlot.captured.copy(ferdigstiltIJoark = LocalDateTime.now()) }
 
-        every { dokDistFordelingClient.distribuerJournalpost(any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+        every { dokDistFordelingClient.distribuerJournalpost(any(), any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+
+        every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
+
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -83,5 +99,20 @@ internal class BrevMottakerDistribusjonServiceTest {
         assertThat(brevMottakerDistribusjon!!.ferdigstiltIJoark).isNotNull
         assertThat(brevMottakerDistribusjon.dokdistReferanse).isNotNull
     }
+
+    val journalpost = Journalpost(
+        journalpostId = "",
+        tittel = DokumentType.VEDTAK.beskrivelse,
+        journalposttype = null,
+        journalstatus = null,
+        tema = null,
+        temanavn = null,
+        behandlingstema = null,
+        behandlingstemanavn = null,
+        sak = null,
+        skjerming = null,
+        datoOpprettet = LocalDateTime.now(),
+        dokumenter = listOf()
+    )
 
 }
