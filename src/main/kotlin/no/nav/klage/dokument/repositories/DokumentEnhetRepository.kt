@@ -3,7 +3,6 @@ package no.nav.klage.dokument.repositories
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
-import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
@@ -135,12 +134,12 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon(brevMottakerDistribusjonId: UUID): String? {
+    fun getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): String? {
         return jdbcTemplate.query(
-            "SELECT de.dokument_type_id FROM document.dokumentenhet AS de" +
-                    "INNER JOIN document.brevmottakerdist AS bmd" +
-                    "WHERE bmd.id = ?" +
-                    "ON bmd.dokumentenhet_id = de.id",
+            "SELECT de.dokument_type_id FROM document.dokumentenhet AS de " +
+                    "INNER JOIN document.brevmottakerdist AS bmd " +
+                    "ON bmd.dokumentenhet_id = de.id " +
+                    "WHERE bmd.id = ? ",
             { rs: ResultSet, _: Int ->
                 rs.getString("dokument_type_id")
 

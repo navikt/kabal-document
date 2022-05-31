@@ -12,7 +12,6 @@ import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
-import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -58,7 +57,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon((any())) } returns DokumentType.VEDTAK.id
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -88,7 +87,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon((any())) } returns DokumentType.VEDTAK.id
+        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)

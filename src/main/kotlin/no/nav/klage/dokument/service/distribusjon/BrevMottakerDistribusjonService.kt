@@ -82,7 +82,7 @@ class BrevMottakerDistribusjonService(
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)
 
     private fun getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): DokumentType =
-        DokumentType.of(dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjon(brevMottakerDistribusjonId)
+        DokumentType.of(dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId(brevMottakerDistribusjonId)
             ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on BrevMottakerDistribusjonId $brevMottakerDistribusjonId")
         )
 }
