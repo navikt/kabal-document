@@ -24,8 +24,6 @@ class BrevMottakerDistribusjonService(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
-        const val SYSTEMBRUKER = "SYSTEMBRUKER" //TODO ??
-        const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
     }
 
     fun distribuerDokumentEnhetTilBrevMottaker(
@@ -52,9 +50,15 @@ class BrevMottakerDistribusjonService(
         brevMottakerDistribusjon.copy(
             dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
                 brevMottakerDistribusjon.journalpostId.value,
-                getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjon.id),
+                getDocumentType(brevMottakerDistribusjon),
             ).bestillingsId
         )
+
+    private fun getDocumentType(brevMottakerDistribusjon: BrevMottakerDistribusjon): DokumentType {
+        return dokumentEnhetRepository.findById(brevMottakerDistribusjon.dokumentEnhetId)?.dokumentType
+            ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on brevMottakerDistribusjon with id ${brevMottakerDistribusjon.id}")
+    }
+
 
     //This first call is the only one allowed to throw exception
     private fun findOrCreateBrevMottakerDistribusjon(
@@ -77,12 +81,8 @@ class BrevMottakerDistribusjonService(
                 vedleggDokumentList = dokumentEnhet.vedlegg,
                 journalfoeringData = dokumentEnhet.journalfoeringData
             ),
+            dokumentEnhetId = dokumentEnhet.id,
         )
 
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)
-
-    private fun getDocumentTypeBasedOnBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): DokumentType =
-        DokumentType.of(dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId(brevMottakerDistribusjonId)
-            ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on BrevMottakerDistribusjonId $brevMottakerDistribusjonId")
-        )
 }

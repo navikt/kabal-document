@@ -129,22 +129,10 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     journalpostId = JournalpostId(value = rs.getString("journalpost_id")),
                     ferdigstiltIJoark = rs.getObject("ferdigstilt_i_joark", LocalDateTime::class.java),
                     dokdistReferanse = rs.getObject("dokdist_referanse", UUID::class.java),
+                    dokumentEnhetId = dokumentEnhetId,
                 )
             }, dokumentEnhetId
         )
-    }
-
-    fun getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId(brevMottakerDistribusjonId: UUID): String? {
-        return jdbcTemplate.query(
-            "SELECT de.dokument_type_id FROM document.dokumentenhet AS de " +
-                    "INNER JOIN document.brevmottakerdist AS bmd " +
-                    "ON bmd.dokumentenhet_id = de.id " +
-                    "WHERE bmd.id = ? ",
-            { rs: ResultSet, _: Int ->
-                rs.getString("dokument_type_id")
-
-            }, brevMottakerDistribusjonId
-        ).firstOrNull()
     }
 
     private fun getHovedDokument(dokumentEnhetId: UUID): OpplastetDokument? {
