@@ -57,7 +57,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
+        every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -87,7 +87,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
 
-        every { dokumentEnhetRepository.getDokumentEnhetDokumentTypeFromBrevMottakerDistribusjonId((any())) } returns DokumentType.VEDTAK.id
+        every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)

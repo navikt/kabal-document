@@ -48,6 +48,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
+                dokumentEnhetId = dokumentEnhetTilDist.id,
             )
         }
 
@@ -76,6 +77,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
+                dokumentEnhetId = dokumentEnhetTilDist.id,
             )
         }
 
@@ -104,6 +106,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
+                dokumentEnhetId = dokumentEnhetTilDist.id,
             )
         }
 
@@ -130,6 +133,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = null,
+                dokumentEnhetId = dokumentEnhetTilDist.id,
             )
         }
 
