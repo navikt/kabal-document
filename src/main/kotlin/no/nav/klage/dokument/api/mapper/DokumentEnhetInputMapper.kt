@@ -59,12 +59,16 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
 
-    fun mapDokumentInput(dokument: DokumentInput.Dokument): OpplastetDokument =
+    fun mapDokumentInput(
+        dokument: DokumentInput.Dokument,
+        type: OpplastetDokument.OpplastetDokumentType
+    ): OpplastetDokument =
         OpplastetDokument(
             mellomlagerId = dokument.mellomlagerId,
             opplastet = dokument.opplastet,
             size = dokument.size,
-            name = dokument.name
+            name = dokument.name,
+            type = type,
         )
 
     private fun mapPartIdInput(partIdInput: PartIdInput) =

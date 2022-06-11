@@ -7,6 +7,7 @@ import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
+import no.nav.klage.dokument.domain.dokument.OpplastetDokument
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
@@ -40,9 +41,12 @@ class DokumentEnhetController(
                 innloggetIdent = SaksbehandlerIdent(navIdent = SYSTEMBRUKER),
                 brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(body.brevMottakere),
                 journalfoeringData = dokumentEnhetInputMapper.mapJournalfoeringDataInput(body.journalfoeringData),
-                hovedokument = dokumentEnhetInputMapper.mapDokumentInput(body.dokumentreferanser.hoveddokument),
+                hovedokument = dokumentEnhetInputMapper.mapDokumentInput(
+                    body.dokumentreferanser.hoveddokument,
+                    OpplastetDokument.OpplastetDokumentType.HOVEDDOKUMENT
+                ),
                 vedlegg = body.dokumentreferanser.vedlegg?.map {
-                    dokumentEnhetInputMapper.mapDokumentInput(it)
+                    dokumentEnhetInputMapper.mapDokumentInput(it, OpplastetDokument.OpplastetDokumentType.VEDLEGG)
                 } ?: emptyList(),
                 dokumentType = DokumentType.of(body.dokumentTypeId),
             )

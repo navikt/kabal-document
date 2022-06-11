@@ -26,7 +26,7 @@ class JoarkMapper(
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
         hovedDokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
+        vedleggDokumentList: List<MellomlagretDokument>?,
         brevMottaker: BrevMottaker
     ): Journalpost =
         Journalpost(
@@ -85,26 +85,28 @@ class JoarkMapper(
     private fun createDokument(
         mellomlagretDokument: MellomlagretDokument, journalfoeringData: JournalfoeringData
     ): Dokument =
-            Dokument(
-                tittel = mellomlagretDokument.title,
-                brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
-                dokumentVarianter = listOf(
-                    DokumentVariant(
-                        filnavn = mellomlagretDokument.title,
-                        filtype = if (pdfUtils.pdfByteArrayIsPdfa(mellomlagretDokument.content)) "PDFA" else "PDF",
-                        variantformat = "ARKIV",
-                        fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
-                    )
+        Dokument(
+            tittel = mellomlagretDokument.title,
+            brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
+            dokumentVarianter = listOf(
+                DokumentVariant(
+                    filnavn = mellomlagretDokument.title,
+                    filtype = if (pdfUtils.pdfByteArrayIsPdfa(mellomlagretDokument.content)) "PDFA" else "PDF",
+                    variantformat = "ARKIV",
+                    fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
                 )
             )
+        )
 
     private fun createDokumentListFromHoveddokumentAndVedleggList(
         hoveddokument: MellomlagretDokument,
-        vedleggList: List<MellomlagretDokument> = emptyList(),
+        vedleggList: List<MellomlagretDokument>?,
         journalfoeringData: JournalfoeringData
     ): List<Dokument> {
         val documents = mutableListOf(createDokument(hoveddokument, journalfoeringData))
-        documents.addAll(vedleggList.map { createDokument(it, journalfoeringData) })
+        vedleggList?.forEach {
+            documents.add(createDokument(it, journalfoeringData))
+        }
         return documents
     }
 }

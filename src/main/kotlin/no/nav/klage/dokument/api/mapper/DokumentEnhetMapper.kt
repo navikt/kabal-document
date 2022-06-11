@@ -20,11 +20,11 @@ class DokumentEnhetMapper {
             )
         }
 
-    fun mapToHovedDokumentEditedView(dokumentEnhet: DokumentEnhet): HovedDokumentEditedView =
-        HovedDokumentEditedView(
-            dokumentEnhet.modified,
-            fileMetadata = getOpplastetFilMetadataView(dokumentEnhet.hovedDokument)
-        )
+//    fun mapToHovedDokumentEditedView(dokumentEnhet: DokumentEnhet): HovedDokumentEditedView =
+//        HovedDokumentEditedView(
+//            dokumentEnhet.modified,
+//            fileMetadata = getOpplastetFilMetadataView(dokumentEnhet.hovedDokument)
+//        )
 
     fun mapToByteArray(mellomlagretDokument: MellomlagretDokument): ResponseEntity<ByteArray> =
         ResponseEntity(
@@ -42,8 +42,8 @@ class DokumentEnhetMapper {
             eier = dokumentEnhet.eier.navIdent,
             journalfoeringData = mapToJournalfoeringDataView(dokumentEnhet.journalfoeringData),
             brevMottakere = dokumentEnhet.brevMottakere.map { mapToBrevMottakerView(it) },
-            hovedDokument = dokumentEnhet.hovedDokument?.let { mapToOpplastetDokumentView(it) },
-            vedlegg = dokumentEnhet.vedlegg.map { mapToOpplastetDokumentView(it) },
+            hovedDokument = dokumentEnhet.getHovedDokument()?.let { mapToOpplastetDokumentView(it) },
+            vedlegg = dokumentEnhet.getVedlegg().map { mapToOpplastetDokumentView(it) },
             brevMottakerDistribusjoner = dokumentEnhet.brevMottakerDistribusjoner.map {
                 mapToBrevMottakerDistribusjonView(it)
             },

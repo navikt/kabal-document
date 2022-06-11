@@ -3,13 +3,24 @@ package no.nav.klage.dokument.domain.dokument
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
+import javax.persistence.*
 
-data class OpplastetDokument(
-    val id: UUID = UUID.randomUUID(),
+@Entity
+@Table(name = "opplastetdokument", schema = "document")
+open class OpplastetDokument(
+    @Id
+    open val id: UUID = UUID.randomUUID(),
+    @Column(name = "mellomlager_id")
     val mellomlagerId: String,
+    @Column(name = "opplastet")
     val opplastet: LocalDateTime,
+    @Column(name = "size")
     val size: Long,
-    val name: String
+    @Column(name = "name")
+    val name: String,
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    var type: OpplastetDokumentType
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,4 +38,9 @@ data class OpplastetDokument(
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    enum class OpplastetDokumentType {
+        HOVEDDOKUMENT,
+        VEDLEGG,
+    }
 }

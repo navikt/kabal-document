@@ -4,20 +4,19 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
-import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
-import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
-import java.util.*
+import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class BrevMottakerDistribusjonService(
     private val brevMottakerJournalfoeringService: BrevMottakerJournalfoeringService,
     private val dokDistFordelingClient: DokDistFordelingClient,
-    private val dokumentEnhetRepository: DokumentEnhetRepository,
 ) {
 
     companion object {
@@ -46,17 +45,17 @@ class BrevMottakerDistribusjonService(
             }
         }
 
-    private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon =
-        brevMottakerDistribusjon.copy(
-            dokdistReferanse = dokDistFordelingClient.distribuerJournalpost(
-                brevMottakerDistribusjon.journalpostId.value,
-                getDocumentType(brevMottakerDistribusjon),
-            ).bestillingsId
-        )
+    private fun distribuerJournalpostTilMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjon {
+        val bestillingsId = dokDistFordelingClient.distribuerJournalpost(
+            brevMottakerDistribusjon.journalpostId.value,
+            getDocumentType(brevMottakerDistribusjon),
+        ).bestillingsId
+        brevMottakerDistribusjon.dokdistReferanse = bestillingsId
+        return brevMottakerDistribusjon
+    }
 
     private fun getDocumentType(brevMottakerDistribusjon: BrevMottakerDistribusjon): DokumentType {
-        return dokumentEnhetRepository.findById(brevMottakerDistribusjon.dokumentEnhetId)?.dokumentType
-            ?: throw DokumentEnhetNotFoundException("DokumentEnhet not found based on brevMottakerDistribusjon with id ${brevMottakerDistribusjon.id}")
+        return brevMottakerDistribusjon.dokumentEnhet.dokumentType
     }
 
 
@@ -74,14 +73,16 @@ class BrevMottakerDistribusjonService(
     ): BrevMottakerDistribusjon =
         BrevMottakerDistribusjon(
             brevMottakerId = brevMottaker.id,
-            opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
+            opplastetDokumentId = dokumentEnhet.getHovedDokument()?.id
+                ?: throw DokumentEnhetNotValidException("Hoveddokument ikke funnet"),
             journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
                 brevMottaker = brevMottaker,
-                hoveddokument = dokumentEnhet.hovedDokument,
-                vedleggDokumentList = dokumentEnhet.vedlegg,
+                hoveddokument = dokumentEnhet.getHovedDokument()
+                    ?: throw DokumentEnhetNotValidException("Hoveddokument ikke funnet"),
+                vedleggDokumentList = dokumentEnhet.getVedlegg(),
                 journalfoeringData = dokumentEnhet.journalfoeringData
             ),
-            dokumentEnhetId = dokumentEnhet.id,
+            dokumentEnhet = dokumentEnhet,
         )
 
     private fun BrevMottakerDistribusjon.chainable() = ChainableOperation(this, true)

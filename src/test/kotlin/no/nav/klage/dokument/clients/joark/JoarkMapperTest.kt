@@ -8,7 +8,7 @@ import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import java.time.LocalDateTime
@@ -66,7 +66,8 @@ internal class JoarkMapperTest {
         mellomlagerId = MELLOMLAGER_ID.toString(),
         opplastet = OPPLASTET,
         size = SIZE,
-        name = DOKUMENT_NAME
+        name = DOKUMENT_NAME,
+        type = OpplastetDokument.OpplastetDokumentType.HOVEDDOKUMENT,
     )
 
     private val mellomlagretDokument = MellomlagretDokument(
@@ -179,6 +180,7 @@ internal class JoarkMapperTest {
             journalfoeringData = journalfoeringData,
             opplastetDokument = opplastetDokument,
             hovedDokument = mellomlagretDokument,
+            vedleggDokumentList = emptyList(),
             brevMottaker = brevMottaker
         )
 

@@ -22,7 +22,7 @@ class DefaultJoarkGateway(
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
         hoveddokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument>,
+        vedleggDokumentList: List<MellomlagretDokument>?,
         brevMottaker: BrevMottaker
     ): JournalpostId =
         JournalpostId(

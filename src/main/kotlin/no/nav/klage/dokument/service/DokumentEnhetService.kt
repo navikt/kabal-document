@@ -35,8 +35,7 @@ class DokumentEnhetService(
         dokumentEnhetId: UUID
     ): DokumentEnhet {
 
-        val dokumentEnhet = dokumentEnhetRepository.findById(dokumentEnhetId)
-            ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
+        val dokumentEnhet = dokumentEnhetRepository.getById(dokumentEnhetId)
 
         //verifyTilgangTilDokumentEnhet(dokumentEnhet, innloggetIdent)
         if (dokumentEnhet.erAvsluttet()) return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
@@ -46,16 +45,13 @@ class DokumentEnhetService(
             throw DokumentEnhetNotValidException("Hoveddokument er ikke lastet opp")
         }
 
-        return dokumentEnhetRepository.saveOrUpdate(
-            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
-                dokumentEnhet
-            )
+        return dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
+            dokumentEnhet
         )
     }
 
     fun getDokumentEnhet(dokumentEnhetId: UUID): DokumentEnhet =
-        dokumentEnhetRepository.findById(dokumentEnhetId)
-            ?: throw DokumentEnhetNotFoundException("Dokumentenhet finnes ikke")
+        dokumentEnhetRepository.getById(dokumentEnhetId)
 
     fun opprettDokumentEnhetMedDokumentreferanser(
         innloggetIdent: SaksbehandlerIdent,
@@ -65,16 +61,17 @@ class DokumentEnhetService(
         vedlegg: List<OpplastetDokument>,
         dokumentType: DokumentType,
     ): DokumentEnhet {
-        return dokumentEnhetRepository.save(
+        val dokumentEnhet = dokumentEnhetRepository.save(
             DokumentEnhet(
                 eier = innloggetIdent,
                 brevMottakere = brevMottakere,
                 journalfoeringData = journalfoeringData,
-                hovedDokument = hovedokument,
-                vedlegg = vedlegg,
+                dokumenter = listOf(hovedokument).plus(vedlegg),
                 dokumentType = dokumentType,
             )
         )
+
+        return dokumentEnhet
     }
 
 }

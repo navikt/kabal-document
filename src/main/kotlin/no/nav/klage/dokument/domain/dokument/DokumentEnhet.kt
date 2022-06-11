@@ -4,23 +4,51 @@ import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.kodeverk.DokumentType
+import no.nav.klage.kodeverk.DokumentTypeConverter
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
+import javax.persistence.*
 
-data class DokumentEnhet(
-    val id: UUID = UUID.randomUUID(),
+@Entity
+@Table(name = "dokumentenhet", schema = "document")
+open class DokumentEnhet(
+    @Id
+    open val id: UUID = UUID.randomUUID(),
+    @Embedded
+    @AttributeOverrides(
+        value = [
+            AttributeOverride(name = "navIdent", column = Column(name = "eier"))
+        ]
+    )
     val eier: SaksbehandlerIdent,
-    val journalfoeringData: JournalfoeringData,
-    val brevMottakere: List<BrevMottaker>,
-    val hovedDokument: OpplastetDokument? = null,
-    val vedlegg: List<OpplastetDokument> = emptyList(),
-    val dokumentType: DokumentType,
 
-    val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
-    val avsluttet: LocalDateTime? = null,
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "journalfoering_id")
+    val journalfoeringData: JournalfoeringData,
+
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    val brevMottakere: List<BrevMottaker>,
+
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    val dokumenter: List<OpplastetDokument>,
+
+    @Column(name = "dokument_type_id")
+    @Convert(converter = DokumentTypeConverter::class)
+    val dokumentType: DokumentType,
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id")
+    var brevMottakerDistribusjoner: MutableList<BrevMottakerDistribusjon> = mutableListOf(),
+    @Column(name = "avsluttet")
+    var avsluttet: LocalDateTime? = null,
+    @Column(name = "modified")
     val modified: LocalDateTime = LocalDateTime.now()
 ) {
+
+    fun getHovedDokument() = dokumenter.firstOrNull { it.type == OpplastetDokument.OpplastetDokumentType.HOVEDDOKUMENT }
+
+    fun getVedlegg() = dokumenter.filter { it.type == OpplastetDokument.OpplastetDokumentType.VEDLEGG }
 
     fun erAvsluttet() = avsluttet != null
 
@@ -38,7 +66,7 @@ data class DokumentEnhet(
             this
         } else throw DokumentEnhetNotValidException("DokumentEnhet ikke distribuert til alle brevmottakere")
 
-    fun harHovedDokument(): Boolean = hovedDokument != null
+    fun harHovedDokument(): Boolean = getHovedDokument() != null
 
     fun getJournalpostIdHovedadressat(): String? =
         brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }
@@ -51,14 +79,6 @@ data class DokumentEnhet(
         other as DokumentEnhet
 
         if (id != other.id) return false
-        if (eier != other.eier) return false
-        if (journalfoeringData != other.journalfoeringData) return false
-        if (brevMottakere != other.brevMottakere) return false
-        if (hovedDokument != other.hovedDokument) return false
-        if (vedlegg != other.vedlegg) return false
-        if (brevMottakerDistribusjoner != other.brevMottakerDistribusjoner) return false
-        if (avsluttet?.truncatedTo(ChronoUnit.MILLIS) != other.avsluttet?.truncatedTo(ChronoUnit.MILLIS)) return false
-        if (modified.truncatedTo(ChronoUnit.MILLIS) != other.modified.truncatedTo(ChronoUnit.MILLIS)) return false
 
         return true
     }

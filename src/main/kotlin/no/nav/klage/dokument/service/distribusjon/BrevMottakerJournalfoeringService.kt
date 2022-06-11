@@ -10,9 +10,11 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
+@Transactional
 class BrevMottakerJournalfoeringService(
     private val mellomlagerService: MellomlagerService,
     private val joarkGateway: DefaultJoarkGateway,
@@ -30,7 +32,7 @@ class BrevMottakerJournalfoeringService(
     fun opprettJournalpostForBrevMottaker(
         brevMottaker: BrevMottaker,
         hoveddokument: OpplastetDokument,
-        vedleggDokumentList: List<OpplastetDokument> = emptyList(),
+        vedleggDokumentList: List<OpplastetDokument>? = emptyList(),
         journalfoeringData: JournalfoeringData
     ): JournalpostId {
         logger.debug("Skal opprette journalpost for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
@@ -40,7 +42,7 @@ class BrevMottakerJournalfoeringService(
             contentType = MediaType.APPLICATION_PDF
         )
         val mellomlagredeVedleggDokument =
-            vedleggDokumentList.map {
+            vedleggDokumentList?.map {
                 MellomlagretDokument(
                     title = it.name,
                     content = mellomlagerService.getUploadedDocumentAsSystemUser(it.mellomlagerId),
@@ -66,9 +68,11 @@ class BrevMottakerJournalfoeringService(
                 brevMottakerDistribusjon.journalpostId,
                 SYSTEM_JOURNALFOERENDE_ENHET
             )
-            brevMottakerDistribusjon.copy(ferdigstiltIJoark = LocalDateTime.now())
+            brevMottakerDistribusjon.ferdigstiltIJoark = LocalDateTime.now()
+            brevMottakerDistribusjon
         } else {
-            brevMottakerDistribusjon.copy(ferdigstiltIJoark = LocalDateTime.now())//TODO Kan denne datoen hentes fra saf?
+            brevMottakerDistribusjon.ferdigstiltIJoark = LocalDateTime.now()
+            brevMottakerDistribusjon
         }
     }
 }
