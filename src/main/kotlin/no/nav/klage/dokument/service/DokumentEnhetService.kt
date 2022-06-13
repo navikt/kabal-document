@@ -66,7 +66,7 @@ class DokumentEnhetService(
                 eier = innloggetIdent,
                 brevMottakere = brevMottakere,
                 journalfoeringData = journalfoeringData,
-                dokumenter = listOf(hovedokument).plus(vedlegg),
+                dokumenter = listOf(hovedokument) + (vedlegg),
                 dokumentType = dokumentType,
             )
         )

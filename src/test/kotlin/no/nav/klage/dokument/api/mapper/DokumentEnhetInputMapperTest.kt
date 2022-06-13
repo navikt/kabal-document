@@ -63,7 +63,7 @@ internal class DokumentEnhetInputMapperTest {
     }
 
     @Test
-    fun `mapBrevMottakerInput casts exception on input error`() {
+    fun `mapBrevMottakerInput throws exception on input error`() {
         val brevMottakerInput = BrevMottakerInput(
             partId = PartIdInput(
                 type = INPUT_TYPE + "blabla",

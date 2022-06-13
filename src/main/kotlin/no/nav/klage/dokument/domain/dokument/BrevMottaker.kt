@@ -19,7 +19,7 @@ open class BrevMottaker(
     val partId: PartId,
     @Column(name = "navn")
     val navn: String?,
-    @Column(name = "Rolle")
+    @Column(name = "rolle")
     @Enumerated(EnumType.STRING)
     val rolle: Rolle,
 )
