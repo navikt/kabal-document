@@ -41,7 +41,7 @@ repositories {
 }
 
 plugins {
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.7.10"
     kotlin("plugin.spring") version "1.6.0"
     kotlin("plugin.jpa") version "1.6.0"
     id("org.springframework.boot") version "2.5.12"
@@ -86,8 +86,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.kjetland:mbknor-jackson-jsonschema_2.13:1.0.39")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
-
-    implementation("org.redundent:kotlin-xml-builder:1.7.3")
 
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
