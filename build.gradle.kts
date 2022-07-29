@@ -13,7 +13,6 @@ val springMockkVersion = "3.0.1"
 val springFoxVersion = "3.0.0"
 val testContainersVersion = "1.17.3"
 val tikaVersion = "2.4.1"
-val nimbusVersion = "8.20.1"
 val threeTenExtraVersion = "1.6.0"
 val shedlockVersion = "4.39.0"
 val archunitVersion = "0.19.0"
@@ -53,8 +52,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    //temporary fix:
-    implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
     implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
 
     implementation("org.springframework.boot:spring-boot-starter-web")
