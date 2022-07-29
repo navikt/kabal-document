@@ -16,7 +16,7 @@ val tikaVersion = "2.4.1"
 val nimbusVersion = "8.20.1"
 val threeTenExtraVersion = "1.6.0"
 val shedlockVersion = "4.39.0"
-val archunitVersion = "0.19.0"
+val archunitVersion = "0.23.1"
 val verapdfVersion = "1.18.8"
 val kabalKodeverkVersion = "2022.05.24-11.13.b63cf1e7e13c"
 
