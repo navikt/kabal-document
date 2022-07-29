@@ -5,9 +5,11 @@ import no.nav.klage.dokument.service.MellomlagerService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
+@Transactional
 class DokumentEnhetDistribusjonService(
     private val brevMottakerDistribusjonService: BrevMottakerDistribusjonService,
     private val mellomlagerService: MellomlagerService
@@ -37,28 +39,34 @@ class DokumentEnhetDistribusjonService(
             dokumentEnhet
         }
 
-    private fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
-        dokumentEnhet.copy(
-            brevMottakerDistribusjoner = dokumentEnhet
+    private fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet {
+        val brevMottakerDistribusjoner =
+            dokumentEnhet
                 .brevMottakere
                 .mapNotNull { brevMottaker ->
                     brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                         brevMottaker,
                         dokumentEnhet
                     )
-                })
+                }
+
+        dokumentEnhet.brevMottakerDistribusjoner = brevMottakerDistribusjoner.toMutableList()
+
+        return dokumentEnhet
+    }
 
     private fun markerDokumentEnhetSomFerdigDistribuert(dokumentEnhet: DokumentEnhet): DokumentEnhet {
         logger.debug("Markerer dokumentEnhet ${dokumentEnhet.id} som ferdig distribuert")
-        return dokumentEnhet.copy(avsluttet = LocalDateTime.now())
+        dokumentEnhet.avsluttet = LocalDateTime.now()
+        return dokumentEnhet
     }
 
     private fun slettMellomlagretDokument(dokumentEnhet: DokumentEnhet) {
         try {
             logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
-            dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
+            dokumentEnhet.getHovedDokument()?.let { mellomlagerService.deleteDocumentAsSystemUser(it.mellomlagerId) }
         } catch (t: Throwable) {
-            logger.warn("Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}")
+            logger.warn("Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.getHovedDokument()?.mellomlagerId}")
         }
     }
 }

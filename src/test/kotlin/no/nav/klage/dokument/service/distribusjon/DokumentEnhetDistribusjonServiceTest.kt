@@ -11,7 +11,6 @@ import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere
 import no.nav.klage.dokument.service.MellomlagerService
-import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -35,7 +34,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 
-        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
+        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.getHovedDokument()!!.mellomlagerId) } returns Unit
         every {
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
@@ -44,11 +43,11 @@ internal class DokumentEnhetDistribusjonServiceTest {
         } answers {
             BrevMottakerDistribusjon(
                 brevMottakerId = brevMottakerSlot.captured.id,
-                opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
+                opplastetDokumentId = dokumentEnhetSlot.captured.getHovedDokument()!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
-                dokumentEnhetId = dokumentEnhetTilDist.id,
+                dokumentEnhet = dokumentEnhetSlot.captured,
             )
         }
 
@@ -64,7 +63,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 
-        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
+        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.getHovedDokument()!!.mellomlagerId) } returns Unit
         every {
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
@@ -73,11 +72,11 @@ internal class DokumentEnhetDistribusjonServiceTest {
         } answers {
             BrevMottakerDistribusjon(
                 brevMottakerId = brevMottakerSlot.captured.id,
-                opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
+                opplastetDokumentId = dokumentEnhetSlot.captured.getHovedDokument()!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
-                dokumentEnhetId = dokumentEnhetTilDist.id,
+                dokumentEnhet = dokumentEnhetSlot.captured,
             )
         }
 
@@ -93,7 +92,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 
-        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
+        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.getHovedDokument()!!.mellomlagerId) } returns Unit
         every {
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
@@ -102,11 +101,11 @@ internal class DokumentEnhetDistribusjonServiceTest {
         } answers {
             BrevMottakerDistribusjon(
                 brevMottakerId = brevMottakerSlot.captured.id,
-                opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
+                opplastetDokumentId = dokumentEnhetSlot.captured.getHovedDokument()!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = UUID.randomUUID(),
-                dokumentEnhetId = dokumentEnhetTilDist.id,
+                dokumentEnhet = dokumentEnhetSlot.captured,
             )
         }
 
@@ -120,7 +119,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
         val brevMottakerSlot = slot<BrevMottaker>()
         val dokumentEnhetSlot = slot<DokumentEnhet>()
 
-        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
+        every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.getHovedDokument()!!.mellomlagerId) } returns Unit
         every {
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
@@ -129,11 +128,11 @@ internal class DokumentEnhetDistribusjonServiceTest {
         } answers {
             BrevMottakerDistribusjon(
                 brevMottakerId = brevMottakerSlot.captured.id,
-                opplastetDokumentId = dokumentEnhetSlot.captured.hovedDokument!!.id,
+                opplastetDokumentId = dokumentEnhetSlot.captured.getHovedDokument()!!.id,
                 journalpostId = JournalpostId("random"),
                 ferdigstiltIJoark = LocalDateTime.now(),
                 dokdistReferanse = null,
-                dokumentEnhetId = dokumentEnhetTilDist.id,
+                dokumentEnhet = dokumentEnhetSlot.captured,
             )
         }
 
@@ -151,7 +150,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
             assertThat(it.ferdigstiltIJoark).isNotNull
             assertThat(it.dokdistReferanse).isNotNull
         }
-        assertThat(dokumentEnhet.hovedDokument).isNotNull
+        assertThat(dokumentEnhet.getHovedDokument()).isNotNull
     }
 
     private fun assertHarBrevmottakerDistribusjoner(dokumentEnhet: DokumentEnhet) {
@@ -160,6 +159,6 @@ internal class DokumentEnhetDistribusjonServiceTest {
             assertThat(it.ferdigstiltIJoark).isNotNull
             assertThat(it.dokdistReferanse).isNull()
         }
-        assertThat(dokumentEnhet.hovedDokument).isNotNull
+        assertThat(dokumentEnhet.getHovedDokument()).isNotNull
     }
 }

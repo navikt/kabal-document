@@ -11,7 +11,6 @@ import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
-import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -24,13 +23,10 @@ internal class BrevMottakerDistribusjonServiceTest {
     private val brevMottakerJournalfoeringService = mockk<BrevMottakerJournalfoeringService>()
     private val dokDistFordelingClient = mockk<DokDistFordelingClient>()
     private val safClient = mockk<SafGraphQlClient>()
-    private val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
-
 
     private val brevMottakerDistribusjonService = BrevMottakerDistribusjonService(
         brevMottakerJournalfoeringService = brevMottakerJournalfoeringService,
         dokDistFordelingClient = dokDistFordelingClient,
-        dokumentEnhetRepository = dokumentEnhetRepository
     )
 
     @Test
@@ -43,21 +39,27 @@ internal class BrevMottakerDistribusjonServiceTest {
         every {
             brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
                 brevMottaker = brevMottaker,
-                hoveddokument = dokumentEnhet.hovedDokument!!,
-                vedleggDokumentList = dokumentEnhet.vedlegg,
+                hoveddokument = dokumentEnhet.getHovedDokument()!!,
+                vedleggDokumentList = dokumentEnhet.getVedlegg(),
                 journalfoeringData = dokumentEnhet.journalfoeringData
             )
         } returns JournalpostId("journalpostId")
 
         every {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
-        } answers { brevMottakerDistribusjonSlot.captured.copy(ferdigstiltIJoark = LocalDateTime.now()) }
+        } answers {
+            brevMottakerDistribusjonSlot.captured.ferdigstiltIJoark = LocalDateTime.now()
+            brevMottakerDistribusjonSlot.captured
+        }
 
-        every { dokDistFordelingClient.distribuerJournalpost(any(), any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+        every {
+            dokDistFordelingClient.distribuerJournalpost(
+                any(),
+                any()
+            )
+        } returns DistribuerJournalpostResponse(UUID.randomUUID())
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
-
-        every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
@@ -74,20 +76,26 @@ internal class BrevMottakerDistribusjonServiceTest {
         every {
             brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
                 brevMottaker = brevMottaker,
-                hoveddokument = dokumentEnhet.hovedDokument!!,
+                hoveddokument = dokumentEnhet.getHovedDokument()!!,
                 journalfoeringData = dokumentEnhet.journalfoeringData
             )
         } returns JournalpostId("journalpostId")
 
         every {
             brevMottakerJournalfoeringService.ferdigstillJournalpostForBrevMottaker(capture(brevMottakerDistribusjonSlot))
-        } answers { brevMottakerDistribusjonSlot.captured.copy(ferdigstiltIJoark = LocalDateTime.now()) }
+        } answers {
+            brevMottakerDistribusjonSlot.captured.ferdigstiltIJoark = LocalDateTime.now()
+            brevMottakerDistribusjonSlot.captured
+        }
 
-        every { dokDistFordelingClient.distribuerJournalpost(any(), any()) } returns DistribuerJournalpostResponse(UUID.randomUUID())
+        every {
+            dokDistFordelingClient.distribuerJournalpost(
+                any(),
+                any()
+            )
+        } returns DistribuerJournalpostResponse(UUID.randomUUID())
 
         every { safClient.getJournalpostAsSystembruker(any()) } returns journalpost
-
-        every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
             brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)

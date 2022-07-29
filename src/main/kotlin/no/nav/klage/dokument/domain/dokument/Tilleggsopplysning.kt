@@ -1,3 +1,12 @@
 package no.nav.klage.dokument.domain.dokument
 
-data class Tilleggsopplysning(val key: String, val value: String)
+import javax.persistence.Column
+import javax.persistence.Embeddable
+
+@Embeddable
+open class Tilleggsopplysning(
+    @Column(name = "key")
+    val key: String,
+    @Column(name = "value")
+    val value: String,
+)

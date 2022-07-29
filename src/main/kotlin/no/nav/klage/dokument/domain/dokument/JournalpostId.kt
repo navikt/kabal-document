@@ -1,3 +1,10 @@
 package no.nav.klage.dokument.domain.dokument
 
-data class JournalpostId(val value: String)
+import javax.persistence.Column
+import javax.persistence.Embeddable
+
+@Embeddable
+open class JournalpostId(
+    @Column(name = "value")
+    val value: String,
+)

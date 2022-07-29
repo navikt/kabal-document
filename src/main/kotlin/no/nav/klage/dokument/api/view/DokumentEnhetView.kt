@@ -8,7 +8,7 @@ data class DokumentEnhetView(
     val journalfoeringData: JournalfoeringDataView,
     val brevMottakere: List<BrevMottakerView>,
     val hovedDokument: OpplastetDokumentView?,
-    val vedlegg: List<OpplastetDokumentView>,
+    val vedlegg: List<OpplastetDokumentView>?,
     val brevMottakerDistribusjoner: List<BrevMottakerDistribusjonView>,
     val avsluttet: LocalDateTime?,
     val modified: LocalDateTime,

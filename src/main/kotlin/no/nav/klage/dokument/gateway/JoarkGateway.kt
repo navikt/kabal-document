@@ -7,7 +7,7 @@ interface JoarkGateway {
         journalfoeringData: JournalfoeringData,
         opplastetDokument: OpplastetDokument,
         hoveddokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
+        vedleggDokumentList: List<MellomlagretDokument>?,
         brevMottaker: BrevMottaker
     ): JournalpostId
 
