@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.10.5"
+val mockkVersion = "1.12.5"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "1.3.2"
+val tokenValidationVersion = "2.1.2"
 val logstashVersion = "6.6"
 val springSleuthVersion = "3.0.4"
 val unleashVersion = "3.3.3"
-val problemSpringWebStartVersion = "0.26.2"
+val problemSpringWebStartVersion = "0.27.0"
 val pdfboxVersion = "2.0.19"
-val springRetryVersion = "1.3.1"
+val springRetryVersion = "1.3.3"
 val springMockkVersion = "3.0.1"
 val springFoxVersion = "3.0.0"
 val testContainersVersion = "1.16.2"
