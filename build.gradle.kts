@@ -15,7 +15,7 @@ val testContainersVersion = "1.17.3"
 val tikaVersion = "2.4.1"
 val threeTenExtraVersion = "1.7.0"
 val shedlockVersion = "4.41.0"
-val archunitVersion = "0.19.0"
+val archunitVersion = "0.23.1"
 val verapdfVersion = "1.18.8"
 val kabalKodeverkVersion = "2022.05.24-11.13.b63cf1e7e13c"
 
