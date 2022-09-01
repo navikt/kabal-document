@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.12.5"
+val mockkVersion = "1.12.7"
 val h2Version = "1.4.200"
 val tokenValidationVersion = "2.1.2"
 val logstashVersion = "7.2"
@@ -17,7 +17,7 @@ val threeTenExtraVersion = "1.7.0"
 val shedlockVersion = "4.39.0"
 val archunitVersion = "0.19.0"
 val verapdfVersion = "1.18.8"
-val kabalKodeverkVersion = "2022.05.24-11.13.b63cf1e7e13c"
+val kabalKodeverkVersion = "2022.09.01-09.55.1dce5ffb09e7"
 
 val githubUser: String by project
 val githubPassword: String by project
