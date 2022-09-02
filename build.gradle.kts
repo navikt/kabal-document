@@ -17,7 +17,7 @@ val threeTenExtraVersion = "1.7.1"
 val shedlockVersion = "4.41.0"
 val archunitVersion = "0.23.1"
 val verapdfVersion = "1.18.8"
-val kabalKodeverkVersion = "2022.05.24-11.13.b63cf1e7e13c"
+val kabalKodeverkVersion = "2022.09.02-09.46.42bb41c078e5"
 
 val githubUser: String by project
 val githubPassword: String by project
