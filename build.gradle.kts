@@ -4,20 +4,20 @@ val mockkVersion = "1.12.7"
 val h2Version = "1.4.200"
 val tokenValidationVersion = "2.1.4"
 val logstashVersion = "7.2"
-val springSleuthVersion = "3.0.4"
+val springSleuthVersion = "3.1.3"
 val unleashVersion = "3.3.3"
 val problemSpringWebStartVersion = "0.27.0"
 val pdfboxVersion = "2.0.26"
 val springRetryVersion = "1.3.3"
 val springMockkVersion = "3.1.1"
-val springFoxVersion = "3.0.0"
+val springDocVersion = "1.6.11"
 val testContainersVersion = "1.17.3"
 val tikaVersion = "2.4.1"
 val threeTenExtraVersion = "1.7.1"
 val shedlockVersion = "4.41.0"
 val archunitVersion = "0.23.1"
-val verapdfVersion = "1.18.8"
-val kabalKodeverkVersion = "2022.05.24-11.13.b63cf1e7e13c"
+val verapdfVersion = "1.20.1"
+val kabalKodeverkVersion = "2022.09.02-09.46.42bb41c078e5"
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -43,10 +43,11 @@ plugins {
     kotlin("jvm") version "1.7.10"
     kotlin("plugin.spring") version "1.7.10"
     kotlin("plugin.jpa") version "1.7.10"
-    id("org.springframework.boot") version "2.5.12"
-    id("io.spring.dependency-management") version "1.0.12.RELEASE"
+    id("org.springframework.boot") version "2.7.3"
     idea
 }
+
+apply(plugin = "io.spring.dependency-management")
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -69,7 +70,7 @@ dependencies {
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
 
     implementation("org.springframework.cloud:spring-cloud-starter-sleuth:$springSleuthVersion")
-    implementation("io.springfox:springfox-boot-starter:$springFoxVersion")
+    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
 
     implementation("org.projectreactor:reactor-spring:1.0.1.RELEASE")
 
