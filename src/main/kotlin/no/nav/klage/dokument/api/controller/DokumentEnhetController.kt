@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@Tag(name = "kabal-document", description = "API for saksbehandlere ved klageinstansen")
+@Tag(name = "kabal-document", description = "API for håndtering av dokumentenheter.")
 @ProtectedWithClaims(issuer = ISSUER_AAD)
 @RequestMapping("/dokumentenheter")
 class DokumentEnhetController(
