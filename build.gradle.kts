@@ -14,7 +14,7 @@ val springDocVersion = "1.6.11"
 val testContainersVersion = "1.17.3"
 val tikaVersion = "2.4.1"
 val threeTenExtraVersion = "1.7.1"
-val shedlockVersion = "4.41.0"
+val shedlockVersion = "4.42.0"
 val archunitVersion = "0.23.1"
 val verapdfVersion = "1.20.1"
 
