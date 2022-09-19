@@ -17,7 +17,6 @@ val threeTenExtraVersion = "1.7.1"
 val shedlockVersion = "4.41.0"
 val archunitVersion = "0.23.1"
 val verapdfVersion = "1.20.1"
-val kabalKodeverkVersion = "2022.09.05-15.31.efa194ed62e9"
 
 val githubUser: String by project
 val githubPassword: String by project
@@ -64,7 +63,7 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
 
-    implementation("com.github.navikt:kabal-kodeverk:$kabalKodeverkVersion")
+    implementation("com.github.navikt:klage-kodeverk:1.0.4")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
