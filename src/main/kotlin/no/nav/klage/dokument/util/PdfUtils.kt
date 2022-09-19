@@ -3,8 +3,8 @@ package no.nav.klage.dokument.util
 import org.springframework.stereotype.Component
 import org.verapdf.core.ModelParsingException
 import org.verapdf.core.ValidationException
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import org.verapdf.pdfa.Foundries
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
 import java.io.ByteArrayInputStream
 
 @Component
