@@ -6,6 +6,7 @@ import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotFoundException
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.ChainableOperation
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -18,6 +19,7 @@ class BrevMottakerDistribusjonService(
     private val brevMottakerJournalfoeringService: BrevMottakerJournalfoeringService,
     private val dokDistFordelingClient: DokDistFordelingClient,
     private val dokumentEnhetRepository: DokumentEnhetRepository,
+    private val journalfoeringService: JournalfoeringService,
 ) {
 
     companion object {
@@ -26,7 +28,7 @@ class BrevMottakerDistribusjonService(
         private val secureLogger = getSecureLogger()
     }
 
-    fun distribuerDokumentEnhetTilBrevMottaker(
+    fun journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
     ): BrevMottakerDistribusjon? =
@@ -36,7 +38,7 @@ class BrevMottakerDistribusjonService(
         } else {
             try {
                 logger.info("Skal distribuere dokumentenhet ${dokumentEnhet.id} til brevmottaker ${brevMottaker.id}")
-                findOrCreateBrevMottakerDistribusjon(brevMottaker, dokumentEnhet).chainable()
+                findOrCreateBrevMottakerDistribusjonWithJournalpost(brevMottaker, dokumentEnhet).chainable()
                     .chain(brevMottakerJournalfoeringService::ferdigstillJournalpostForBrevMottaker)
                     .chain(this::distribuerJournalpostTilMottaker)
                     .value
@@ -61,7 +63,7 @@ class BrevMottakerDistribusjonService(
 
 
     //This first call is the only one allowed to throw exception
-    private fun findOrCreateBrevMottakerDistribusjon(
+    private fun findOrCreateBrevMottakerDistribusjonWithJournalpost(
         brevMottaker: BrevMottaker,
         dokumentEnhet: DokumentEnhet
     ): BrevMottakerDistribusjon =
@@ -75,7 +77,7 @@ class BrevMottakerDistribusjonService(
         BrevMottakerDistribusjon(
             brevMottakerId = brevMottaker.id,
             opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
-            journalpostId = brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
+            journalpostId = journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker,
                 hoveddokument = dokumentEnhet.hovedDokument,
                 vedleggDokumentList = dokumentEnhet.vedlegg,

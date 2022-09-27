@@ -19,10 +19,10 @@ class DokumentEnhetDistribusjonService(
         private val secureLogger = getSecureLogger()
     }
 
-    fun distribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
+    fun journalfoerOgDistribuerDokumentEnhet(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         if (!dokumentEnhet.erAvsluttet()) {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke avsluttet")
-            val oppdatertDokumentEnhet = distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet)
+            val oppdatertDokumentEnhet = journalfoerOgDistribuerDokumentEnhetTilBrevMottakere(dokumentEnhet)
             if (oppdatertDokumentEnhet.erDistribuertTilAlle()) {
                 logger.debug("dokumentEnhet ${dokumentEnhet.id} er distribuert til alle, markerer som ferdig")
                 val ferdigDistribuertDokumentEnhet = markerDokumentEnhetSomFerdigDistribuert(oppdatertDokumentEnhet)
@@ -37,12 +37,12 @@ class DokumentEnhetDistribusjonService(
             dokumentEnhet
         }
 
-    private fun distribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
+    private fun journalfoerOgDistribuerDokumentEnhetTilBrevMottakere(dokumentEnhet: DokumentEnhet): DokumentEnhet =
         dokumentEnhet.copy(
             brevMottakerDistribusjoner = dokumentEnhet
                 .brevMottakere
                 .mapNotNull { brevMottaker ->
-                    brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+                    brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
                         brevMottaker,
                         dokumentEnhet
                     )

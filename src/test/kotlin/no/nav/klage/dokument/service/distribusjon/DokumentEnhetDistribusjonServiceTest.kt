@@ -11,7 +11,6 @@ import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere
 import no.nav.klage.dokument.service.MellomlagerService
-import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -37,7 +36,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
 
         every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
         every {
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
                 capture(dokumentEnhetSlot)
             )
@@ -52,7 +51,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
             )
         }
 
-        assertFerdigDistribuert(dokumentEnhetDistribusjonService.distribuerDokumentEnhet(dokumentEnhetTilDist))
+        assertFerdigDistribuert(dokumentEnhetDistribusjonService.journalfoerOgDistribuerDokumentEnhet(dokumentEnhetTilDist))
     }
 
     @Test
@@ -66,7 +65,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
 
         every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
         every {
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
                 capture(dokumentEnhetSlot)
             )
@@ -81,7 +80,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
             )
         }
 
-        assertFerdigDistribuert(dokumentEnhetDistribusjonService.distribuerDokumentEnhet(dokumentEnhetTilDist))
+        assertFerdigDistribuert(dokumentEnhetDistribusjonService.journalfoerOgDistribuerDokumentEnhet(dokumentEnhetTilDist))
     }
 
     @Test
@@ -95,7 +94,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
 
         every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
         every {
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
                 capture(dokumentEnhetSlot)
             )
@@ -110,7 +109,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
             )
         }
 
-        assertFerdigDistribuert(dokumentEnhetDistribusjonService.distribuerDokumentEnhet(dokumentEnhetTilDist))
+        assertFerdigDistribuert(dokumentEnhetDistribusjonService.journalfoerOgDistribuerDokumentEnhet(dokumentEnhetTilDist))
     }
 
     @Test
@@ -122,7 +121,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
 
         every { mellomlagerService.deleteDocumentAsSystemUser(dokumentEnhetTilDist.hovedDokument!!.mellomlagerId) } returns Unit
         every {
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(
                 capture(brevMottakerSlot),
                 capture(dokumentEnhetSlot)
             )
@@ -138,7 +137,7 @@ internal class DokumentEnhetDistribusjonServiceTest {
         }
 
         assertHarBrevmottakerDistribusjoner(
-            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
+            dokumentEnhetDistribusjonService.journalfoerOgDistribuerDokumentEnhet(
                 dokumentEnhetTilDist
             )
         )

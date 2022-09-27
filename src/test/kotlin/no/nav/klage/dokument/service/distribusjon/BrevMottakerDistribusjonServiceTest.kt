@@ -12,6 +12,7 @@ import no.nav.klage.dokument.domain.dokument.JournalpostId
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere
 import no.nav.klage.dokument.ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.kodeverk.DokumentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -22,6 +23,7 @@ import java.util.*
 internal class BrevMottakerDistribusjonServiceTest {
 
     private val brevMottakerJournalfoeringService = mockk<BrevMottakerJournalfoeringService>()
+    private val journalfoeringService = mockk<JournalfoeringService>()
     private val dokDistFordelingClient = mockk<DokDistFordelingClient>()
     private val safClient = mockk<SafGraphQlClient>()
     private val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
@@ -30,7 +32,8 @@ internal class BrevMottakerDistribusjonServiceTest {
     private val brevMottakerDistribusjonService = BrevMottakerDistribusjonService(
         brevMottakerJournalfoeringService = brevMottakerJournalfoeringService,
         dokDistFordelingClient = dokDistFordelingClient,
-        dokumentEnhetRepository = dokumentEnhetRepository
+        dokumentEnhetRepository = dokumentEnhetRepository,
+        journalfoeringService = journalfoeringService,
     )
 
     @Test
@@ -41,7 +44,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         val brevMottakerDistribusjonSlot = slot<BrevMottakerDistribusjon>()
         every {
-            brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
+            journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker,
                 hoveddokument = dokumentEnhet.hovedDokument!!,
                 vedleggDokumentList = dokumentEnhet.vedlegg,
@@ -60,7 +63,7 @@ internal class BrevMottakerDistribusjonServiceTest {
         every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
         assertFerdigDistribuert(brevMottakerDistribusjon)
     }
 
@@ -72,7 +75,7 @@ internal class BrevMottakerDistribusjonServiceTest {
 
         val brevMottakerDistribusjonSlot = slot<BrevMottakerDistribusjon>()
         every {
-            brevMottakerJournalfoeringService.opprettJournalpostForBrevMottaker(
+            journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker,
                 hoveddokument = dokumentEnhet.hovedDokument!!,
                 journalfoeringData = dokumentEnhet.journalfoeringData
@@ -90,7 +93,7 @@ internal class BrevMottakerDistribusjonServiceTest {
         every { dokumentEnhetRepository.findById(any()) } returns dokumentEnhet
 
         val brevMottakerDistribusjon =
-            brevMottakerDistribusjonService.distribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
+            brevMottakerDistribusjonService.journalfoerOgDistribuerDokumentEnhetTilBrevMottaker(brevMottaker, dokumentEnhet)
         assertFerdigDistribuert(brevMottakerDistribusjon)
     }
 
