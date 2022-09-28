@@ -47,7 +47,7 @@ class DokumentEnhetService(
         }
 
         return dokumentEnhetRepository.saveOrUpdate(
-            dokumentEnhetDistribusjonService.distribuerDokumentEnhet(
+            dokumentEnhetDistribusjonService.journalfoerOgDistribuerDokumentEnhet(
                 dokumentEnhet
             )
         )
