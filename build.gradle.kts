@@ -63,7 +63,7 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache")
 
-    implementation("com.github.navikt:klage-kodeverk:1.0.4")
+    implementation("com.github.navikt:klage-kodeverk:1.1.1")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
