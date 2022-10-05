@@ -1,7 +1,6 @@
 package no.nav.klage.dokument.repositories
 
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -215,7 +214,6 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                         value = rs.getString("part_id_value")
                     ),
                     navn = rs.getString("navn"),
-                    rolle = Rolle.valueOf(rs.getString("rolle")),
                 )
             }, dokumentEnhetId
         )
@@ -282,7 +280,6 @@ class DokumentEnhetRepository(private val jdbcTemplate: JdbcTemplate) {
                     "part_id_type_id" to brevMottaker.partId.type.id,
                     "part_id_value" to brevMottaker.partId.value,
                     "navn" to brevMottaker.navn,
-                    "rolle" to brevMottaker.rolle.name,
                     "dokumentenhet_id" to dokumentEnhetId,
                 )
             )

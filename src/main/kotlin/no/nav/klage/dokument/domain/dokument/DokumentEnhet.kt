@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.domain.dokument
 
-import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.kodeverk.DokumentType
@@ -39,10 +38,6 @@ data class DokumentEnhet(
         } else throw DokumentEnhetNotValidException("DokumentEnhet ikke distribuert til alle brevmottakere")
 
     fun harHovedDokument(): Boolean = hovedDokument != null
-
-    fun getJournalpostIdHovedadressat(): String? =
-        brevMottakere.find { it.rolle == Rolle.HOVEDADRESSAT }
-            ?.let { findBrevMottakerDistribusjon(it)?.journalpostId?.value }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
