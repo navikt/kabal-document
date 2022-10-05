@@ -49,7 +49,6 @@ class DokumentEnhetMapper {
             },
             avsluttet = dokumentEnhet.avsluttet,
             modified = dokumentEnhet.modified,
-            journalpostIdHovedadressat = dokumentEnhet.getJournalpostIdHovedadressat()
         )
     }
 
@@ -58,11 +57,10 @@ class DokumentEnhetMapper {
             dokumentEnhet.brevMottakere.map {
                 val brevMottakerDistribusjon = dokumentEnhet.findBrevMottakerDistribusjon(it)
                 BrevMottakerWithJoarkAndDokDistInfo(
-                    it.partId,
-                    it.navn,
-                    it.rolle,
-                    brevMottakerDistribusjon!!.journalpostId,
-                    brevMottakerDistribusjon.dokdistReferanse
+                    partId = it.partId,
+                    navn = it.navn,
+                    journalpostId = brevMottakerDistribusjon!!.journalpostId,
+                    dokdistReferanse = brevMottakerDistribusjon.dokdistReferanse
                 )
             }
         )
@@ -87,7 +85,6 @@ class DokumentEnhetMapper {
         BrevMottakerView(
             partId = mapToPartIdView(brevMottaker.partId),
             navn = brevMottaker.navn,
-            rolle = brevMottaker.rolle.name
         )
 
     private fun mapToBrevMottakerDistribusjonView(brevMottakerDistribusjon: BrevMottakerDistribusjon): BrevMottakerDistribusjonView =

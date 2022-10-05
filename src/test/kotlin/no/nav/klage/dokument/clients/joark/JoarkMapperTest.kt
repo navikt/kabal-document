@@ -3,12 +3,11 @@ package no.nav.klage.dokument.clients.joark
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import java.time.LocalDateTime
@@ -85,7 +84,6 @@ internal class JoarkMapperTest {
         id = BREVMOTTAGER_ID,
         partId = sakenGjelder,
         navn = NAVN,
-        rolle = Rolle.HOVEDADRESSAT
     )
 
     private val hovedDokument = Dokument(

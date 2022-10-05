@@ -5,7 +5,6 @@ import no.nav.klage.dokument.api.input.DokumentInput
 import no.nav.klage.dokument.api.input.JournalfoeringDataInput
 import no.nav.klage.dokument.api.input.PartIdInput
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -31,8 +30,6 @@ class DokumentEnhetInputMapper {
             BrevMottaker(
                 partId = mapPartIdInput(brevMottakerInput.partId),
                 navn = brevMottakerInput.navn,
-                rolle = Rolle.valueOf(brevMottakerInput.rolle)
-
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)

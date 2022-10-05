@@ -1,7 +1,6 @@
 package no.nav.klage.dokument
 
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.kodeverk.Rolle
 import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
@@ -37,7 +36,6 @@ fun ferdigDistribuertDokumentEnhet(): DokumentEnhet {
                     value = "01011012345"
                 ),
                 navn = "Test Person",
-                rolle = Rolle.KOPIADRESSAT
             ),
             BrevMottaker(
                 partId = PartId(
@@ -45,7 +43,6 @@ fun ferdigDistribuertDokumentEnhet(): DokumentEnhet {
                     value = "20022012345"
                 ),
                 navn = "Mottaker Person",
-                rolle = Rolle.HOVEDADRESSAT
             )
         ),
         hovedDokument = OpplastetDokument(
@@ -101,7 +98,6 @@ fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere() = DokumentEnhet(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
@@ -109,7 +105,6 @@ fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere() = DokumentEnhet(
                 value = "20022012345"
             ),
             navn = "Mottaker Person",
-            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(
@@ -155,7 +150,6 @@ fun ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere() = DokumentEnhet(
                 value = "01011012345"
             ),
             navn = "Test Person",
-            rolle = Rolle.KOPIADRESSAT
         ),
         BrevMottaker(
             partId = PartId(
@@ -163,7 +157,6 @@ fun ikkeDistribuertDokumentEnhetUtenVedleggMedToBrevMottakere() = DokumentEnhet(
                 value = "20022012345"
             ),
             navn = "Mottaker Person",
-            rolle = Rolle.HOVEDADRESSAT
         )
     ),
     hovedDokument = OpplastetDokument(
@@ -207,7 +200,6 @@ fun journalfoertMenIkkeDistribuertDokumentEnhetMedEnBrevMottakere(
                     value = "01011012345"
                 ),
                 navn = "Test Person",
-                rolle = Rolle.HOVEDADRESSAT
             )
         ),
         hovedDokument = OpplastetDokument(
@@ -270,7 +262,6 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
                     value = "01011012345"
                 ),
                 navn = "Test Person",
-                rolle = Rolle.KOPIADRESSAT
             ),
             BrevMottaker(
                 partId = PartId(
@@ -278,7 +269,6 @@ fun delvisDistribuertDokumentEnhetMedToBrevMottakere(
                     value = "20022012345"
                 ),
                 navn = "Mottaker Person",
-                rolle = Rolle.HOVEDADRESSAT
             )
         ),
         hovedDokument = OpplastetDokument(
