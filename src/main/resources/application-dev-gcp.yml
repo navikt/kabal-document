@@ -2,7 +2,7 @@ TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851
 SECURITY_TOKEN_SERVICE_REST_URL: https://api-gw-q1.oera.no/security-token-service
 
 SAF_BASE_URL: https://saf.dev-fss-pub.nais.io/
-SAF_APP_CLIENT_ID: dev-fss.teamdokumenthandtering.saf
+SAF_SCOPE: dev-fss.teamdokumenthandtering.saf-q1
 
 DOKARKIV_CLIENT_ID: 972814f3-8bdf-44f8-a191-c2ed00020b54
 

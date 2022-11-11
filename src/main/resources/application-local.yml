@@ -7,7 +7,7 @@ AZURE_APP_WELL_KNOWN_URL: https://login.microsoftonline.com/966ac572-f5b7-4bbe-a
 STS_APIKEY: 789
 
 SAF_BASE_URL: local
-SAF_APP_CLIENT_ID: uu-id
+SAF_SCOPE: uu-id
 nais:
   cluster:
     name: local
