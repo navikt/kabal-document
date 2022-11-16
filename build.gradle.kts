@@ -18,23 +18,11 @@ val shedlockVersion = "4.42.0"
 val archunitVersion = "1.0.0"
 val verapdfVersion = "1.22.2"
 
-val githubUser: String by project
-val githubPassword: String by project
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
-    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
-    maven {
-        url = uri("https://maven.pkg.github.com/navikt/simple-slack-poster")
-        credentials {
-            username = githubUser
-            password = githubPassword
-        }
-    }
-    jcenter()
-    maven("https://packages.confluent.io/maven/")
     maven("https://jitpack.io")
 }
 
