@@ -61,8 +61,6 @@ management:
     tags:
       application: ${spring.application.name}
 
-SERVICE_USER_USERNAME: srvklage-saksbeh
-
 no.nav.security.jwt:
   issuer:
     aad:
@@ -70,14 +68,6 @@ no.nav.security.jwt:
       accepted_audience: ${AZURE_APP_CLIENT_ID}
   client:
     registration:
-      saf-onbehalfof:
-        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: api://${SAF_SCOPE}/.default
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-jwk: ${AZURE_APP_JWK}
-          client-auth-method: private_key_jwt
       saf-maskintilmaskin:
         token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -86,18 +76,10 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-jwk: ${AZURE_APP_JWK}
           client-auth-method: private_key_jwt
-      dokarkiv-onbehalfof:
+      dokarkiv-maskintilmaskin:
         token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: api://${DOKARKIV_CLIENT_ID}/.default
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-jwk: ${AZURE_APP_JWK}
-          client-auth-method: private_key_jwt
-      kabal-file-api-onbehalfof:
-        token-endpoint-url: https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: api://${NAIS_CLUSTER_NAME}.${NAIS_NAMESPACE}.${KABAL_FILE_API_APP_NAME}/.default
+        grant-type: client_credentials
+        scope: api://${DOKARKIV_SCOPE}/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-jwk: ${AZURE_APP_JWK}
@@ -113,8 +95,6 @@ no.nav.security.jwt:
 
 navCallId: Nav-Callid
 navConsumerId: Nav-Consumer-Id
-
-SERVICE_USER_PASSWORD: itest
 
 KABAL_FILE_API_BASE_URL: http://kabal-file-api
 KABAL_FILE_API_APP_NAME: kabal-file-api

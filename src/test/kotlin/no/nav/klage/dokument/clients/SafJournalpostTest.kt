@@ -25,8 +25,7 @@ internal class SafJournalpostTest {
 
     @BeforeEach
     fun before() {
-        every { tokenUtilMock.getStsSystembrukerToken() } returns "abc"
-        every { tokenUtilMock.getSaksbehandlerAccessTokenWithSafScope() } returns "abc"
+        every { tokenUtilMock.getAppAccessTokenWithDokarkivScope() } returns "abc"
         every { tokenUtilMock.getAppAccessTokenWithSafScope() } returns "abc"
         every { tracerMock.currentSpan().context().traceIdString() } returns "def"
     }

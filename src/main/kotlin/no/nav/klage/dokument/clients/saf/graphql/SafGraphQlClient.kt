@@ -25,7 +25,6 @@ class SafGraphQlClient(
 
     @Retryable
     fun getJournalpostAsSystembruker(journalpostId: String): Journalpost? {
-        //TODO: Her kan vi vel bruke det nye auth-opplegget til Saf?
         return runWithTimingAndLogging {
             val token = tokenUtil.getAppAccessTokenWithSafScope()
             getJournalpostWithToken(journalpostId, token)
