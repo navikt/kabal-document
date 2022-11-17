@@ -23,13 +23,13 @@ class TokenUtil(
     }
 
     fun getAppAccessTokenWithSafScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["dokarkiv-maskintilmaskin"]
+        val clientProperties = clientConfigurationProperties.registration["saf-maskintilmaskin"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.accessToken
     }
 
     fun getAppAccessTokenWithDokarkivScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["saf-maskintilmaskin"]
+        val clientProperties = clientConfigurationProperties.registration["dokarkiv-maskintilmaskin"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.accessToken
     }
