@@ -15,7 +15,7 @@ val testContainersVersion = "1.17.6"
 val tikaVersion = "2.6.0"
 val threeTenExtraVersion = "1.7.1"
 val shedlockVersion = "4.42.0"
-val archunitVersion = "1.0.0"
+val archunitVersion = "1.0.1"
 val verapdfVersion = "1.22.2"
 
 
