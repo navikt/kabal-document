@@ -37,11 +37,6 @@ class DefaultJoarkGateway(
             ).journalpostId
         )
 
-
-    override fun cancelJournalpost(journalpostId: JournalpostId): String {
-        return joarkClient.cancelJournalpost(journalpostId.value)
-    }
-
     override fun finalizeJournalpostAsSystemUser(journalpostId: JournalpostId, journalfoerendeEnhet: String): String {
         //TODO: Hva returnerer dette kallet? Hva er den String'en?
         return joarkClient.finalizeJournalpostAsSystemUser(journalpostId.value, journalfoerendeEnhet)

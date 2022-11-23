@@ -1,10 +1,9 @@
 TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b
-SECURITY_TOKEN_SERVICE_REST_URL: https://api-gw.oera.no/security-token-service
 
 SAF_BASE_URL: https://saf.prod-fss-pub.nais.io/
 SAF_SCOPE: prod-fss.teamdokumenthandtering.saf
 
-DOKARKIV_CLIENT_ID: 162b3255-2f72-4399-8f7a-244add9ffaac
+DOKARKIV_SCOPE: prod-fss.teamdokumenthandtering.dokarkiv/
 
-JOARK_SERVICE_URL: https://api-gw.oera.no/dokarkiv/rest/journalpostapi/v1/journalpost
-DOKDIST_SERVICE_URL: https://api-gw.oera.no/dokdistfordeling/rest/v1/distribuerjournalpost
+JOARK_SERVICE_URL: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
+DOKDIST_SERVICE_URL: https://dokdistfordeling.prod-fss-pub.nais.io/rest/v1/distribuerjournalpost

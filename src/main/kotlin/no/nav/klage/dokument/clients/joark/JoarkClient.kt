@@ -26,8 +26,7 @@ class JoarkClient(
     ): JournalpostResponse {
         val journalpostResponse = joarkWebClient.post()
             .uri("?forsoekFerdigstill=true")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getStsSystembrukerToken()}")
-            .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(journalpost)
             .retrieve()
@@ -40,30 +39,10 @@ class JoarkClient(
         return journalpostResponse
     }
 
-    fun cancelJournalpost(journalpostId: String): String {
-        val response = joarkWebClient.patch()
-            .uri("/${journalpostId}/feilregistrer/settStatusAvbryt")
-            .header("Nav-Consumer-Token", "Bearer ${tokenUtil.getStsSystembrukerToken()}")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithJoarkScope()}")
-            .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(AvbrytJournalpostPayload(journalpostId))
-            .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
-            ?: throw RuntimeException("Journalpost with id $journalpostId could not be cancelled.")
-
-        logger.debug("Journalpost with id $journalpostId was succesfully cancelled.")
-
-        return response
-    }
-
-
     fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String): String {
         val response = joarkWebClient.patch()
             .uri("/${journalpostId}/ferdigstill")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getStsSystembrukerToken()}")
-            .header("Nav-Call-Id", tracer.currentSpan().context().traceIdString())
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(FerdigstillJournalpostPayload(journalfoerendeEnhet))
             .retrieve()

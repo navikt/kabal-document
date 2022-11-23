@@ -11,6 +11,5 @@ interface JoarkGateway {
         brevMottaker: BrevMottaker
     ): JournalpostId
 
-    fun cancelJournalpost(journalpostId: JournalpostId): String
     fun finalizeJournalpostAsSystemUser(journalpostId: JournalpostId, journalfoerendeEnhet: String): String
 }
