@@ -5,15 +5,12 @@ val h2Version = "1.4.200"
 val tokenValidationVersion = "3.0.2"
 val logstashVersion = "7.2"
 val unleashVersion = "3.3.3"
-val pdfboxVersion = "2.0.27"
 val springRetryVersion = "2.0.0"
 val springMockkVersion = "4.0.0"
 val springDocVersion = "2.0.2"
 val testContainersVersion = "1.17.6"
-val tikaVersion = "2.6.0"
 val shedlockVersion = "4.42.0"
 val archunitVersion = "1.0.1"
-val verapdfVersion = "1.22.2"
 val ehcacheVersion = "3.10.8"
 val kodeverkVersion = "1.2.4"
 val syslog4jVersion = "1.0.0"
@@ -72,12 +69,6 @@ dependencies {
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
 
     implementation("org.springframework.retry:spring-retry:$springRetryVersion")
-
-    implementation("org.verapdf:validation-model:$verapdfVersion") {
-        exclude(group = "com.sun.xml.bind")
-    }
-    implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
-    implementation("org.apache.tika:tika-core:$tikaVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")

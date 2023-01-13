@@ -4,7 +4,6 @@ import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
-import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.PartIdType
@@ -12,9 +11,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class JoarkMapper(
-    private val pdfUtils: PdfUtils
-) {
+class JoarkMapper {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -91,7 +88,9 @@ class JoarkMapper(
                 dokumentVarianter = listOf(
                     DokumentVariant(
                         filnavn = mellomlagretDokument.title,
-                        filtype = if (pdfUtils.pdfByteArrayIsPdfa(mellomlagretDokument.content)) "PDFA" else "PDF",
+                        //Hardcode to 'PDF' for now. Had some issues with Vera (old) and Spring Boot (new).
+                        //Might work in the future if we need it.
+                        filtype = "PDF",
                         variantformat = "ARKIV",
                         fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
                     )
