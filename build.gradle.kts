@@ -7,7 +7,7 @@ val logstashVersion = "7.2"
 val unleashVersion = "3.3.3"
 val pdfboxVersion = "2.0.27"
 val springRetryVersion = "2.0.0"
-val springMockkVersion = "3.1.2"
+val springMockkVersion = "4.0.0"
 val springDocVersion = "2.0.2"
 val testContainersVersion = "1.17.6"
 val tikaVersion = "2.6.0"
@@ -16,7 +16,12 @@ val shedlockVersion = "4.42.0"
 val archunitVersion = "1.0.1"
 val verapdfVersion = "1.22.2"
 val ehcacheVersion = "3.10.8"
-
+val kodeverkVersion = "1.2.4"
+val reactorSpringVersion = "1.0.1.RELEASE"
+val jsonschemaVersion = "1.0.39"
+val syslog4jVersion = "1.0.0"
+val commonsIOVersion = "2.11.0"
+val commonsFileuploadVersion = "1.4"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -51,14 +56,14 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
-    implementation("com.github.navikt:klage-kodeverk:v1.2.0")
+    implementation("com.github.navikt:klage-kodeverk:$kodeverkVersion")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
-    implementation("org.projectreactor:reactor-spring:1.0.1.RELEASE")
+    implementation("org.projectreactor:reactor-spring:$reactorSpringVersion")
 
     implementation("org.flywaydb:flyway-core")
     implementation("com.zaxxer:HikariCP")
@@ -70,8 +75,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.kjetland:mbknor-jackson-jsonschema_2.13:1.0.39")
-    implementation("com.papertrailapp:logback-syslog4j:1.0.0")
+    implementation("com.kjetland:mbknor-jackson-jsonschema_2.13:$jsonschemaVersion")
+    implementation("com.papertrailapp:logback-syslog4j:$syslog4jVersion")
 
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
@@ -84,8 +89,8 @@ dependencies {
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.apache.tika:tika-core:$tikaVersion")
 
-    implementation("commons-io:commons-io:2.11.0")
-    implementation("commons-fileupload:commons-fileupload:1.4")
+    implementation("commons-io:commons-io:$commonsIOVersion")
+    implementation("commons-fileupload:commons-fileupload:$commonsFileuploadVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
