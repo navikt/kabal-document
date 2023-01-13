@@ -1,15 +1,12 @@
 package no.nav.klage.dokument.service.distribusjon
 
-import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
 import no.nav.klage.dokument.clients.saf.graphql.Journalstatus
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.service.JournalfoeringService
-import no.nav.klage.dokument.service.MellomlagerService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
