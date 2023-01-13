@@ -11,17 +11,12 @@ val springMockkVersion = "4.0.0"
 val springDocVersion = "2.0.2"
 val testContainersVersion = "1.17.6"
 val tikaVersion = "2.6.0"
-val threeTenExtraVersion = "1.7.2"
 val shedlockVersion = "4.42.0"
 val archunitVersion = "1.0.1"
 val verapdfVersion = "1.22.2"
 val ehcacheVersion = "3.10.8"
 val kodeverkVersion = "1.2.4"
-val reactorSpringVersion = "1.0.1.RELEASE"
-val jsonschemaVersion = "1.0.39"
 val syslog4jVersion = "1.0.0"
-val commonsIOVersion = "2.11.0"
-val commonsFileuploadVersion = "1.4"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -61,8 +56,6 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
-    implementation("org.projectreactor:reactor-spring:$reactorSpringVersion")
-
     implementation("org.flywaydb:flyway-core")
     implementation("com.zaxxer:HikariCP")
     implementation("org.postgresql:postgresql")
@@ -85,9 +78,6 @@ dependencies {
     }
     implementation("org.apache.pdfbox:pdfbox:$pdfboxVersion")
     implementation("org.apache.tika:tika-core:$tikaVersion")
-
-    implementation("commons-io:commons-io:$commonsIOVersion")
-    implementation("commons-fileupload:commons-fileupload:$commonsFileuploadVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
