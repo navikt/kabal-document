@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.joark
 
-import brave.Tracer
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -13,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient
 class JoarkClient(
     private val joarkWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    private val tracer: Tracer
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")

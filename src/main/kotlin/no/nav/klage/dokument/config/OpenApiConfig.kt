@@ -1,7 +1,7 @@
 package no.nav.klage.dokument.config
 
 import no.nav.klage.dokument.api.controller.DokumentEnhetController
-import org.springdoc.core.GroupedOpenApi
+import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

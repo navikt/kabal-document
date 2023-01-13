@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.klagefileapi
 
-import brave.Tracer
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.http.HttpHeaders
@@ -12,7 +11,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class FileApiClient(
     private val fileWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    private val tracer: Tracer
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
