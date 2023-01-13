@@ -45,8 +45,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("org.threeten:threeten-extra:$threeTenExtraVersion")
-
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -75,7 +73,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.kjetland:mbknor-jackson-jsonschema_2.13:$jsonschemaVersion")
     implementation("com.papertrailapp:logback-syslog4j:$syslog4jVersion")
 
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
