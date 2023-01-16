@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.dokdistfordeling
 
-import brave.Tracer
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -13,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class DokDistFordelingClient(
     private val dokDistWebClient: WebClient,
-    private val tracer: Tracer,
     private val tokenUtil: TokenUtil
 ) {
     companion object {

@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.saf.graphql
 
-import brave.Tracer
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -14,7 +13,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 class SafGraphQlClient(
     private val safWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    private val tracer: Tracer,
 ) {
 
     companion object {

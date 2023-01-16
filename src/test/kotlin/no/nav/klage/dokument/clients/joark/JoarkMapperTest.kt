@@ -1,9 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import io.mockk.every
-import io.mockk.mockk
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.util.PdfUtils
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -15,11 +12,7 @@ import java.util.*
 
 internal class JoarkMapperTest {
 
-    private val pdfUtils = mockk<PdfUtils>()
-
-    private val joarkMapper = JoarkMapper(
-        pdfUtils = pdfUtils
-    )
+    private val joarkMapper = JoarkMapper()
 
     private val FNR = "FNR"
     private val SAKFAGSAKID = "SAKFAGSAKID"
@@ -39,7 +32,7 @@ internal class JoarkMapperTest {
     private val NAVN = "NAVN"
     private val TEMA = Tema.OMS
     private val SAKFAGSYSTEM = Fagsystem.K9
-    private val PDFA = "PDFA"
+    private val PDF = "PDF"
     private val ARKIV = "ARKIV"
 
     private val sakenGjelder = PartId(
@@ -92,7 +85,7 @@ internal class JoarkMapperTest {
         dokumentVarianter = listOf(
             DokumentVariant(
                 filnavn = MELLOMLAGER_TITLE,
-                filtype = PDFA,
+                filtype = PDF,
                 fysiskDokument = Base64.getEncoder().encodeToString(ByteArray(SIZE.toInt())),
                 variantformat = ARKIV
             )
@@ -105,7 +98,7 @@ internal class JoarkMapperTest {
         dokumentVarianter = listOf(
             DokumentVariant(
                 filnavn = MELLOMLAGER_VEDLEGG_TITLE,
-                filtype = PDFA,
+                filtype = PDF,
                 fysiskDokument = Base64.getEncoder().encodeToString(ByteArray(SIZE.toInt())),
                 variantformat = ARKIV
             )
@@ -171,7 +164,6 @@ internal class JoarkMapperTest {
 
     @Test
     fun `createJournalpost works as expected with one documents`() {
-        every { pdfUtils.pdfByteArrayIsPdfa(any()) } returns true
 
         val resultingJournalpost = joarkMapper.createJournalpost(
             journalfoeringData = journalfoeringData,
@@ -185,7 +177,6 @@ internal class JoarkMapperTest {
 
     @Test
     fun `createJournalpost works as expected with two documents`() {
-        every { pdfUtils.pdfByteArrayIsPdfa(any()) } returns true
 
         val resultingJournalpost = joarkMapper.createJournalpost(
             journalfoeringData = journalfoeringData,
