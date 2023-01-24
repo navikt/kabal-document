@@ -9,7 +9,7 @@ import java.util.*
 @Entity
 @Table(name = "brevmottakerdist", schema = "document")
 @DynamicUpdate
-data class BrevMottakerDistribusjon(
+class BrevMottakerDistribusjon(
     @Id
     val id: UUID = UUID.randomUUID(),
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)

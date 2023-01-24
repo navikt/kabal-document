@@ -7,7 +7,7 @@ import java.util.*
 
 @Entity
 @Table(name = "journalfoeringdata", schema = "document")
-data class JournalfoeringData(
+class JournalfoeringData(
     @Id
     val id: UUID = UUID.randomUUID(),
     @Embedded

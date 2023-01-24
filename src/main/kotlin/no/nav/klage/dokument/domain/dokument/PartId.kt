@@ -6,7 +6,7 @@ import jakarta.persistence.Embeddable
 import no.nav.klage.kodeverk.PartIdType
 
 @Embeddable
-data class PartId(
+class PartId(
     @Column(name = "type")
     @Convert(converter = PartIdTypeConverter::class)
     val type: PartIdType,

@@ -3,7 +3,6 @@ package no.nav.klage.dokument.service
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -33,11 +32,9 @@ class DokumentEnhetService(
     ): DokumentEnhet {
         val dokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhetId)
 
-        if (dokumentEnhet.isAvsluttet()) return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
-
-        //Sjekker om fil er lastet opp til mellomlager
-        if (!dokumentEnhet.harHovedDokument()) {
-            throw DokumentEnhetNotValidException("Hoveddokument er ikke lastet opp")
+        if (dokumentEnhet.isAvsluttet()) {
+            logger.debug("Dokumentenhet $dokumentEnhetId already finalized.")
+            return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
         }
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->

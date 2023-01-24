@@ -5,7 +5,7 @@ import java.util.*
 
 @Entity
 @Table(name = "brevmottaker", schema = "document")
-data class BrevMottaker(
+class BrevMottaker(
     @Id
     val id: UUID = UUID.randomUUID(),
     @Embedded

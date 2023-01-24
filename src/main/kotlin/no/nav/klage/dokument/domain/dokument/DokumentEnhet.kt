@@ -12,7 +12,7 @@ import java.util.*
 @Entity
 @Table(name = "dokumentenhet", schema = "document")
 @DynamicUpdate
-data class DokumentEnhet(
+class DokumentEnhet(
     @Id
     val id: UUID = UUID.randomUUID(),
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
