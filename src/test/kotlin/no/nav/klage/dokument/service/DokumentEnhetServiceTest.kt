@@ -112,7 +112,7 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
     }
-
+    //Mer eksplisitt verifisering av at tjenester ikke er kalt
     @Test
     fun `journalfoert og distribuert dokumentEnhet skal ikke kalle på andre funksjoner`() {
 

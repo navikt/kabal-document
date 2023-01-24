@@ -46,6 +46,7 @@ class DokumentEnhetService(
                             brevMottakerDistribusjon = brevMottakerDistribusjon,
                             dokumentEnhet = dokumentEnhet
                         )
+                    dokumentEnhet.modified = LocalDateTime.now()
                     dokumentEnhetRepository.save(dokumentEnhet)
                 } catch (t: Throwable) {
                     logger.error(
@@ -61,10 +62,19 @@ class DokumentEnhetService(
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
             if (brevMottakerDistribusjon.ferdigstiltIJoark == null) {
-                logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
-                brevMottakerDistribusjon.ferdigstiltIJoark =
-                    journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon = brevMottakerDistribusjon)
-                dokumentEnhetRepository.save(dokumentEnhet)
+                try {
+                    logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
+                    brevMottakerDistribusjon.ferdigstiltIJoark =
+                        journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon = brevMottakerDistribusjon)
+                    dokumentEnhet.modified = LocalDateTime.now()
+                    dokumentEnhetRepository.save(dokumentEnhet)
+                } catch (t: Throwable) {
+                    logger.error(
+                        "Failed to finalize journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}, journalpost ${brevMottakerDistribusjon.journalpostId}",
+                        t
+                    )
+                    throw t
+                }
             } else {
                 logger.debug("Journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already finalized.")
             }
@@ -80,6 +90,7 @@ class DokumentEnhetService(
                                 journalpostId = brevMottakerDistribusjon.journalpostId!!,
                                 dokumentType = dokumentEnhet.dokumentType
                             )
+                        dokumentEnhet.modified = LocalDateTime.now()
                         dokumentEnhetRepository.save(dokumentEnhet)
                     } catch (t: Throwable) {
                         logger.error(
@@ -96,7 +107,9 @@ class DokumentEnhetService(
 
         if (dokumentEnhet.isProcessedForAll()) {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er behandlet for alle mottakere, markerer som ferdig")
-            dokumentEnhet.avsluttet = LocalDateTime.now()
+            val timestamp = LocalDateTime.now()
+            dokumentEnhet.avsluttet = timestamp
+            dokumentEnhet.modified = timestamp
             dokumentEnhetRepository.save(dokumentEnhet)
             slettMellomlagretDokument(dokumentEnhet)
         } else {

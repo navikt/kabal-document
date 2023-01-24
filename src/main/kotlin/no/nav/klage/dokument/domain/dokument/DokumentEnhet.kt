@@ -6,7 +6,6 @@ import jakarta.persistence.Table
 import no.nav.klage.kodeverk.DokumentType
 import org.hibernate.annotations.*
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Entity
@@ -73,8 +72,6 @@ class DokumentEnhet(
     fun findBrevMottakerDistribusjon(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
         brevMottakerDistribusjoner.find { it.brevMottaker == brevMottaker }
 
-    fun harHovedDokument(): Boolean = hovedDokument != null
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -82,15 +79,6 @@ class DokumentEnhet(
         other as DokumentEnhet
 
         if (id != other.id) return false
-        if (journalfoeringData != other.journalfoeringData) return false
-        if (brevMottakere != other.brevMottakere) return false
-        if (hovedDokument != other.hovedDokument) return false
-        //Necessary due to Hibernate list comparison bug
-        if (vedlegg != other.vedlegg && other.vedlegg != vedlegg) return false
-        if (brevMottakerDistribusjoner != other.brevMottakerDistribusjoner) return false
-        if (avsluttet?.truncatedTo(ChronoUnit.MILLIS) != other.avsluttet?.truncatedTo(ChronoUnit.MILLIS)) return false
-        if (modified.truncatedTo(ChronoUnit.MILLIS) != other.modified.truncatedTo(ChronoUnit.MILLIS)) return false
-        if (shouldBeDistributed != other.shouldBeDistributed) return false
 
         return true
     }
