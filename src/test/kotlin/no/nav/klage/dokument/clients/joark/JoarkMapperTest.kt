@@ -1,6 +1,10 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -53,7 +57,7 @@ internal class JoarkMapperTest {
         tilleggsopplysning = null
     )
 
-    private val opplastetDokument = OpplastetDokument(
+    private val opplastetHovedDokument = OpplastetHoveddokument(
         id = OPPLASTET_DOKUMENT_ID,
         mellomlagerId = MELLOMLAGER_ID.toString(),
         opplastet = OPPLASTET,
@@ -61,13 +65,13 @@ internal class JoarkMapperTest {
         name = DOKUMENT_NAME
     )
 
-    private val mellomlagretDokument = MellomlagretDokument(
+    private val mellomlagretDokument = JournalfoeringService.MellomlagretDokument(
         title = MELLOMLAGER_TITLE,
         content = ByteArray(SIZE.toInt()),
         contentType = MediaType.APPLICATION_JSON
     )
 
-    private val mellomlagretVedleggDokument = MellomlagretDokument(
+    private val mellomlagretVedleggDokument = JournalfoeringService.MellomlagretDokument(
         title = MELLOMLAGER_VEDLEGG_TITLE,
         content = ByteArray(SIZE.toInt()),
         contentType = MediaType.APPLICATION_JSON
@@ -163,11 +167,11 @@ internal class JoarkMapperTest {
     )
 
     @Test
-    fun `createJournalpost works as expected with one documents`() {
+    fun `createJournalpost works as expected with one document`() {
 
         val resultingJournalpost = joarkMapper.createJournalpost(
             journalfoeringData = journalfoeringData,
-            opplastetDokument = opplastetDokument,
+            opplastetHovedDokument = opplastetHovedDokument,
             hovedDokument = mellomlagretDokument,
             brevMottaker = brevMottaker
         )
@@ -180,7 +184,7 @@ internal class JoarkMapperTest {
 
         val resultingJournalpost = joarkMapper.createJournalpost(
             journalfoeringData = journalfoeringData,
-            opplastetDokument = opplastetDokument,
+            opplastetHovedDokument = opplastetHovedDokument,
             hovedDokument = mellomlagretDokument,
             vedleggDokumentList = listOf(mellomlagretVedleggDokument),
             brevMottaker = brevMottaker

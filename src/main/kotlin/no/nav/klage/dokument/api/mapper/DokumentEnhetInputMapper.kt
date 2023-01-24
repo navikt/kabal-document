@@ -22,8 +22,8 @@ class DokumentEnhetInputMapper {
         private val secureLogger = getSecureLogger()
     }
 
-    fun mapBrevMottakereInput(brevMottakere: List<BrevMottakerInput>): List<BrevMottaker> =
-        brevMottakere.map { mapBrevMottakerInput(it) }
+    fun mapBrevMottakereInput(brevMottakereInput: List<BrevMottakerInput>): Set<BrevMottaker> =
+        brevMottakereInput.map { mapBrevMottakerInput(it) }.toSet()
 
     fun mapBrevMottakerInput(brevMottakerInput: BrevMottakerInput): BrevMottaker =
         try {
@@ -56,16 +56,24 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
 
-    fun mapDokumentInput(dokument: DokumentInput.Dokument): OpplastetDokument =
-        OpplastetDokument(
+    fun mapDokumentInputToHoveddokument(dokument: DokumentInput.Dokument): OpplastetHoveddokument =
+        OpplastetHoveddokument(
             mellomlagerId = dokument.mellomlagerId,
             opplastet = dokument.opplastet,
             size = dokument.size,
             name = dokument.name
         )
 
-    private fun mapPartIdInput(partIdInput: PartIdInput) =
-        try {
+    fun mapDokumentInputToVedlegg(dokument: DokumentInput.Dokument): OpplastetVedlegg =
+        OpplastetVedlegg(
+            mellomlagerId = dokument.mellomlagerId,
+            opplastet = dokument.opplastet,
+            size = dokument.size,
+            name = dokument.name
+        )
+
+    private fun mapPartIdInput(partIdInput: PartIdInput): PartId {
+        return try {
             PartId(
                 type = if (partIdInput.partIdTypeId != null) PartIdType.of(partIdInput.partIdTypeId)
                 else PartIdType.valueOf(partIdInput.type!!),
@@ -75,6 +83,5 @@ class DokumentEnhetInputMapper {
             logger.warn("Data fra klient er ikke gyldig", iae)
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
-
-
+    }
 }

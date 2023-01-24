@@ -1,9 +1,7 @@
 package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.clients.klagefileapi.FileApiClient
-import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
 import no.nav.klage.dokument.util.getLogger
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 
 @Service
