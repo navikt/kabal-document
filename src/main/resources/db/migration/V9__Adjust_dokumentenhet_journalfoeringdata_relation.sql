@@ -9,7 +9,7 @@ ALTER TABLE document.journalfoeringdata
 
 ALTER TABLE document.journalfoeringdata
 DROP
-COLUMN dokumentenhet_id;
+COLUMN IF EXISTS dokumentenhet_id;
 
 -- Hoveddokument
 ALTER TABLE document.dokumentenhet
@@ -33,13 +33,13 @@ ALTER TABLE document.brevmottakerdist
 --Replaced by sak_fagsystem_id
 ALTER TABLE document.journalfoeringdata
 DROP
-COLUMN sak_fagsystem;
+COLUMN IF EXISTS sak_fagsystem;
 
     --Deprecated
 ALTER TABLE document.dokumentenhet
 DROP
-COLUMN eier;
+COLUMN IF EXISTS eier;
     --Deprecated
 ALTER TABLE document.brevmottaker
 DROP
-COLUMN rolle;
+COLUMN IF EXISTS rolle;
