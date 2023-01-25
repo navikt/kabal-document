@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
@@ -22,6 +23,7 @@ internal class DokumentEnhetServiceTest {
     private val journalfoeringService = mockk<JournalfoeringService>()
     private val dokumentDistribusjonService = mockk<DokumentDistribusjonService>()
     private val mellomlagerService = mockk<MellomlagerService>()
+    private val brevMottakerDistribusjonRepository = mockk<BrevMottakerDistribusjonRepository>()
 
     val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
     val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
@@ -96,11 +98,13 @@ internal class DokumentEnhetServiceTest {
         journalfoeringService = journalfoeringService,
         dokumentDistribusjonService = dokumentDistribusjonService,
         mellomlagerService = mellomlagerService,
+        brevMottakerDistribusjonRepository = brevMottakerDistribusjonRepository
     )
 
     @BeforeEach
     fun setup() {
         every { dokumentEnhetRepository.save(any()) } returns baseDokumentEnhet
+        every { brevMottakerDistribusjonRepository.save(any()) } returns brevMottakerDistribusjon1
         every {
             journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker1,

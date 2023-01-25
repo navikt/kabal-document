@@ -3,6 +3,7 @@ package no.nav.klage.dokument.service
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -18,6 +19,7 @@ class DokumentEnhetService(
     private val journalfoeringService: JournalfoeringService,
     private val dokumentDistribusjonService: DokumentDistribusjonService,
     private val mellomlagerService: MellomlagerService,
+    private val brevMottakerDistribusjonRepository: BrevMottakerDistribusjonRepository
 
     ) {
 
@@ -49,8 +51,9 @@ class DokumentEnhetService(
                             brevMottakerDistribusjon = brevMottakerDistribusjon,
                             dokumentEnhet = dokumentEnhet
                         )
-                    dokumentEnhet.modified = LocalDateTime.now()
-                    dokumentEnhetRepository.save(dokumentEnhet)
+//                    dokumentEnhet.modified = LocalDateTime.now()
+                    brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+//                    dokumentEnhetRepository.save(dokumentEnhet)
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to create journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
@@ -72,8 +75,9 @@ class DokumentEnhetService(
                     logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
                     brevMottakerDistribusjon.ferdigstiltIJoark =
                         journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon = brevMottakerDistribusjon)
-                    dokumentEnhet.modified = LocalDateTime.now()
-                    dokumentEnhetRepository.save(dokumentEnhet)
+//                    dokumentEnhet.modified = LocalDateTime.now()
+//                    dokumentEnhetRepository.save(dokumentEnhet)
+                    brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to finalize journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}, journalpost ${brevMottakerDistribusjon.journalpostId}",
@@ -100,8 +104,9 @@ class DokumentEnhetService(
                                 journalpostId = brevMottakerDistribusjon.journalpostId!!,
                                 dokumentType = dokumentEnhet.dokumentType
                             )
-                        dokumentEnhet.modified = LocalDateTime.now()
-                        dokumentEnhetRepository.save(dokumentEnhet)
+//                        dokumentEnhet.modified = LocalDateTime.now()
+                        brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+//                        dokumentEnhetRepository.save(dokumentEnhet)
                     } catch (t: Throwable) {
                         logger.error(
                             "Failed to distribute journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
