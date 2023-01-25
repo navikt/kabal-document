@@ -21,7 +21,7 @@ class DokumentEnhetService(
     private val mellomlagerService: MellomlagerService,
     private val brevMottakerDistribusjonRepository: BrevMottakerDistribusjonRepository
 
-    ) {
+) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -51,9 +51,7 @@ class DokumentEnhetService(
                             brevMottakerDistribusjon = brevMottakerDistribusjon,
                             dokumentEnhet = dokumentEnhet
                         )
-//                    dokumentEnhet.modified = LocalDateTime.now()
                     brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
-//                    dokumentEnhetRepository.save(dokumentEnhet)
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to create journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
@@ -75,8 +73,6 @@ class DokumentEnhetService(
                     logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
                     brevMottakerDistribusjon.ferdigstiltIJoark =
                         journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon = brevMottakerDistribusjon)
-//                    dokumentEnhet.modified = LocalDateTime.now()
-//                    dokumentEnhetRepository.save(dokumentEnhet)
                     brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                 } catch (t: Throwable) {
                     logger.error(
@@ -104,9 +100,7 @@ class DokumentEnhetService(
                                 journalpostId = brevMottakerDistribusjon.journalpostId!!,
                                 dokumentType = dokumentEnhet.dokumentType
                             )
-//                        dokumentEnhet.modified = LocalDateTime.now()
                         brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
-//                        dokumentEnhetRepository.save(dokumentEnhet)
                     } catch (t: Throwable) {
                         logger.error(
                             "Failed to distribute journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
