@@ -39,10 +39,7 @@ class DokumentEnhetService(
             return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
         }
 
-        val journalpostIdIterator = dokumentEnhet.brevMottakerDistribusjoner.iterator()
-
-        while (journalpostIdIterator.hasNext()) {
-            val brevMottakerDistribusjon = journalpostIdIterator.next()
+        dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
             if (brevMottakerDistribusjon.journalpostId == null) {
                 try {
                     logger.debug("Creating journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
@@ -64,10 +61,7 @@ class DokumentEnhetService(
             }
         }
 
-        val ferdigstillJournalpostIterator = dokumentEnhet.brevMottakerDistribusjoner.iterator()
-
-        while (ferdigstillJournalpostIterator.hasNext()) {
-            val brevMottakerDistribusjon = ferdigstillJournalpostIterator.next()
+        dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
             if (brevMottakerDistribusjon.ferdigstiltIJoark == null) {
                 try {
                     logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
@@ -87,11 +81,7 @@ class DokumentEnhetService(
         }
 
         if (dokumentEnhet.shouldBeDistributed) {
-            val distributionIterator = dokumentEnhet.brevMottakerDistribusjoner.iterator()
-
-            while (distributionIterator.hasNext()) {
-                val brevMottakerDistribusjon = distributionIterator.next()
-
+            dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
                 if (brevMottakerDistribusjon.dokdistReferanse == null) {
                     try {
                         logger.debug("Distributing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
