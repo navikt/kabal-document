@@ -75,7 +75,7 @@ class DokumentEnhetRepositoryTest {
     fun `update DokumentEnhet works as expected`() {
         dokumentEnhetRepository.save(dokumentEnhet)
         val firstDokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
-        firstDokumentEnhet.shouldBeDistributed = false
+        firstDokumentEnhet.modified = LocalDateTime.now()
         val secondDokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
 
         assertThat(firstDokumentEnhet).isEqualTo(secondDokumentEnhet)

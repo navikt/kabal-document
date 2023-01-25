@@ -2,10 +2,12 @@ package no.nav.klage.dokument.api.mapper
 
 
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
+import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -34,7 +36,10 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
 
-    fun mapJournalfoeringDataInput(input: DokumentEnhetWithDokumentreferanserInput.JournalfoeringDataInput): JournalfoeringData =
+    fun mapJournalfoeringDataInput(
+        input: DokumentEnhetWithDokumentreferanserInput.JournalfoeringDataInput,
+        dokumentType: DokumentType
+    ): JournalfoeringData =
         try {
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
@@ -47,7 +52,8 @@ class DokumentEnhetInputMapper {
                 behandlingstema = input.behandlingstema,
                 tittel = input.tittel,
                 brevKode = input.brevKode,
-                tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) }
+                tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) },
+                journalpostType = if (dokumentType == DokumentType.NOTAT) JournalpostType.NOTAT else JournalpostType.UTGAAENDE,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)

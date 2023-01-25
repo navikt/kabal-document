@@ -54,7 +54,7 @@ internal class JoarkMapperTest {
         behandlingstema = BEHANDLINGSTEMA,
         tittel = TITTEL,
         brevKode = BREVKODE,
-        tilleggsopplysning = null
+        tilleggsopplysning = null,
     )
 
     private val opplastetHovedDokument = OpplastetHoveddokument(
@@ -113,6 +113,7 @@ internal class JoarkMapperTest {
         journalposttype = JournalpostType.UTGAAENDE,
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
+        kanal = "NAV_NO",
         tittel = TITTEL,
         avsenderMottaker = AvsenderMottaker(
             id = FNR,
@@ -142,6 +143,7 @@ internal class JoarkMapperTest {
         journalposttype = JournalpostType.UTGAAENDE,
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
+        kanal = "NAV_NO",
         tittel = TITTEL,
         avsenderMottaker = AvsenderMottaker(
             id = FNR,

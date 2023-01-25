@@ -23,12 +23,11 @@ class JoarkMapper {
         hovedDokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
-    ): Journalpost =
-        Journalpost(
-            journalposttype = JournalpostType.UTGAAENDE,
+    ): Journalpost {
+        val journalpost = Journalpost(
+            journalposttype = journalfoeringData.journalpostType,
             tema = journalfoeringData.tema,
             behandlingstema = journalfoeringData.behandlingstema,
-            avsenderMottaker = createAvsenderMottager(brevMottaker),
             sak = createSak(journalfoeringData),
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
@@ -47,6 +46,14 @@ class JoarkMapper {
                 )
             } ?: emptyList()
         )
+
+        if (journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) {
+            journalpost.avsenderMottaker = createAvsenderMottager(brevMottaker)
+            journalpost.kanal = "NAV_NO"
+        }
+
+        return journalpost
+    }
 
     private fun createAvsenderMottager(brevMottaker: BrevMottaker): AvsenderMottaker =
         AvsenderMottaker(

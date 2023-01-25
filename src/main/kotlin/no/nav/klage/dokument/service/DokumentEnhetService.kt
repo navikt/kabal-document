@@ -82,7 +82,7 @@ class DokumentEnhetService(
             }
         }
 
-        if (dokumentEnhet.shouldBeDistributed) {
+        if (dokumentEnhet.shouldBeDistributed()) {
             dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
                 if (brevMottakerDistribusjon.dokdistReferanse == null) {
                     try {
@@ -129,7 +129,7 @@ class DokumentEnhetService(
             brevMottaker = brevMottakerDistribusjon.brevMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,
             vedleggDokumentList = dokumentEnhet.vedlegg,
-            journalfoeringData = dokumentEnhet.journalfoeringData
+            journalfoeringData = dokumentEnhet.journalfoeringData,
         )
     }
 
@@ -159,7 +159,9 @@ class DokumentEnhetService(
         input: DokumentEnhetWithDokumentreferanserInput
     ): DokumentEnhet {
         logger.debug("Creating dokumentEnhet")
-        val journalfoeringData = dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData)
+        val dokumentType = DokumentType.of(input.dokumentTypeId)
+        val journalfoeringData =
+            dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData, dokumentType)
         val brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere)
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
@@ -167,7 +169,6 @@ class DokumentEnhetService(
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(it)
         } ?: emptyList()
         val brevMottakerDistribusjoner = createBrevMottakerDistribusjoner(brevMottakere, hovedokument.id)
-        val dokumentType = DokumentType.of(input.dokumentTypeId)
         return dokumentEnhetRepository.save(
             DokumentEnhet(
                 journalfoeringData = journalfoeringData,
@@ -176,7 +177,6 @@ class DokumentEnhetService(
                 hovedDokument = hovedokument,
                 vedlegg = vedlegg,
                 dokumentType = dokumentType,
-                shouldBeDistributed = dokumentType != DokumentType.NOTAT
             )
         )
     }
