@@ -48,6 +48,7 @@ class DokumentEnhetService(
                             brevMottakerDistribusjon = brevMottakerDistribusjon,
                             dokumentEnhet = dokumentEnhet
                         )
+                    brevMottakerDistribusjon.modified = LocalDateTime.now()
                     brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                 } catch (t: Throwable) {
                     logger.error(
@@ -67,6 +68,7 @@ class DokumentEnhetService(
                     logger.debug("Finalizing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
                     brevMottakerDistribusjon.ferdigstiltIJoark =
                         journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon = brevMottakerDistribusjon)
+                    brevMottakerDistribusjon.modified = LocalDateTime.now()
                     brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                 } catch (t: Throwable) {
                     logger.error(
@@ -90,6 +92,7 @@ class DokumentEnhetService(
                                 journalpostId = brevMottakerDistribusjon.journalpostId!!,
                                 dokumentType = dokumentEnhet.dokumentType
                             )
+                        brevMottakerDistribusjon.modified = LocalDateTime.now()
                         brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                     } catch (t: Throwable) {
                         logger.error(

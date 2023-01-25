@@ -23,6 +23,8 @@ class BrevMottakerDistribusjon(
     var ferdigstiltIJoark: LocalDateTime? = null,
     @Column(name = "dokdist_referanse")
     var dokdistReferanse: UUID? = null,
+    @Column(name = "modified")
+    var modified: LocalDateTime = LocalDateTime.now(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
