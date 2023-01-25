@@ -1,43 +1,76 @@
 package no.nav.klage.dokument.domain.dokument
 
-import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
-import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Table
 import no.nav.klage.kodeverk.DokumentType
+import org.hibernate.annotations.*
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 
-data class DokumentEnhet(
+@Entity
+@Table(name = "dokumentenhet", schema = "document")
+@DynamicUpdate
+class DokumentEnhet(
+    @Id
     val id: UUID = UUID.randomUUID(),
-    val eier: SaksbehandlerIdent,
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "journalfoeringdata_id", referencedColumnName = "id")
     val journalfoeringData: JournalfoeringData,
-    val brevMottakere: List<BrevMottaker>,
-    val hovedDokument: OpplastetDokument? = null,
-    val vedlegg: List<OpplastetDokument> = emptyList(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 100)
+    val brevMottakere: Set<BrevMottaker>,
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "hoveddokument_id", referencedColumnName = "id")
+    val hovedDokument: OpplastetHoveddokument? = null,
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 100)
+    var vedlegg: List<OpplastetVedlegg> = emptyList(),
+    @Column(name = "dokument_type_id")
+    @Convert(converter = DokumentTypeConverter::class)
     val dokumentType: DokumentType,
-
-    val brevMottakerDistribusjoner: List<BrevMottakerDistribusjon> = emptyList(),
-    val avsluttet: LocalDateTime? = null,
-    val modified: LocalDateTime = LocalDateTime.now()
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 100)
+    var brevMottakerDistribusjoner: Set<BrevMottakerDistribusjon> = emptySet(),
+    @Column(name = "avsluttet")
+    var avsluttet: LocalDateTime? = null,
+    @Column(name = "modified")
+    var modified: LocalDateTime = LocalDateTime.now(),
+    @Column(name = "should_be_distributed")
+    var shouldBeDistributed: Boolean = true
 ) {
 
-    fun erAvsluttet() = avsluttet != null
+    fun isAvsluttet() = avsluttet != null
 
-    fun erDistribuertTil(brevMottaker: BrevMottaker): Boolean =
+    fun isDistributedTo(brevMottaker: BrevMottaker): Boolean =
         findBrevMottakerDistribusjon(brevMottaker)?.dokdistReferanse != null
 
-    fun erDistribuertTilAlle(): Boolean =
-        brevMottakere.all { erDistribuertTil(it) }
+    fun isJournalfoertFor(brevMottaker: BrevMottaker): Boolean =
+        findBrevMottakerDistribusjon(brevMottaker)?.journalpostId != null && findBrevMottakerDistribusjon(brevMottaker)?.ferdigstiltIJoark != null
+
+    //Trengs dette?
+    fun isProcessedForAll(): Boolean {
+        return if (shouldBeDistributed) {
+            isDistributedToAll()
+        } else {
+            isJournalfoertForAll()
+        }
+    }
+
+    fun isDistributedToAll(): Boolean =
+        brevMottakere.all { isDistributedTo(it) }
+
+    fun isJournalfoertForAll(): Boolean =
+        brevMottakere.all { isJournalfoertFor(it) }
 
     fun findBrevMottakerDistribusjon(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
-        brevMottakerDistribusjoner.find { it.brevMottakerId == brevMottaker.id }
-
-    fun validateDistribuertTilAlle(): DokumentEnhet =
-        if (erDistribuertTilAlle()) {
-            this
-        } else throw DokumentEnhetNotValidException("DokumentEnhet ikke distribuert til alle brevmottakere")
-
-    fun harHovedDokument(): Boolean = hovedDokument != null
+        brevMottakerDistribusjoner.find { it.brevMottaker == brevMottaker }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -46,14 +79,6 @@ data class DokumentEnhet(
         other as DokumentEnhet
 
         if (id != other.id) return false
-        if (eier != other.eier) return false
-        if (journalfoeringData != other.journalfoeringData) return false
-        if (brevMottakere != other.brevMottakere) return false
-        if (hovedDokument != other.hovedDokument) return false
-        if (vedlegg != other.vedlegg) return false
-        if (brevMottakerDistribusjoner != other.brevMottakerDistribusjoner) return false
-        if (avsluttet?.truncatedTo(ChronoUnit.MILLIS) != other.avsluttet?.truncatedTo(ChronoUnit.MILLIS)) return false
-        if (modified.truncatedTo(ChronoUnit.MILLIS) != other.modified.truncatedTo(ChronoUnit.MILLIS)) return false
 
         return true
     }

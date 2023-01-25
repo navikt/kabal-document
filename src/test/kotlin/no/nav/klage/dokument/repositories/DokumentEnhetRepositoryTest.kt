@@ -1,10 +1,7 @@
 package no.nav.klage.dokument.repositories
 
 import no.nav.klage.dokument.db.TestPostgresqlContainer
-import no.nav.klage.dokument.dokumentEnhetUtenBrevMottakereOgHovedDokument
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.domain.saksbehandler.SaksbehandlerIdent
-import no.nav.klage.dokument.ferdigDistribuertDokumentEnhet
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
@@ -12,18 +9,19 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
 
 @ActiveProfiles("local")
-@JdbcTest
+@DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-internal class DokumentEnhetRepositoryTest {
+class DokumentEnhetRepositoryTest {
 
     companion object {
         @Container
@@ -32,101 +30,96 @@ internal class DokumentEnhetRepositoryTest {
     }
 
     @Autowired
-    lateinit var jdbcTemplate: JdbcTemplate
+    lateinit var testEntityManager: TestEntityManager
+
+    @Autowired
+    lateinit var dokumentEnhetRepository: DokumentEnhetRepository
 
     @Test
-    fun `persist fullstendig dokumentenhet works`() {
+    fun `store DokumentEnhet works as expected`() {
+        val dokumentEnhet = dokumentEnhet
 
-        val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
+        dokumentEnhetRepository.save(dokumentEnhet)
 
-        val dokumentEnhet = ferdigDistribuertDokumentEnhet()
+        testEntityManager.flush()
+        testEntityManager.clear()
 
-        assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
+        assertThat(dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)).isEqualTo(dokumentEnhet)
     }
 
     @Test
-    fun `persist empty dokumentenhet works`() {
-
-        val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
-
-        val dokumentEnhet = dokumentEnhetUtenBrevMottakereOgHovedDokument()
-
-        assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
-    }
-
-    @Test
-    fun `save, update and get works`() {
-        val dokumentEnhetRepository = DokumentEnhetRepository(jdbcTemplate)
-
-        val dokumentEnhet = DokumentEnhet(
-            eier = SaksbehandlerIdent(navIdent = "A10101"),
-            journalfoeringData = JournalfoeringData(
-                sakenGjelder = PartId(
-                    type = PartIdType.PERSON,
-                    value = "20022012345"
-                ),
-                tema = Tema.OMS,
-                sakFagsakId = null,
-                sakFagsystem = null,
-                kildeReferanse = "kildeReferanse",
-                enhet = "Enhet",
-                behandlingstema = "behandlingstema",
-                tittel = "Tittel",
-                brevKode = "brevKode",
-                tilleggsopplysning = Tilleggsopplysning("key", "value")
-            ),
-            brevMottakere = emptyList(),
-            hovedDokument = null,
-            vedlegg = emptyList(),
-            brevMottakerDistribusjoner = emptyList(),
-            avsluttet = null,
-            dokumentType = DokumentType.VEDTAK,
-        )
-
-        println("dokumentEnhet before save: $dokumentEnhet")
-        println("dokumentEnhet.modified before save: ${dokumentEnhet.modified}")
-
-        assertThat(dokumentEnhetRepository.save(dokumentEnhet)).isEqualTo(dokumentEnhet)
-
-        println("dokumentEnhet after save: $dokumentEnhet")
-        println("dokumentEnhet.modified after save: ${dokumentEnhet.modified}")
-
-        val oppdatertDokumentEnhet = dokumentEnhet.copy(
-            brevMottakere = listOf(
-                BrevMottaker(
-                    partId = PartId(
-                        type = PartIdType.PERSON,
-                        value = "01011012345"
-                    ),
-                    navn = "Test Person",
-                ),
-                BrevMottaker(
-                    partId = PartId(
-                        type = PartIdType.PERSON,
-                        value = "20022012345"
-                    ),
-                    navn = "Mottaker Person",
-                )
-            ),
-            hovedDokument = OpplastetDokument(
-                mellomlagerId = "123",
-                opplastet = LocalDateTime.now(),
-                size = 1000L,
-                name = "fil.pdf"
-            ),
-            vedlegg = listOf(
-                OpplastetDokument(
-                    mellomlagerId = "456",
-                    opplastet = LocalDateTime.now(),
-                    size = 1001L,
-                    name = "fil2.pdf"
-                )
+    @Transactional
+    fun `update child property works as expected`() {
+        val dokumentEnhet = dokumentEnhet
+        dokumentEnhet.brevMottakerDistribusjoner = setOf(
+            BrevMottakerDistribusjon(
+                brevMottaker = dokumentEnhet.brevMottakere.first(),
+                opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
             )
         )
 
-        assertThat(dokumentEnhetRepository.saveOrUpdate(oppdatertDokumentEnhet)).isEqualTo(oppdatertDokumentEnhet)
+        dokumentEnhetRepository.save(dokumentEnhet)
 
-        assertThat(dokumentEnhetRepository.findById(dokumentEnhet.id)).isEqualTo(oppdatertDokumentEnhet)
+        val retrievedObject = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
+
+        retrievedObject.brevMottakerDistribusjoner.first().journalpostId = "JOURNALPOST_ID"
+
+        dokumentEnhetRepository.save(retrievedObject)
+
+        val retrievedObject2 = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
+
+        assertThat(retrievedObject2.brevMottakerDistribusjoner.first().journalpostId).isEqualTo(retrievedObject.brevMottakerDistribusjoner.first().journalpostId)
     }
 
+    @Test
+    fun `update DokumentEnhet works as expected`() {
+        dokumentEnhetRepository.save(dokumentEnhet)
+        val firstDokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
+        firstDokumentEnhet.shouldBeDistributed = false
+        val secondDokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
+
+        assertThat(firstDokumentEnhet).isEqualTo(secondDokumentEnhet)
+    }
+
+    val dokumentEnhet = DokumentEnhet(
+        journalfoeringData = JournalfoeringData(
+            sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
+            tema = Tema.OMS,
+            sakFagsakId = null,
+            sakFagsystem = null,
+            kildeReferanse = "",
+            enhet = "",
+            behandlingstema = "",
+            tittel = "",
+            brevKode = "",
+            tilleggsopplysning = null
+        ),
+        brevMottakere = setOf(
+            BrevMottaker(
+                partId = PartId(
+                    type = PartIdType.PERSON,
+                    value = "01011012345"
+                ),
+                navn = "Test Person",
+            ),
+        ),
+        vedlegg = listOf(
+            OpplastetVedlegg(
+                mellomlagerId = "456",
+                opplastet = LocalDateTime.now(),
+                size = 1001L,
+                name = "fil2.pdf",
+            )
+        ),
+        hovedDokument = OpplastetHoveddokument(
+            mellomlagerId = "4567",
+            opplastet = LocalDateTime.now(),
+            size = 1001L,
+            name = "fil1.pdf",
+        ),
+        dokumentType = DokumentType.VEDTAK,
+        brevMottakerDistribusjoner = setOf(),
+        avsluttet = null,
+        modified = LocalDateTime.now()
+    )
 }

@@ -1,17 +1,30 @@
 package no.nav.klage.dokument.domain.dokument
 
+import jakarta.persistence.*
+import org.hibernate.annotations.DynamicUpdate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
 
-data class BrevMottakerDistribusjon(
+@Entity
+@Table(name = "brevmottakerdist", schema = "document")
+@DynamicUpdate
+class BrevMottakerDistribusjon(
+    @Id
     val id: UUID = UUID.randomUUID(),
-    val brevMottakerId: UUID,
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "brev_mottaker_id", referencedColumnName = "id", nullable = false)
+    val brevMottaker: BrevMottaker,
+    @Column(name = "opplastet_dokument_id")
     val opplastetDokumentId: UUID,
-    val journalpostId: JournalpostId,
-    val ferdigstiltIJoark: LocalDateTime? = null,
-    val dokdistReferanse: UUID? = null,
-    val dokumentEnhetId: UUID,
+    @Column(name = "journalpost_id")
+    var journalpostId: String? = null,
+    @Column(name = "ferdigstilt_i_joark")
+    var ferdigstiltIJoark: LocalDateTime? = null,
+    @Column(name = "dokdist_referanse")
+    var dokdistReferanse: UUID? = null,
+    @Column(name = "modified")
+    var modified: LocalDateTime = LocalDateTime.now(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,7 +33,6 @@ data class BrevMottakerDistribusjon(
         other as BrevMottakerDistribusjon
 
         if (id != other.id) return false
-        if (brevMottakerId != other.brevMottakerId) return false
         if (opplastetDokumentId != other.opplastetDokumentId) return false
         if (journalpostId != other.journalpostId) return false
         if (ferdigstiltIJoark?.truncatedTo(ChronoUnit.MILLIS) != other.ferdigstiltIJoark?.truncatedTo(ChronoUnit.MILLIS)) return false

@@ -37,19 +37,15 @@ class JoarkClient(
         return journalpostResponse
     }
 
-    fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String): String {
-        val response = joarkWebClient.patch()
+    fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
+        joarkWebClient.patch()
             .uri("/${journalpostId}/ferdigstill")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(FerdigstillJournalpostPayload(journalfoerendeEnhet))
             .retrieve()
-            .bodyToMono(String::class.java)
-            .block()
-            ?: throw RuntimeException("Journalpost with id $journalpostId could not be finalized.")
 
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
 
-        return response
     }
 }

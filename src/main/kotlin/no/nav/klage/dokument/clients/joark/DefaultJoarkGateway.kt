@@ -2,6 +2,7 @@ package no.nav.klage.dokument.clients.joark
 
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.gateway.JoarkGateway
+import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.stereotype.Component
@@ -20,25 +21,23 @@ class DefaultJoarkGateway(
 
     override fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
-        opplastetDokument: OpplastetDokument,
-        hoveddokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument>,
+        opplastetHovedDokument: OpplastetHoveddokument,
+        hoveddokument: JournalfoeringService.MellomlagretDokument,
+        vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
         brevMottaker: BrevMottaker
-    ): JournalpostId =
-        JournalpostId(
-            joarkClient.createJournalpostInJoarkAsSystemUser(
-                joarkMapper.createJournalpost(
-                    journalfoeringData = journalfoeringData,
-                    opplastetDokument = opplastetDokument,
-                    hovedDokument = hoveddokument,
-                    vedleggDokumentList = vedleggDokumentList,
-                    brevMottaker = brevMottaker
-                )
-            ).journalpostId
-        )
+    ): String =
+        joarkClient.createJournalpostInJoarkAsSystemUser(
+            joarkMapper.createJournalpost(
+                journalfoeringData = journalfoeringData,
+                opplastetHovedDokument = opplastetHovedDokument,
+                hovedDokument = hoveddokument,
+                vedleggDokumentList = vedleggDokumentList,
+                brevMottaker = brevMottaker
+            )
+        ).journalpostId
 
-    override fun finalizeJournalpostAsSystemUser(journalpostId: JournalpostId, journalfoerendeEnhet: String): String {
-        //TODO: Hva returnerer dette kallet? Hva er den String'en?
-        return joarkClient.finalizeJournalpostAsSystemUser(journalpostId.value, journalfoerendeEnhet)
+
+    override fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
+        joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
     }
 }

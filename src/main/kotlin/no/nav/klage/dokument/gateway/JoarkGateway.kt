@@ -1,15 +1,19 @@
 package no.nav.klage.dokument.gateway
 
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.service.JournalfoeringService
 
 interface JoarkGateway {
+
+    fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String)
+
     fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
-        opplastetDokument: OpplastetDokument,
-        hoveddokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
+        opplastetHovedDokument: OpplastetHoveddokument,
+        hoveddokument: JournalfoeringService.MellomlagretDokument,
+        vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
         brevMottaker: BrevMottaker
-    ): JournalpostId
-
-    fun finalizeJournalpostAsSystemUser(journalpostId: JournalpostId, journalfoerendeEnhet: String): String
+    ): String
 }

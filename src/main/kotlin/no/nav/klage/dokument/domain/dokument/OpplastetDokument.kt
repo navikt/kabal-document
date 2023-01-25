@@ -1,15 +1,27 @@
 package no.nav.klage.dokument.domain.dokument
 
+import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
 
-data class OpplastetDokument(
+@Entity
+@Table(name = "opplastetdokument", schema = "document")
+@DiscriminatorColumn(name = "type")
+abstract class OpplastetDokument(
+    @Id
     val id: UUID = UUID.randomUUID(),
+    @Column(name = "mellomlager_id")
     val mellomlagerId: String,
+    @Column(name = "opplastet")
     val opplastet: LocalDateTime,
+    @Column(name = "size")
     val size: Long,
-    val name: String
+    @Column(name = "name")
+    val name: String,
+    @Column(name = "type", insertable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
+    val type: OpplastetDokumentType
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,4 +39,9 @@ data class OpplastetDokument(
     }
 
     override fun hashCode(): Int = id.hashCode()
+}
+
+enum class OpplastetDokumentType {
+    HOVEDDOKUMENT,
+    VEDLEGG
 }

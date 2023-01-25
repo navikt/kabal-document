@@ -1,9 +1,7 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.JournalfoeringData
-import no.nav.klage.dokument.domain.dokument.MellomlagretDokument
-import no.nav.klage.dokument.domain.dokument.OpplastetDokument
+import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.PartIdType
@@ -21,9 +19,9 @@ class JoarkMapper {
 
     fun createJournalpost(
         journalfoeringData: JournalfoeringData,
-        opplastetDokument: OpplastetDokument,
-        hovedDokument: MellomlagretDokument,
-        vedleggDokumentList: List<MellomlagretDokument> = emptyList(),
+        opplastetHovedDokument: OpplastetHoveddokument,
+        hovedDokument: JournalfoeringService.MellomlagretDokument,
+        vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
     ): Journalpost =
         Journalpost(
@@ -34,7 +32,7 @@ class JoarkMapper {
             sak = createSak(journalfoeringData),
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
-            eksternReferanseId = "${opplastetDokument.id}_${brevMottaker.id}",
+            eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",
             bruker = createBruker(journalfoeringData),
             dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
                 hoveddokument = hovedDokument,
@@ -72,7 +70,6 @@ class JoarkMapper {
             )
         }
 
-
     private fun createBruker(journalfoeringData: JournalfoeringData): Bruker =
         Bruker(
             journalfoeringData.sakenGjelder.value,
@@ -80,26 +77,26 @@ class JoarkMapper {
         )
 
     private fun createDokument(
-        mellomlagretDokument: MellomlagretDokument, journalfoeringData: JournalfoeringData
+        mellomlagretDokument: JournalfoeringService.MellomlagretDokument, journalfoeringData: JournalfoeringData
     ): Dokument =
-            Dokument(
-                tittel = mellomlagretDokument.title,
-                brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
-                dokumentVarianter = listOf(
-                    DokumentVariant(
-                        filnavn = mellomlagretDokument.title,
-                        //Hardcode to 'PDF' for now. Had some issues with Vera (old) and Spring Boot (new).
-                        //Might work in the future if we need it.
-                        filtype = "PDF",
-                        variantformat = "ARKIV",
-                        fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
-                    )
+        Dokument(
+            tittel = mellomlagretDokument.title,
+            brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
+            dokumentVarianter = listOf(
+                DokumentVariant(
+                    filnavn = mellomlagretDokument.title,
+                    //Hardcode to 'PDF' for now. Had some issues with Vera (old) and Spring Boot (new).
+                    //Might work in the future if we need it.
+                    filtype = "PDF",
+                    variantformat = "ARKIV",
+                    fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
                 )
             )
+        )
 
     private fun createDokumentListFromHoveddokumentAndVedleggList(
-        hoveddokument: MellomlagretDokument,
-        vedleggList: List<MellomlagretDokument> = emptyList(),
+        hoveddokument: JournalfoeringService.MellomlagretDokument,
+        vedleggList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         journalfoeringData: JournalfoeringData
     ): List<Dokument> {
         val documents = mutableListOf(createDokument(hoveddokument, journalfoeringData))

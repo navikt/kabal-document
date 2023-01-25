@@ -24,14 +24,15 @@ repositories {
 
 plugins {
     val kotlinVersion = "1.8.0"
+    id("org.springframework.boot") version "3.0.1"
+    id("io.spring.dependency-management") version "1.1.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
-    id("org.springframework.boot") version "3.0.1"
     idea
 }
 
-apply(plugin = "io.spring.dependency-management")
+//apply(plugin = "io.spring.dependency-management")
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -43,6 +44,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")

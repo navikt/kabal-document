@@ -8,8 +8,6 @@ data class Error(val message: String, val extensions: Extensions)
 
 data class Extensions(val classification: String)
 
-data class DokumentoversiktBruker(val journalposter: List<Journalpost>, val sideInfo: SideInfo)
-
 data class SideInfo(val sluttpeker: String?, val finnesNesteSide: Boolean, val antall: Int, val totaltAntall: Int)
 
 data class JournalpostResponse(val data: JournalpostDataWrapper?, val errors: List<Error>?)

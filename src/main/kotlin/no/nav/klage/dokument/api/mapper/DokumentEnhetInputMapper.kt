@@ -1,9 +1,7 @@
 package no.nav.klage.dokument.api.mapper
 
-import no.nav.klage.dokument.api.input.BrevMottakerInput
-import no.nav.klage.dokument.api.input.DokumentInput
-import no.nav.klage.dokument.api.input.JournalfoeringDataInput
-import no.nav.klage.dokument.api.input.PartIdInput
+
+import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
@@ -22,10 +20,10 @@ class DokumentEnhetInputMapper {
         private val secureLogger = getSecureLogger()
     }
 
-    fun mapBrevMottakereInput(brevMottakere: List<BrevMottakerInput>): List<BrevMottaker> =
-        brevMottakere.map { mapBrevMottakerInput(it) }
+    fun mapBrevMottakereInput(brevMottakereInput: List<DokumentEnhetWithDokumentreferanserInput.BrevMottakerInput>): Set<BrevMottaker> =
+        brevMottakereInput.map { mapBrevMottakerInput(it) }.toSet()
 
-    fun mapBrevMottakerInput(brevMottakerInput: BrevMottakerInput): BrevMottaker =
+    fun mapBrevMottakerInput(brevMottakerInput: DokumentEnhetWithDokumentreferanserInput.BrevMottakerInput): BrevMottaker =
         try {
             BrevMottaker(
                 partId = mapPartIdInput(brevMottakerInput.partId),
@@ -36,7 +34,7 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
 
-    fun mapJournalfoeringDataInput(input: JournalfoeringDataInput): JournalfoeringData =
+    fun mapJournalfoeringDataInput(input: DokumentEnhetWithDokumentreferanserInput.JournalfoeringDataInput): JournalfoeringData =
         try {
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
@@ -56,16 +54,24 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
 
-    fun mapDokumentInput(dokument: DokumentInput.Dokument): OpplastetDokument =
-        OpplastetDokument(
+    fun mapDokumentInputToHoveddokument(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument): OpplastetHoveddokument =
+        OpplastetHoveddokument(
             mellomlagerId = dokument.mellomlagerId,
             opplastet = dokument.opplastet,
             size = dokument.size,
             name = dokument.name
         )
 
-    private fun mapPartIdInput(partIdInput: PartIdInput) =
-        try {
+    fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument): OpplastetVedlegg =
+        OpplastetVedlegg(
+            mellomlagerId = dokument.mellomlagerId,
+            opplastet = dokument.opplastet,
+            size = dokument.size,
+            name = dokument.name
+        )
+
+    private fun mapPartIdInput(partIdInput: DokumentEnhetWithDokumentreferanserInput.PartIdInput): PartId {
+        return try {
             PartId(
                 type = if (partIdInput.partIdTypeId != null) PartIdType.of(partIdInput.partIdTypeId)
                 else PartIdType.valueOf(partIdInput.type!!),
@@ -75,6 +81,5 @@ class DokumentEnhetInputMapper {
             logger.warn("Data fra klient er ikke gyldig", iae)
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
-
-
+    }
 }
