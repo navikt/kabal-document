@@ -113,7 +113,6 @@ internal class JoarkMapperTest {
         journalposttype = JournalpostType.UTGAAENDE,
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
-        kanal = "NAV_NO",
         tittel = TITTEL,
         avsenderMottaker = AvsenderMottaker(
             id = FNR,
@@ -143,7 +142,6 @@ internal class JoarkMapperTest {
         journalposttype = JournalpostType.UTGAAENDE,
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
-        kanal = "NAV_NO",
         tittel = TITTEL,
         avsenderMottaker = AvsenderMottaker(
             id = FNR,

@@ -6,7 +6,6 @@ data class Journalpost(
     val journalposttype: JournalpostType? = null,
     val tema: Tema,
     val behandlingstema: String,
-    var kanal: String? = null,
     val tittel: String,
     var avsenderMottaker: AvsenderMottaker? = null,
     val journalfoerendeEnhet: String? = null,

@@ -49,7 +49,6 @@ class JoarkMapper {
 
         if (journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) {
             journalpost.avsenderMottaker = createAvsenderMottager(brevMottaker)
-            journalpost.kanal = "NAV_NO"
         }
 
         return journalpost
