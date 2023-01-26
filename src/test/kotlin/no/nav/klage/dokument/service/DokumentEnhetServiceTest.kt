@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
+import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
@@ -75,7 +76,8 @@ internal class DokumentEnhetServiceTest {
             behandlingstema = "behandlingstema",
             tittel = "Tittel",
             brevKode = "brevKode",
-            tilleggsopplysning = Tilleggsopplysning("key", "value")
+            tilleggsopplysning = Tilleggsopplysning("key", "value"),
+            journalpostType = JournalpostType.UTGAAENDE
         ),
         brevMottakere = setOf(brevMottaker1, brevMottaker2),
         brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon1, brevMottakerDistribusjon2),
@@ -229,7 +231,7 @@ internal class DokumentEnhetServiceTest {
 
     fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakereNotForDistribution(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
-        dokumentEnhet.shouldBeDistributed = false
+        dokumentEnhet.journalfoeringData.journalpostType = JournalpostType.NOTAT
         return dokumentEnhet
     }
 

@@ -3,6 +3,7 @@ package no.nav.klage.dokument.domain.dokument
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Table
+import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.kodeverk.DokumentType
 import org.hibernate.annotations.*
 import java.time.LocalDateTime
@@ -42,9 +43,10 @@ class DokumentEnhet(
     var avsluttet: LocalDateTime? = null,
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "should_be_distributed")
-    var shouldBeDistributed: Boolean = true
 ) {
+    fun shouldBeDistributed(): Boolean {
+        return journalfoeringData.journalpostType == JournalpostType.UTGAAENDE
+    }
 
     fun isAvsluttet() = avsluttet != null
 
@@ -56,7 +58,7 @@ class DokumentEnhet(
 
     //Trengs dette?
     fun isProcessedForAll(): Boolean {
-        return if (shouldBeDistributed) {
+        return if (shouldBeDistributed()) {
             isDistributedToAll()
         } else {
             isJournalfoertForAll()

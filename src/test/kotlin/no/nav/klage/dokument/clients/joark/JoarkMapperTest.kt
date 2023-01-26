@@ -54,7 +54,7 @@ internal class JoarkMapperTest {
         behandlingstema = BEHANDLINGSTEMA,
         tittel = TITTEL,
         brevKode = BREVKODE,
-        tilleggsopplysning = null
+        tilleggsopplysning = null,
     )
 
     private val opplastetHovedDokument = OpplastetHoveddokument(
