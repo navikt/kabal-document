@@ -14,6 +14,7 @@ interface JoarkGateway {
         opplastetHovedDokument: OpplastetHoveddokument,
         hoveddokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
-        brevMottaker: BrevMottaker
+        brevMottaker: BrevMottaker,
+        journalfoerendeSaksbehandlerIdent: String,
     ): String
 }

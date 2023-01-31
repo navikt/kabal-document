@@ -28,7 +28,8 @@ class JournalfoeringService(
         brevMottaker: BrevMottaker,
         hoveddokument: OpplastetHoveddokument,
         vedleggDokumentList: List<OpplastetVedlegg> = emptyList(),
-        journalfoeringData: JournalfoeringData
+        journalfoeringData: JournalfoeringData,
+        journalfoerendeSaksbehandlerIdent: String,
     ): String {
         logger.debug("Skal opprette journalpost som systembruker for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
         val mellomlagretHovedDokument = MellomlagretDokument(
@@ -50,7 +51,8 @@ class JournalfoeringService(
             opplastetHovedDokument = hoveddokument,
             hoveddokument = mellomlagretHovedDokument,
             vedleggDokumentList = mellomlagredeVedleggDokument,
-            brevMottaker = brevMottaker
+            brevMottaker = brevMottaker,
+            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent,
         )
     }
 

@@ -120,6 +120,7 @@ class DokumentEnhetRepositoryTest {
         dokumentType = DokumentType.VEDTAK,
         brevMottakerDistribusjoner = setOf(),
         avsluttet = null,
+        journalfoerendeSaksbehandlerIdent = "S123456",
         modified = LocalDateTime.now()
     )
 }

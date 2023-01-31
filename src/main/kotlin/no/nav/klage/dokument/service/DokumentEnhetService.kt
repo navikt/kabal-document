@@ -130,6 +130,7 @@ class DokumentEnhetService(
             hoveddokument = dokumentEnhet.hovedDokument!!,
             vedleggDokumentList = dokumentEnhet.vedlegg,
             journalfoeringData = dokumentEnhet.journalfoeringData,
+            journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
         )
     }
 
@@ -177,6 +178,7 @@ class DokumentEnhetService(
                 hovedDokument = hovedokument,
                 vedlegg = vedlegg,
                 dokumentType = dokumentType,
+                journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
             )
         )
     }
