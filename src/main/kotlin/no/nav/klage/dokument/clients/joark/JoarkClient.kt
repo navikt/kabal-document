@@ -52,12 +52,19 @@ class JoarkClient(
     }
 
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
-        joarkWebClient.put()
-            .uri("/${journalpostId}")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivkScope()}")
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(input)
-            .retrieve()
+        try {
+            joarkWebClient.put()
+                .uri("/${journalpostId}")
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivkScope()}"
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(input)
+                .retrieve()
+        } catch (e: Exception) {
+            logger.error("Error updating journalpost $journalpostId:", e)
+        }
 
         logger.debug("Document from journalpost $journalpostId with dokumentInfoId id ${input.dokumenter.first().dokumentInfoId} was succesfully updated.")
     }
