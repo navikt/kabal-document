@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.api.controller
 
 import io.swagger.v3.oas.annotations.tags.Tag
+import no.nav.klage.dokument.api.input.UpdateTitleInput
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
@@ -22,14 +23,13 @@ class DokarkivController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @GetMapping("/updatetitle/{newTitle}")
+    @GetMapping("/updatetitle/")
     fun updateDocumentTitleInDokarkiv(
-        @PathVariable("newTitle") newTitle: String = "ny tittel"
-    ): String {
+        @RequestBody input: UpdateTitleInput
+    ) {
         logger.debug("Kall mottatt på updateDocumentTitleInDokarkiv")
         journalfoeringService.updateDocumentTitle(
-            journalpostId = "598114725", dokumentInfoId = "624861697", newTitle = newTitle
+            journalpostId = input.journalpostId, dokumentInfoId = input.dokumentInfoId, newTitle = input.newTitle
         )
-        return "Funka"
     }
 }
