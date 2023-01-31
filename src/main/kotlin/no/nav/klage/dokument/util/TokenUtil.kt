@@ -28,6 +28,12 @@ class TokenUtil(
         return response.accessToken
     }
 
+    fun getSaksbehandlerAccessTokenWithDokarkivkScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["dokarkiv-onbehalfof"]
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.accessToken
+    }
+
     fun getAppAccessTokenWithDokarkivScope(): String {
         val clientProperties = clientConfigurationProperties.registration["dokarkiv-maskintilmaskin"]
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)

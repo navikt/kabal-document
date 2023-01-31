@@ -17,4 +17,6 @@ interface JoarkGateway {
         brevMottaker: BrevMottaker,
         journalfoerendeSaksbehandlerIdent: String,
     ): String
+
+    fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, newTitle: String)
 }

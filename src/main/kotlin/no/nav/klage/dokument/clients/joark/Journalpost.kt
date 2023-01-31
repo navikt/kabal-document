@@ -102,3 +102,13 @@ data class Tilleggsopplysning(
     val nokkel: String,
     val verdi: String
 )
+
+data class UpdateDocumentTitleJournalpostInput(
+    val dokumenter: List<UpdateDocumentTitleDokumentInput>,
+)
+
+data class UpdateDocumentTitleDokumentInput(
+    val dokumentInfoId: String,
+    val tittel: String,
+)
+

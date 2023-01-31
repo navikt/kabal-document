@@ -42,4 +42,13 @@ class DefaultJoarkGateway(
     override fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
         joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
     }
+
+    override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, newTitle: String) {
+        joarkClient.updateDocumentTitleOnBehalfOf(
+            journalpostId = journalpostId,
+            input = joarkMapper.createUpdateDocumentTitleJournalpostInput(
+                dokumentInfoId, newTitle
+            )
+        )
+    }
 }

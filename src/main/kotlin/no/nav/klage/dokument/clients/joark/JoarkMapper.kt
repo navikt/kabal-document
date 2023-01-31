@@ -109,4 +109,18 @@ class JoarkMapper {
         documents.addAll(vedleggList.map { createDokument(it, journalfoeringData) })
         return documents
     }
+
+    fun createUpdateDocumentTitleJournalpostInput(
+        dokumentInfoId: String,
+        newTitle: String
+    ): UpdateDocumentTitleJournalpostInput {
+        return UpdateDocumentTitleJournalpostInput(
+            dokumenter = listOf(
+                UpdateDocumentTitleDokumentInput(
+                    dokumentInfoId = dokumentInfoId,
+                    tittel = newTitle
+                )
+            )
+        )
+    }
 }

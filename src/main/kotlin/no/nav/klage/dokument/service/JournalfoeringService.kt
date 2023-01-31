@@ -37,14 +37,13 @@ class JournalfoeringService(
             content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
             contentType = MediaType.APPLICATION_PDF
         )
-        val mellomlagredeVedleggDokument =
-            vedleggDokumentList.map {
-                MellomlagretDokument(
-                    title = it.name,
-                    content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
-                    contentType = MediaType.APPLICATION_PDF
-                )
-            }
+        val mellomlagredeVedleggDokument = vedleggDokumentList.map {
+            MellomlagretDokument(
+                title = it.name,
+                content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
+                contentType = MediaType.APPLICATION_PDF
+            )
+        }
 
         return joarkGateway.createJournalpostAsSystemUser(
             journalfoeringData = journalfoeringData,
@@ -60,8 +59,7 @@ class JournalfoeringService(
         journalpostId: String,
     ) {
         return joarkGateway.finalizeJournalpostAsSystemUser(
-            journalpostId = journalpostId,
-            journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
+            journalpostId = journalpostId, journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
         )
     }
 
@@ -79,10 +77,15 @@ class JournalfoeringService(
         }
     }
 
+    fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, newTitle: String) {
+        joarkGateway.updateDocumentTitleOnBehalfOf(
+            journalpostId = journalpostId, dokumentInfoId = dokumentInfoId, newTitle = newTitle
+
+        )
+    }
+
     data class MellomlagretDokument(
-        val title: String,
-        val content: ByteArray,
-        val contentType: MediaType
+        val title: String, val content: ByteArray, val contentType: MediaType
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
