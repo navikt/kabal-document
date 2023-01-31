@@ -7,7 +7,6 @@ import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
 import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.DokumentEnhetService
-import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.*
@@ -20,7 +19,6 @@ import java.util.*
 class DokumentEnhetController(
     private val dokumentEnhetMapper: DokumentEnhetMapper,
     private val dokumentEnhetService: DokumentEnhetService,
-    private val journalfoeringService: JournalfoeringService
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -49,15 +47,5 @@ class DokumentEnhetController(
             throw RuntimeException("DokumentEnhet (id: $dokumentEnhetId) feilet under fullføring. Se logger.")
         }
         return dokumentEnhetMapper.mapToDokumentEnhetFullfoertView(dokumentEnhet)
-    }
-
-    @GetMapping("/updatetitle/{newTitle}")
-    fun updateDocumentTitleInDokarkiv(
-        @PathVariable("newTitle") newTitle: String = "ny tittel"
-    ) {
-        logger.debug("Kall mottatt på updateDocumentTitleInDokarkiv")
-        journalfoeringService.updateDocumentTitle(
-            journalpostId = "598114725", dokumentInfoId = "598114725", newTitle = newTitle
-        )
     }
 }
