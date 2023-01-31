@@ -41,6 +41,8 @@ class DokumentEnhet(
     var brevMottakerDistribusjoner: Set<BrevMottakerDistribusjon> = emptySet(),
     @Column(name = "avsluttet")
     var avsluttet: LocalDateTime? = null,
+    @Column(name = "journalfoerende_saksbehandler_ident")
+    val journalfoerendeSaksbehandlerIdent: String,
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
 ) {

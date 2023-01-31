@@ -91,6 +91,7 @@ internal class DokumentEnhetServiceTest {
             )
         ),
         avsluttet = null,
+        journalfoerendeSaksbehandlerIdent = "S123456",
         dokumentType = DokumentType.VEDTAK,
     )
 
@@ -113,6 +114,7 @@ internal class DokumentEnhetServiceTest {
                 hoveddokument = any(),
                 vedleggDokumentList = any(),
                 journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         } returns JOURNALPOST_ID_1
 
@@ -122,6 +124,7 @@ internal class DokumentEnhetServiceTest {
                 hoveddokument = any(),
                 vedleggDokumentList = any(),
                 journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         } returns JOURNALPOST_ID_2
 
@@ -139,8 +142,8 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any()) }
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any(), any()) }
 
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
@@ -159,8 +162,8 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any()) }
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any(), any()) }
 
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
@@ -179,7 +182,7 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any()) }
+        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
 
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
         verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
@@ -199,7 +202,7 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any()) }
+        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
         verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) }
         verify(exactly = 0) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any()) }
     }

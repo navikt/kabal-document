@@ -24,16 +24,18 @@ class DefaultJoarkGateway(
         opplastetHovedDokument: OpplastetHoveddokument,
         hoveddokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
-        brevMottaker: BrevMottaker
+        brevMottaker: BrevMottaker,
+        journalfoerendeSaksbehandlerIdent: String,
     ): String =
         joarkClient.createJournalpostInJoarkAsSystemUser(
-            joarkMapper.createJournalpost(
+            journalpost = joarkMapper.createJournalpost(
                 journalfoeringData = journalfoeringData,
                 opplastetHovedDokument = opplastetHovedDokument,
                 hovedDokument = hoveddokument,
                 vedleggDokumentList = vedleggDokumentList,
                 brevMottaker = brevMottaker
-            )
+            ),
+            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
         ).journalpostId
 
 

@@ -20,11 +20,13 @@ class JoarkClient(
     }
 
     fun createJournalpostInJoarkAsSystemUser(
-        journalpost: Journalpost
+        journalpost: Journalpost,
+        journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
         val journalpostResponse = joarkWebClient.post()
             .uri("?forsoekFerdigstill=true")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+            .header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(journalpost)
             .retrieve()
