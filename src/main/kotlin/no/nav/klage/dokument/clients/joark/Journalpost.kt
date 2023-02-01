@@ -104,6 +104,7 @@ data class Tilleggsopplysning(
 )
 
 data class UpdateDocumentTitleJournalpostInput(
+    val tittel: String? = null,
     val dokumenter: List<UpdateDocumentTitleDokumentInput>,
 )
 

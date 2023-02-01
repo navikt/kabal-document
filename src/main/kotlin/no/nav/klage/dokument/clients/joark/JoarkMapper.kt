@@ -115,6 +115,7 @@ class JoarkMapper {
         newTitle: String
     ): UpdateDocumentTitleJournalpostInput {
         return UpdateDocumentTitleJournalpostInput(
+            tittel = newTitle + " tittel på rota",
             dokumenter = listOf(
                 UpdateDocumentTitleDokumentInput(
                     dokumentInfoId = dokumentInfoId,
