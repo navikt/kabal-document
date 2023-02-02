@@ -89,7 +89,7 @@ jobs:
           CLUSTER: dev-gcp
           VAR: app=kabal,jobname=klage-job-${{ steps.generate-uuid.outputs.uuid }}
           TEAM: klage
-          RESOURCE: deploy/e2ejob.yml
+          RESOURCE: deploy/e2ejob.yaml
         timeout-minutes: 5
   deploytoprod:
     name: Deploy to prod
