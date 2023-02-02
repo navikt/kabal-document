@@ -29,7 +29,9 @@ class DokarkivController(
     ) {
         logger.debug("Kall mottatt på updateDocumentTitleInDokarkiv")
         journalfoeringService.updateDocumentTitle(
-            journalpostId = input.journalpostId, dokumentInfoId = input.dokumentInfoId, newTitle = input.newTitle
+            journalpostId = input.journalpostId,
+            dokumentInfoId = input.dokumentInfoId,
+            newTitle = input.newTitle
         )
     }
 }

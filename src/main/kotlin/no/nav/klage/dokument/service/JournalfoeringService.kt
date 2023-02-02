@@ -59,7 +59,8 @@ class JournalfoeringService(
         journalpostId: String,
     ) {
         return joarkGateway.finalizeJournalpostAsSystemUser(
-            journalpostId = journalpostId, journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
+            journalpostId = journalpostId,
+            journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
         )
     }
 
@@ -79,7 +80,9 @@ class JournalfoeringService(
 
     fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, newTitle: String) {
         joarkGateway.updateDocumentTitleOnBehalfOf(
-            journalpostId = journalpostId, dokumentInfoId = dokumentInfoId, newTitle = newTitle
+            journalpostId = journalpostId,
+            dokumentInfoId = dokumentInfoId,
+            newTitle = newTitle
         )
     }
 

@@ -7,7 +7,10 @@ import no.nav.klage.dokument.service.JournalfoeringService
 
 interface JoarkGateway {
 
-    fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String)
+    fun finalizeJournalpostAsSystemUser(
+        journalpostId: String,
+        journalfoerendeEnhet: String
+    )
 
     fun createJournalpostAsSystemUser(
         journalfoeringData: JournalfoeringData,
@@ -18,5 +21,9 @@ interface JoarkGateway {
         journalfoerendeSaksbehandlerIdent: String,
     ): String
 
-    fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, newTitle: String)
+    fun updateDocumentTitleOnBehalfOf(
+        journalpostId: String,
+        dokumentInfoId: String,
+        newTitle: String
+    )
 }
