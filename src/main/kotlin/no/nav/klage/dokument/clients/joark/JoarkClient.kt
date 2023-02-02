@@ -57,7 +57,7 @@ class JoarkClient(
                 .uri("/${journalpostId}")
                 .header(
                     HttpHeaders.AUTHORIZATION,
-                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivkScope()}"
+                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivScope()}"
                 )
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(input)
