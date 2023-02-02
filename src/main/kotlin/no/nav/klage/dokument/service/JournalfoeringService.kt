@@ -87,7 +87,9 @@ class JournalfoeringService(
     }
 
     data class MellomlagretDokument(
-        val title: String, val content: ByteArray, val contentType: MediaType
+        val title: String,
+        val content: ByteArray,
+        val contentType: MediaType
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
