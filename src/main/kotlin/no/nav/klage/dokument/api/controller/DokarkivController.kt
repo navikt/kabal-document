@@ -23,7 +23,7 @@ class DokarkivController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @PutMapping("/updatetitle/")
+    @PutMapping("/journalpost/title")
     fun updateDocumentTitleInDokarkiv(
         @RequestBody input: UpdateTitleInput
     ) {

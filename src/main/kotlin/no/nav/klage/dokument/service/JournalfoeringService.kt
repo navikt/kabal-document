@@ -80,7 +80,6 @@ class JournalfoeringService(
     fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, newTitle: String) {
         joarkGateway.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId, dokumentInfoId = dokumentInfoId, newTitle = newTitle
-
         )
     }
 
