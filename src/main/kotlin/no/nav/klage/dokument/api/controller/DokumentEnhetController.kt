@@ -18,7 +18,7 @@ import java.util.*
 @RequestMapping("/dokumentenheter")
 class DokumentEnhetController(
     private val dokumentEnhetMapper: DokumentEnhetMapper,
-    private val dokumentEnhetService: DokumentEnhetService
+    private val dokumentEnhetService: DokumentEnhetService,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -36,8 +36,6 @@ class DokumentEnhetController(
             )
         )
     }
-
-    //TODO: Sjekk hvilken type journalpost det er snakk om når det er notat
 
     @PostMapping("/{dokumentEnhetId}/fullfoer")
     fun fullfoerDokumentEnhet(

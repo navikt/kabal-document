@@ -50,4 +50,25 @@ class JoarkClient(
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
 
     }
+
+    fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
+        try {
+            joarkWebClient.put()
+                .uri("/${journalpostId}")
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivScope()}"
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(input)
+                .retrieve()
+                .bodyToMono(JournalpostResponse::class.java)
+                .block()
+                ?: throw RuntimeException("Journalpost could not be updated.")
+        } catch (e: Exception) {
+            logger.error("Error updating journalpost $journalpostId:", e)
+        }
+
+        logger.debug("Document from journalpost $journalpostId with dokumentInfoId id ${input.dokumenter.first().dokumentInfoId} was succesfully updated.")
+    }
 }
