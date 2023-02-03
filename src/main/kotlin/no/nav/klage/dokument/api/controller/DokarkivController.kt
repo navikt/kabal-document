@@ -23,15 +23,17 @@ class DokarkivController(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @PutMapping("/journalpost/title")
+    @PutMapping("/journalposter/{journalpostId}/dokumenter/{dokumentInfoId}/title")
     fun updateDocumentTitleInDokarkiv(
+        @PathVariable("journalpostId") journalpostId: String,
+        @PathVariable("dokumentInfoId") dokumentInfoId: String,
         @RequestBody input: UpdateTitleInput
     ) {
         logger.debug("Kall mottatt på updateDocumentTitleInDokarkiv")
         journalfoeringService.updateDocumentTitle(
-            journalpostId = input.journalpostId,
-            dokumentInfoId = input.dokumentInfoId,
-            newTitle = input.newTitle
+            journalpostId = journalpostId,
+            dokumentInfoId = dokumentInfoId,
+            title = input.title
         )
     }
 }
