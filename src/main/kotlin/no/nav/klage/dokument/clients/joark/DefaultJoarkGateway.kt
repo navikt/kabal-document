@@ -43,11 +43,11 @@ class DefaultJoarkGateway(
         joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
     }
 
-    override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, newTitle: String) {
+    override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, title: String) {
         joarkClient.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
             input = joarkMapper.createUpdateDocumentTitleJournalpostInput(
-                dokumentInfoId, newTitle
+                dokumentInfoId = dokumentInfoId, title = title
             )
         )
     }

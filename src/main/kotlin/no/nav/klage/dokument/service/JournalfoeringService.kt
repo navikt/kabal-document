@@ -78,11 +78,11 @@ class JournalfoeringService(
         }
     }
 
-    fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, newTitle: String) {
+    fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, title: String) {
         joarkGateway.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
-            newTitle = newTitle
+            title = title
         )
     }
 

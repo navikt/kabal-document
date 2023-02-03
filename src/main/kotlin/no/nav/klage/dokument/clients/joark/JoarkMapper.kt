@@ -112,13 +112,13 @@ class JoarkMapper {
 
     fun createUpdateDocumentTitleJournalpostInput(
         dokumentInfoId: String,
-        newTitle: String
+        title: String
     ): UpdateDocumentTitleJournalpostInput {
         return UpdateDocumentTitleJournalpostInput(
             dokumenter = listOf(
                 UpdateDocumentTitleDokumentInput(
                     dokumentInfoId = dokumentInfoId,
-                    tittel = newTitle
+                    tittel = title
                 )
             )
         )
