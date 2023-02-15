@@ -29,6 +29,7 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
       tenant: {{tenant}}
   port: 7094
   startup:
