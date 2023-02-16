@@ -52,7 +52,6 @@ class JoarkClient(
             ?: throw RuntimeException("Journalpost could not be finalized.")
 
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
-
     }
 
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
