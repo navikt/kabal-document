@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
 class JoarkClient(
@@ -46,6 +47,9 @@ class JoarkClient(
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(FerdigstillJournalpostPayload(journalfoerendeEnhet))
             .retrieve()
+            .bodyToMono<String>()
+            .block()
+            ?: throw RuntimeException("Journalpost could not be finalized.")
 
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
 
