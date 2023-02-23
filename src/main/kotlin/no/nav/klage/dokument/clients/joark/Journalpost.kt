@@ -11,7 +11,7 @@ data class Journalpost(
     val journalfoerendeEnhet: String? = null,
     val eksternReferanseId: String? = null,
     val bruker: Bruker? = null,
-    val sak: Sak? = null,
+    val sak: Sak,
     val dokumenter: List<Dokument>? = mutableListOf(),
     val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf()
 )
@@ -49,8 +49,8 @@ enum class BrukerIdType {
 
 data class Sak(
     val sakstype: Sakstype,
-    val fagsaksystem: FagsaksSystem? = null,
-    val fagsakid: String? = null,
+    val fagsaksystem: FagsaksSystem,
+    val fagsakid: String,
     val arkivsaksystem: ArkivsaksSystem? = null,
     val arkivsaksnummer: String? = null
 )

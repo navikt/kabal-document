@@ -3,6 +3,7 @@ package no.nav.klage.dokument.repositories
 import no.nav.klage.dokument.db.TestPostgresqlContainer
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.kodeverk.DokumentType
+import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
@@ -85,8 +86,8 @@ class DokumentEnhetRepositoryTest {
         journalfoeringData = JournalfoeringData(
             sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
             tema = Tema.OMS,
-            sakFagsakId = null,
-            sakFagsystem = null,
+            sakFagsakId = "123",
+            sakFagsystem = Fagsystem.AO01,
             kildeReferanse = "",
             enhet = "",
             behandlingstema = "",

@@ -23,10 +23,10 @@ class JournalfoeringData(
     @Convert(converter = TemaConverter::class)
     val tema: Tema,
     @Column(name = "sak_fagsak_id")
-    val sakFagsakId: String?,
+    val sakFagsakId: String,
     @Column(name = "sak_fagsystem_id")
     @Convert(converter = FagsystemConverter::class)
-    val sakFagsystem: Fagsystem?,
+    val sakFagsystem: Fagsystem,
     @Column(name = "kilde_referanse")
     val kildeReferanse: String,
     @Column(name = "enhet")
