@@ -43,10 +43,9 @@ class DokumentEnhetInputMapper {
         try {
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
-                tema = if (input.temaId != null) Tema.of(input.temaId) else Tema.valueOf(input.tema!!),
+                tema = Tema.of(input.temaId),
                 sakFagsakId = input.sakFagsakId,
-                sakFagsystem = if (input.sakFagsystemId != null) Fagsystem.of(input.sakFagsystemId) else
-                    input.sakFagsystem?.let { Fagsystem.valueOf(it) },
+                sakFagsystem = Fagsystem.of(input.sakFagsystemId),
                 kildeReferanse = input.kildeReferanse,
                 enhet = input.enhet,
                 behandlingstema = input.behandlingstema,

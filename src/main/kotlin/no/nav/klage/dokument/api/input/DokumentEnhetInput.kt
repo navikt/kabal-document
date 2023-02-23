@@ -28,11 +28,9 @@ data class DokumentEnhetWithDokumentreferanserInput(
 
     data class JournalfoeringDataInput(
         val sakenGjelder: PartIdInput,
-        val tema: String?,
-        val temaId: String?,
-        val sakFagsakId: String?,
-        val sakFagsystem: String?,
-        val sakFagsystemId: String?,
+        val temaId: String,
+        val sakFagsakId: String,
+        val sakFagsystemId: String,
         val kildeReferanse: String,
         val enhet: String,
         val behandlingstema: String,

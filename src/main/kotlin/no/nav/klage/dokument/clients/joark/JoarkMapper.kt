@@ -66,15 +66,11 @@ class JoarkMapper {
         )
 
     private fun createSak(journalfoeringData: JournalfoeringData): Sak =
-        if (journalfoeringData.sakFagsakId == null || journalfoeringData.sakFagsystem == null) {
-            Sak(Sakstype.GENERELL_SAK)
-        } else {
-            Sak(
-                sakstype = Sakstype.FAGSAK,
-                fagsaksystem = FagsaksSystem.valueOf(journalfoeringData.sakFagsystem.name),
-                fagsakid = journalfoeringData.sakFagsakId
-            )
-        }
+        Sak(
+            sakstype = Sakstype.FAGSAK,
+            fagsaksystem = FagsaksSystem.valueOf(journalfoeringData.sakFagsystem.name),
+            fagsakid = journalfoeringData.sakFagsakId
+        )
 
     private fun createBruker(journalfoeringData: JournalfoeringData): Bruker =
         Bruker(
