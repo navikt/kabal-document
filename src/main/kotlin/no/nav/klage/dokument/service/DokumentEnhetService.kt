@@ -2,7 +2,10 @@ package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
+import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.JournalfoertVedleggId
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
@@ -59,6 +62,27 @@ class DokumentEnhetService(
                 }
             } else {
                 logger.debug("Journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists: ${brevMottakerDistribusjon.journalpostId}")
+            }
+        }
+
+        dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
+            dokumentEnhet.journalfoerteVedlegg.forEach { journalfoertVedlegg ->
+                if (brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }) {
+                    journalfoeringService.tilknyttVedleggAsSystemUser(
+                        journalpostId = brevMottakerDistribusjon.journalpostId!!,
+                        journalfoertVedlegg = journalfoertVedlegg
+                    )
+
+                    brevMottakerDistribusjon.journalfoerteVedlegg.add(
+                        JournalfoertVedleggId(
+                            journalfoertVedleggId = journalfoertVedlegg.id
+                        )
+                    )
+
+                    brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+                } else {
+                    logger.debug("JournalfoertVedlegg already added to brevmottakerDistribusjon.")
+                }
             }
         }
 
@@ -169,6 +193,9 @@ class DokumentEnhetService(
         val vedlegg = input.dokumentreferanser.vedlegg?.map {
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(it)
         } ?: emptyList()
+        val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map {
+            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(it)
+        } ?: emptyList()
         val brevMottakerDistribusjoner = createBrevMottakerDistribusjoner(brevMottakere, hovedokument.id)
         return dokumentEnhetRepository.save(
             DokumentEnhet(
@@ -177,6 +204,7 @@ class DokumentEnhetService(
                 brevMottakerDistribusjoner = brevMottakerDistribusjoner,
                 hovedDokument = hovedokument,
                 vedlegg = vedlegg,
+                journalfoerteVedlegg = journalfoerteVedlegg,
                 dokumentType = dokumentType,
                 journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
             )

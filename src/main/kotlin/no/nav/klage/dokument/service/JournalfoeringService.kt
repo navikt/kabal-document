@@ -67,6 +67,16 @@ class JournalfoeringService(
         )
     }
 
+    fun tilknyttVedleggAsSystemUser(
+        journalpostId: String,
+        journalfoertVedlegg: JournalfoertVedlegg
+    ) {
+        return joarkGateway.tilknyttVedleggAsSystemUser(
+            journalpostId = journalpostId,
+            journalfoertVedlegg = journalfoertVedlegg,
+        )
+    }
+
     fun ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): LocalDateTime {
         if (brevMottakerDistribusjon.journalpostId == null) {
             throw JournalpostNotFoundException("Ingen journalpostId registrert i brevmottakerDistribusjon ${brevMottakerDistribusjon.id}")

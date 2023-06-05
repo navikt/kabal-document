@@ -1,7 +1,10 @@
 package no.nav.klage.dokument.domain.dokument
 
 import jakarta.persistence.*
+import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.Fetch
+import org.hibernate.annotations.FetchMode
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -25,6 +28,11 @@ class BrevMottakerDistribusjon(
     var dokdistReferanse: UUID? = null,
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "brevmottakerdist_id", referencedColumnName = "id", nullable = false)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 100)
+    var journalfoerteVedlegg: MutableSet<JournalfoertVedleggId> = mutableSetOf(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

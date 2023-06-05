@@ -1,6 +1,9 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.gateway.JoarkGateway
 import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
@@ -41,6 +44,20 @@ class DefaultJoarkGateway(
 
     override fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
         joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
+    }
+
+    override fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoertVedlegg: JournalfoertVedlegg) {
+        joarkClient.tilknyttVedleggAsSystemUser(
+            journalpostId = journalpostId,
+            input = TilknyttVedleggPayload(
+                dokument = listOf(
+                    TilknyttVedleggPayload.VedleggReference(
+                        kildeJournalpostId = journalfoertVedlegg.kildeJournalpostId,
+                        dokumentInfoId = journalfoertVedlegg.dokumentInfoId
+                    )
+                )
+            )
+        )
     }
 
     override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, title: String) {
