@@ -25,7 +25,7 @@ class JoarkClient(
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
         val journalpostResponse = joarkWebClient.post()
-            .uri("?forsoekFerdigstill=true")
+            .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
             .contentType(MediaType.APPLICATION_JSON)

@@ -2,8 +2,6 @@ package no.nav.klage.dokument.service
 
 
 import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
-import no.nav.klage.dokument.clients.saf.graphql.Journalstatus
-import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
@@ -16,7 +14,6 @@ import java.time.LocalDateTime
 class JournalfoeringService(
     private val joarkGateway: DefaultJoarkGateway,
     private val mellomlagerService: MellomlagerService,
-    private val safGraphQlClient: SafGraphQlClient,
 ) {
 
     companion object {
@@ -82,14 +79,9 @@ class JournalfoeringService(
             throw JournalpostNotFoundException("Ingen journalpostId registrert i brevmottakerDistribusjon ${brevMottakerDistribusjon.id}")
         }
 
-        val journalpostInSaf = safGraphQlClient.getJournalpostAsSystembruker(brevMottakerDistribusjon.journalpostId!!)
-            ?: throw JournalpostNotFoundException("Journalpost with id ${brevMottakerDistribusjon.journalpostId} not found in SAF")
-
-        if (journalpostInSaf.journalstatus != Journalstatus.FERDIGSTILT) {
-            finalizeJournalpostAsSystemUser(
-                journalpostId = brevMottakerDistribusjon.journalpostId!!
-            )
-        }
+        finalizeJournalpostAsSystemUser(
+            journalpostId = brevMottakerDistribusjon.journalpostId!!
+        )
 
         return LocalDateTime.now()
     }
