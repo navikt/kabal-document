@@ -33,9 +33,7 @@ abstract class OpplastetDokument(
         if (mellomlagerId != other.mellomlagerId) return false
         if (opplastet.truncatedTo(ChronoUnit.MILLIS) != other.opplastet.truncatedTo(ChronoUnit.MILLIS)) return false
         if (size != other.size) return false
-        if (name != other.name) return false
-
-        return true
+        return name == other.name
     }
 
     override fun hashCode(): Int = id.hashCode()
