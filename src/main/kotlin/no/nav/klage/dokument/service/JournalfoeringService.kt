@@ -107,9 +107,7 @@ class JournalfoeringService(
 
             if (title != other.title) return false
             if (!content.contentEquals(other.content)) return false
-            if (contentType != other.contentType) return false
-
-            return true
+            return contentType == other.contentType
         }
 
         override fun hashCode(): Int {

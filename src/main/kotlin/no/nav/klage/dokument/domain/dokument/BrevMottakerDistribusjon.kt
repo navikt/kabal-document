@@ -44,9 +44,7 @@ class BrevMottakerDistribusjon(
         if (opplastetDokumentId != other.opplastetDokumentId) return false
         if (journalpostId != other.journalpostId) return false
         if (ferdigstiltIJoark?.truncatedTo(ChronoUnit.MILLIS) != other.ferdigstiltIJoark?.truncatedTo(ChronoUnit.MILLIS)) return false
-        if (dokdistReferanse != other.dokdistReferanse) return false
-
-        return true
+        return dokdistReferanse == other.dokdistReferanse
     }
 
     override fun hashCode(): Int = id.hashCode()
