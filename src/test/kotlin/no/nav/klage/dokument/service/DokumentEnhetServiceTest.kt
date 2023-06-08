@@ -82,7 +82,7 @@ internal class DokumentEnhetServiceTest {
         brevMottakere = setOf(brevMottaker1, brevMottaker2),
         brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon1, brevMottakerDistribusjon2),
         hovedDokument = hovedDokument,
-        vedlegg = listOf(
+        vedlegg = setOf(
             OpplastetVedlegg(
                 mellomlagerId = "456",
                 opplastet = LocalDateTime.now(),
@@ -112,7 +112,7 @@ internal class DokumentEnhetServiceTest {
             journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker1,
                 hoveddokument = any(),
-                vedleggDokumentList = any(),
+                vedleggDokumentSet = any(),
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
@@ -122,7 +122,7 @@ internal class DokumentEnhetServiceTest {
             journalfoeringService.createJournalpostAsSystemUser(
                 brevMottaker = brevMottaker2,
                 hoveddokument = any(),
-                vedleggDokumentList = any(),
+                vedleggDokumentSet = any(),
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )

@@ -27,7 +27,7 @@ class JournalfoeringService(
         //Skal kanskje være noe annet, om vi skal støtte både utgående og inngående?
         brevMottaker: BrevMottaker,
         hoveddokument: OpplastetHoveddokument,
-        vedleggDokumentList: List<OpplastetVedlegg> = emptyList(),
+        vedleggDokumentSet: Set<OpplastetVedlegg> = emptySet(),
         journalfoeringData: JournalfoeringData,
         journalfoerendeSaksbehandlerIdent: String,
     ): String {
@@ -37,7 +37,7 @@ class JournalfoeringService(
             content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
             contentType = MediaType.APPLICATION_PDF
         )
-        val mellomlagredeVedleggDokument = vedleggDokumentList.map {
+        val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
             MellomlagretDokument(
                 title = it.name,
                 content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),

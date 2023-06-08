@@ -104,7 +104,7 @@ class DokumentEnhetRepositoryTest {
                 navn = "Test Person",
             ),
         ),
-        vedlegg = listOf(
+        vedlegg = setOf(
             OpplastetVedlegg(
                 mellomlagerId = "456",
                 opplastet = LocalDateTime.now(),

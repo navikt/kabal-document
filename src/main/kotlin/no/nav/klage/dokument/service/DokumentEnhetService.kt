@@ -152,7 +152,7 @@ class DokumentEnhetService(
         return journalfoeringService.createJournalpostAsSystemUser(
             brevMottaker = brevMottakerDistribusjon.brevMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,
-            vedleggDokumentList = dokumentEnhet.vedlegg,
+            vedleggDokumentSet = dokumentEnhet.vedlegg,
             journalfoeringData = dokumentEnhet.journalfoeringData,
             journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
         )
@@ -192,10 +192,10 @@ class DokumentEnhetService(
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
         val vedlegg = input.dokumentreferanser.vedlegg?.map {
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(it)
-        } ?: emptyList()
+        }?.toSet() ?: emptySet()
         val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map {
             dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(it)
-        } ?: emptyList()
+        }?.toSet() ?: emptySet()
         val brevMottakerDistribusjoner = createBrevMottakerDistribusjoner(brevMottakere, hovedokument.id)
         return dokumentEnhetRepository.save(
             DokumentEnhet(
