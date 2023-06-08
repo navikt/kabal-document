@@ -66,6 +66,7 @@ class DokumentEnhetService(
         }
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
+            //TODO: Gjør et enkelt kall mot tilknyttVedlegg med alle vedleggene.
             dokumentEnhet.journalfoerteVedlegg.forEach { journalfoertVedlegg ->
                 if (brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }) {
                     journalfoeringService.tilknyttVedleggAsSystemUser(
