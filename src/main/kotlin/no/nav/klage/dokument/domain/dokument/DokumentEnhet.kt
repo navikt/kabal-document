@@ -30,7 +30,12 @@ class DokumentEnhet(
     @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
-    var vedlegg: List<OpplastetVedlegg> = emptyList(),
+    var vedlegg: Set<OpplastetVedlegg> = emptySet(),
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 100)
+    var journalfoerteVedlegg: Set<JournalfoertVedlegg> = emptySet(),
     @Column(name = "dokument_type_id")
     @Convert(converter = DokumentTypeConverter::class)
     val dokumentType: DokumentType,
