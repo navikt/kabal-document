@@ -12,7 +12,7 @@ val testContainersVersion = "1.18.1"
 val shedlockVersion = "5.3.0"
 val archunitVersion = "1.0.1"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "1.3.5"
+val kodeverkVersion = "1.3.11"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
