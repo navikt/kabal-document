@@ -12,14 +12,14 @@ val testContainersVersion = "1.18.3"
 val shedlockVersion = "5.5.0"
 val archunitVersion = "1.0.1"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "v1.4.0"
+val kodeverkVersion = "1.5.5"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
+    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
 plugins {
@@ -49,7 +49,7 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
-    implementation("com.github.navikt:klage-kodeverk:$kodeverkVersion")
+    implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
     implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:$shedlockVersion")
