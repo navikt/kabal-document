@@ -90,7 +90,7 @@ class JournalfoeringService(
         joarkGateway.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
-            title = title
+            newTitle = title
         )
     }
 

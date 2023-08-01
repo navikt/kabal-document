@@ -60,11 +60,11 @@ class DefaultJoarkGateway(
         )
     }
 
-    override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, title: String) {
+    override fun updateDocumentTitleOnBehalfOf(journalpostId: String, dokumentInfoId: String, newTitle: String) {
         joarkClient.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
             input = joarkMapper.createUpdateDocumentTitleJournalpostInput(
-                dokumentInfoId = dokumentInfoId, title = title
+                dokumentInfoId = dokumentInfoId, title = newTitle
             )
         )
     }
