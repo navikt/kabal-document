@@ -1,7 +1,9 @@
 package no.nav.klage.dokument.api.input
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDateTime
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentEnhetWithDokumentreferanserInput(
     val brevMottakere: List<BrevMottakerInput>,
     val journalfoeringData: JournalfoeringDataInput,
