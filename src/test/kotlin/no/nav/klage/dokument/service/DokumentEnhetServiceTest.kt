@@ -87,7 +87,8 @@ internal class DokumentEnhetServiceTest {
                 mellomlagerId = "456",
                 opplastet = LocalDateTime.now(),
                 size = 1001L,
-                name = "fil2.pdf"
+                name = "fil2.pdf",
+                index = 0,
             )
         ),
         avsluttet = null,
