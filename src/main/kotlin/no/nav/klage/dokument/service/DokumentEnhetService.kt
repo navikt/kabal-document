@@ -38,14 +38,18 @@ class DokumentEnhetService(
         val dokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhetId)
 
         if (dokumentEnhet.isAvsluttet()) {
-            logger.debug("Dokumentenhet $dokumentEnhetId already finalized.")
+            logger.debug("Dokumentenhet {} already finalized.", dokumentEnhetId)
             return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
         }
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
             if (brevMottakerDistribusjon.journalpostId == null) {
                 try {
-                    logger.debug("Creating journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
+                    logger.debug(
+                        "Creating journalpost for brevMottakerDistribusjon {} in dokumentEnhet {}",
+                        brevMottakerDistribusjon.id,
+                        dokumentEnhet.id
+                    )
                     brevMottakerDistribusjon.journalpostId =
                         createJournalpost(
                             brevMottakerDistribusjon = brevMottakerDistribusjon,
@@ -61,7 +65,12 @@ class DokumentEnhetService(
                     throw t
                 }
             } else {
-                logger.debug("Journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists: ${brevMottakerDistribusjon.journalpostId}")
+                logger.debug(
+                    "Journalpost for brevMottakerDistribusjon {} in dokumentEnhet {} already exists: {}",
+                    brevMottakerDistribusjon.id,
+                    dokumentEnhet.id,
+                    brevMottakerDistribusjon.journalpostId
+                )
             }
         }
 
