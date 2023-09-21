@@ -200,11 +200,11 @@ class DokumentEnhetService(
         val brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere)
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
-        val vedlegg = input.dokumentreferanser.vedlegg?.map {
-            dokumentEnhetInputMapper.mapDokumentInputToVedlegg(it)
+        val vedlegg = input.dokumentreferanser.vedlegg?.mapIndexed { index, document ->
+            dokumentEnhetInputMapper.mapDokumentInputToVedlegg(document, index)
         }?.toSet() ?: emptySet()
-        val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map {
-            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(it)
+        val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.mapIndexed { index, document ->
+            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, index)
         }?.toSet() ?: emptySet()
         val brevMottakerDistribusjoner = createBrevMottakerDistribusjoner(brevMottakere, hovedokument.id)
         return dokumentEnhetRepository.save(

@@ -67,20 +67,20 @@ class DokumentEnhetInputMapper {
             name = dokument.name,
         )
 
-    fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument): OpplastetVedlegg =
+    fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument, index: Int): OpplastetVedlegg =
         OpplastetVedlegg(
             mellomlagerId = dokument.mellomlagerId,
             opplastet = dokument.opplastet,
             size = dokument.size,
             name = dokument.name,
-            index = dokument.index,
+            index = index,
         )
 
-    fun mapDokumentInputToJournalfoertVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument): JournalfoertVedlegg =
+    fun mapDokumentInputToJournalfoertVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument, index: Int): JournalfoertVedlegg =
         JournalfoertVedlegg(
             kildeJournalpostId = dokument.kildeJournalpostId,
             dokumentInfoId = dokument.dokumentInfoId,
-            index = dokument.index,
+            index = index,
         )
 
     private fun mapPartIdInput(partIdInput: DokumentEnhetWithDokumentreferanserInput.PartIdInput): PartId {
