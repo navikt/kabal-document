@@ -41,7 +41,7 @@ class DokumentEnhetController(
     fun fullfoerDokumentEnhet(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
     ): DokumentEnhetFullfoertView {
-        logger.debug("Kall mottatt på fullfoerDokumentEnhet for $dokumentEnhetId")
+        logger.debug("Kall mottatt på fullfoerDokumentEnhet for {}", dokumentEnhetId)
         val dokumentEnhet = dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetId)
         if (!dokumentEnhet.isAvsluttet()) {
             throw RuntimeException("DokumentEnhet (id: $dokumentEnhetId) feilet under fullføring. Se logger.")

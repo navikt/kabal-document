@@ -73,12 +73,14 @@ class DokumentEnhetInputMapper {
             opplastet = dokument.opplastet,
             size = dokument.size,
             name = dokument.name,
+            index = dokument.index,
         )
 
     fun mapDokumentInputToJournalfoertVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument): JournalfoertVedlegg =
         JournalfoertVedlegg(
             kildeJournalpostId = dokument.kildeJournalpostId,
             dokumentInfoId = dokument.dokumentInfoId,
+            index = dokument.index,
         )
 
     private fun mapPartIdInput(partIdInput: DokumentEnhetWithDokumentreferanserInput.PartIdInput): PartId {

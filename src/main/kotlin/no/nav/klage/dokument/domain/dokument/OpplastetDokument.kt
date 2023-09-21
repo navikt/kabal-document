@@ -21,7 +21,9 @@ abstract class OpplastetDokument(
     val name: String,
     @Column(name = "type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    val type: OpplastetDokumentType
+    val type: OpplastetDokumentType,
+    @Column(name = "index")
+    val index: Int,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

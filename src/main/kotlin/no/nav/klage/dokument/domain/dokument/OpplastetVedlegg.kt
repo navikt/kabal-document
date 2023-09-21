@@ -12,12 +12,14 @@ class OpplastetVedlegg(
     mellomlagerId: String,
     opplastet: LocalDateTime,
     size: Long,
-    name: String
+    name: String,
+    index: Int,
 ) : OpplastetDokument(
     id = id,
     mellomlagerId = mellomlagerId,
     opplastet = opplastet,
     size = size,
     name = name,
-    type = OpplastetDokumentType.VEDLEGG
+    type = OpplastetDokumentType.VEDLEGG,
+    index = index,
 )

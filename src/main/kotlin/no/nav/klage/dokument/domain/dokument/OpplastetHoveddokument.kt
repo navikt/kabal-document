@@ -19,5 +19,6 @@ class OpplastetHoveddokument(
     opplastet = opplastet,
     size = size,
     name = name,
-    type = OpplastetDokumentType.HOVEDDOKUMENT
+    type = OpplastetDokumentType.HOVEDDOKUMENT,
+    index = 0,
 )

@@ -15,4 +15,6 @@ class JournalfoertVedlegg(
     val kildeJournalpostId: String,
     @Column(name = "dokument_info_id")
     val dokumentInfoId: String,
+    @Column(name = "index")
+    val index: Int,
 )
