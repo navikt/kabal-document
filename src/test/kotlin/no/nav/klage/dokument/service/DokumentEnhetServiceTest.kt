@@ -47,7 +47,6 @@ internal class DokumentEnhetServiceTest {
 
     val hovedDokument = OpplastetHoveddokument(
         mellomlagerId = "123",
-        size = 1000L,
         name = "fil.pdf"
     )
 
@@ -84,7 +83,6 @@ internal class DokumentEnhetServiceTest {
         vedlegg = setOf(
             OpplastetVedlegg(
                 mellomlagerId = "456",
-                size = 1001L,
                 name = "fil2.pdf",
                 index = 0,
             )

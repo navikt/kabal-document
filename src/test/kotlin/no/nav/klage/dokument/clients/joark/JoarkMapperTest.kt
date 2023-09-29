@@ -58,7 +58,6 @@ internal class JoarkMapperTest {
     private val opplastetHovedDokument = OpplastetHoveddokument(
         id = OPPLASTET_DOKUMENT_ID,
         mellomlagerId = MELLOMLAGER_ID.toString(),
-        size = SIZE,
         name = DOKUMENT_NAME
     )
 
