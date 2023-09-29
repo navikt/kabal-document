@@ -62,16 +62,12 @@ class DokumentEnhetInputMapper {
     fun mapDokumentInputToHoveddokument(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument): OpplastetHoveddokument =
         OpplastetHoveddokument(
             mellomlagerId = dokument.mellomlagerId,
-            opplastet = dokument.opplastet,
-            size = dokument.size,
             name = dokument.name,
         )
 
     fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument, index: Int): OpplastetVedlegg =
         OpplastetVedlegg(
             mellomlagerId = dokument.mellomlagerId,
-            opplastet = dokument.opplastet,
-            size = dokument.size,
             name = dokument.name,
             index = index,
         )

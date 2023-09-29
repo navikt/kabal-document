@@ -11,7 +11,6 @@ import no.nav.klage.kodeverk.Tema
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import java.time.LocalDateTime
 import java.util.*
 
 internal class JoarkMapperTest {
@@ -28,7 +27,6 @@ internal class JoarkMapperTest {
     private val OPPLASTET_DOKUMENT_ID = UUID.randomUUID()
     private val MELLOMLAGER_ID = UUID.randomUUID()
     private val BREVMOTTAGER_ID = UUID.randomUUID()
-    private val OPPLASTET = LocalDateTime.now()
     private val SIZE = 16L
     private val DOKUMENT_NAME = "DOKUMENT_NAME"
     private val MELLOMLAGER_TITLE = "MELLOMLAGER_TITLE"
@@ -60,7 +58,6 @@ internal class JoarkMapperTest {
     private val opplastetHovedDokument = OpplastetHoveddokument(
         id = OPPLASTET_DOKUMENT_ID,
         mellomlagerId = MELLOMLAGER_ID.toString(),
-        opplastet = OPPLASTET,
         size = SIZE,
         name = DOKUMENT_NAME
     )

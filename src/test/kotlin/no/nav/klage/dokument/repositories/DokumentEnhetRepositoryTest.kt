@@ -107,7 +107,6 @@ class DokumentEnhetRepositoryTest {
         vedlegg = setOf(
             OpplastetVedlegg(
                 mellomlagerId = "456",
-                opplastet = LocalDateTime.now(),
                 size = 1001L,
                 name = "fil2.pdf",
                 index = 0,
@@ -115,7 +114,6 @@ class DokumentEnhetRepositoryTest {
         ),
         hovedDokument = OpplastetHoveddokument(
             mellomlagerId = "4567",
-            opplastet = LocalDateTime.now(),
             size = 1001L,
             name = "fil1.pdf",
         ),
