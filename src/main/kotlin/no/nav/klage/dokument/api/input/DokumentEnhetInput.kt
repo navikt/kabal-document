@@ -1,7 +1,6 @@
 package no.nav.klage.dokument.api.input
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import java.time.LocalDateTime
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentEnhetWithDokumentreferanserInput(
@@ -18,8 +17,6 @@ data class DokumentEnhetWithDokumentreferanserInput(
     ) {
         data class Dokument(
             val mellomlagerId: String,
-            val opplastet: LocalDateTime,
-            val size: Long,
             val name: String,
         )
 
