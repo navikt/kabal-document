@@ -77,7 +77,12 @@ enum class FagsaksSystem {
     EF,
     KONT,
     SUPSTONAD,
-    OMSORGSPENGER
+    OMSORGSPENGER,
+    FS22,
+    HJELPEMIDLER,
+    BARNEBRILLER,
+    EY,
+    KABAL,
 }
 
 enum class ArkivsaksSystem {
