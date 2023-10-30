@@ -32,14 +32,12 @@ internal class DokumentEnhetServiceTest {
 
     val JOURNALPOST_RESPONSE_1 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_1,
-        melding = "",
         journalpostferdigstilt = false,
         dokumenter = listOf()
     )
 
     val JOURNALPOST_RESPONSE_2 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_2,
-        melding = "",
         journalpostferdigstilt = false,
         dokumenter = listOf()
     )
