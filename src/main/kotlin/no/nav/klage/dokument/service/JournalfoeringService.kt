@@ -2,6 +2,7 @@ package no.nav.klage.dokument.service
 
 
 import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
+import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
@@ -30,8 +31,12 @@ class JournalfoeringService(
         vedleggDokumentSet: Set<OpplastetVedlegg> = emptySet(),
         journalfoeringData: JournalfoeringData,
         journalfoerendeSaksbehandlerIdent: String,
-    ): String {
-        logger.debug("Skal opprette journalpost som systembruker for brevMottaker ${brevMottaker.id} og dokument ${hoveddokument.id}")
+    ): JournalpostResponse {
+        logger.debug(
+            "Skal opprette journalpost som systembruker for brevMottaker {} og dokument {}",
+            brevMottaker.id,
+            hoveddokument.id
+        )
         val mellomlagretHovedDokument = MellomlagretDokument(
             title = hoveddokument.name,
             content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),

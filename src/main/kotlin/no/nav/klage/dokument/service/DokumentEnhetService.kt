@@ -2,10 +2,8 @@ package no.nav.klage.dokument.service
 
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
-import no.nav.klage.dokument.domain.dokument.BrevMottakerDistribusjon
-import no.nav.klage.dokument.domain.dokument.DokumentEnhet
-import no.nav.klage.dokument.domain.dokument.JournalfoertVedleggId
+import no.nav.klage.dokument.clients.joark.JournalpostResponse
+import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
@@ -50,11 +48,32 @@ class DokumentEnhetService(
                         brevMottakerDistribusjon.id,
                         dokumentEnhet.id
                     )
-                    brevMottakerDistribusjon.journalpostId =
-                        createJournalpost(
-                            brevMottakerDistribusjon = brevMottakerDistribusjon,
-                            dokumentEnhet = dokumentEnhet
-                        )
+                    val journalpostResponse = createJournalpost(
+                        brevMottakerDistribusjon = brevMottakerDistribusjon,
+                        dokumentEnhet = dokumentEnhet
+                    )
+                    brevMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
+
+                    journalpostResponse.dokumenter.mapIndexed{ index, dokument ->
+                        if (index == 0) {
+                            dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
+                                DokumentInfoReference(
+                                    journalpostId = journalpostResponse.journalpostId,
+                                    dokumentInfoId = dokument.dokumentInfoId,
+                                )
+                            )
+                        } else {
+                            val currentDokumentEnhetVedlegg = dokumentEnhet.vedlegg.find { it.index == index - 1 }
+                            currentDokumentEnhetVedlegg?.dokumentInfoReferenceList?.add(
+                                DokumentInfoReference(
+                                    journalpostId = journalpostResponse.journalpostId,
+                                    dokumentInfoId = dokument.dokumentInfoId,
+                                )
+                            )
+                        }
+                    }
+
+
                     brevMottakerDistribusjon.modified = LocalDateTime.now()
                     brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
                 } catch (t: Throwable) {
@@ -158,7 +177,7 @@ class DokumentEnhetService(
     fun createJournalpost(
         brevMottakerDistribusjon: BrevMottakerDistribusjon,
         dokumentEnhet: DokumentEnhet
-    ): String {
+    ): JournalpostResponse {
         return journalfoeringService.createJournalpostAsSystemUser(
             brevMottaker = brevMottakerDistribusjon.brevMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,

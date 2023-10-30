@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
+import java.util.*
 
 @ActiveProfiles("local")
 @DataJpaTest
@@ -109,11 +110,13 @@ class DokumentEnhetRepositoryTest {
                 mellomlagerId = "456",
                 name = "fil2.pdf",
                 index = 0,
+                dokumentUnderArbeidReferanse = UUID.randomUUID(),
             )
         ),
         hovedDokument = OpplastetHoveddokument(
             mellomlagerId = "4567",
             name = "fil1.pdf",
+            dokumentUnderArbeidReferanse = UUID.randomUUID(),
         ),
         dokumentType = DokumentType.VEDTAK,
         brevMottakerDistribusjoner = setOf(),

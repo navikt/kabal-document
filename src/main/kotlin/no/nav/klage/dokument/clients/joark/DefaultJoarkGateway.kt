@@ -29,7 +29,7 @@ class DefaultJoarkGateway(
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
         brevMottaker: BrevMottaker,
         journalfoerendeSaksbehandlerIdent: String,
-    ): String =
+    ): JournalpostResponse =
         joarkClient.createJournalpostInJoarkAsSystemUser(
             journalpost = joarkMapper.createJournalpost(
                 journalfoeringData = journalfoeringData,
@@ -39,7 +39,7 @@ class DefaultJoarkGateway(
                 brevMottaker = brevMottaker
             ),
             journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
-        ).journalpostId
+        )
 
 
     override fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {

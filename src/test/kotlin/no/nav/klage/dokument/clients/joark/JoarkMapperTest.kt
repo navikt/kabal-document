@@ -58,7 +58,8 @@ internal class JoarkMapperTest {
     private val opplastetHovedDokument = OpplastetHoveddokument(
         id = OPPLASTET_DOKUMENT_ID,
         mellomlagerId = MELLOMLAGER_ID.toString(),
-        name = DOKUMENT_NAME
+        name = DOKUMENT_NAME,
+        dokumentUnderArbeidReferanse = UUID.randomUUID(),
     )
 
     private val mellomlagretDokument = JournalfoeringService.MellomlagretDokument(

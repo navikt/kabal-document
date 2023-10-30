@@ -63,6 +63,7 @@ class DokumentEnhetInputMapper {
         OpplastetHoveddokument(
             mellomlagerId = dokument.mellomlagerId,
             name = dokument.name,
+            dokumentUnderArbeidReferanse = dokument.dokumentUnderArbeidReferanse,
         )
 
     fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument, index: Int): OpplastetVedlegg =
@@ -70,6 +71,7 @@ class DokumentEnhetInputMapper {
             mellomlagerId = dokument.mellomlagerId,
             name = dokument.name,
             index = index,
+            dokumentUnderArbeidReferanse = dokument.dokumentUnderArbeidReferanse
         )
 
     fun mapDokumentInputToJournalfoertVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument, index: Int): JournalfoertVedlegg =
