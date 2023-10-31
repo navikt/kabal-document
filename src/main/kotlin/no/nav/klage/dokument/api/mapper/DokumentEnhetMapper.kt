@@ -4,10 +4,16 @@ package no.nav.klage.dokument.api.mapper
 import no.nav.klage.dokument.api.view.*
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
+import no.nav.klage.dokument.util.getLogger
 import org.springframework.stereotype.Service
 
 @Service
 class DokumentEnhetMapper {
+    companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        private val logger = getLogger(javaClass.enclosingClass)
+    }
+
     fun mapToDokumentEnhetView(dokumentEnhet: DokumentEnhet): DokumentEnhetView {
         return DokumentEnhetView(
             id = dokumentEnhet.id.toString(),
@@ -18,7 +24,7 @@ class DokumentEnhetMapper {
         val journalpostIdList = dokumentEnhet.brevMottakerDistribusjoner.map {
             it.journalpostId!!
         }
-        return DokumentEnhetFullfoertView(
+        val dokumentEnhetFullfoertView = DokumentEnhetFullfoertView(
             journalpostIdList.map {
                 BrevMottakerWithJoarkAndDokDistInfo(
                     journalpostId = JournalpostId(value = it),
@@ -27,6 +33,10 @@ class DokumentEnhetMapper {
             journalpostIdList = journalpostIdList,
             dokumentUnderArbeidWithJoarkReferencesList = getDokumentUnderArbeidWithJoarkReferencesList(dokumentEnhet)
         )
+
+        logger.debug("returning output to kabal-api: $dokumentEnhetFullfoertView")
+
+        return dokumentEnhetFullfoertView
     }
 
     private fun getDokumentUnderArbeidWithJoarkReferencesList(dokumentEnhet: DokumentEnhet): List<DokumentUnderArbeidWithJoarkReferences> {
