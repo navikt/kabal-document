@@ -21,8 +21,8 @@ abstract class OpplastetDokument(
     val type: OpplastetDokumentType,
     @Column(name = "index")
     val index: Int,
-    @Column(name = "dokument_under_arbeid_referanse")
-    val dokumentUnderArbeidReferanse: UUID?,
+    @Column(name = "source_reference")
+    val sourceReference: UUID?,
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "opplastet_dokument_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)

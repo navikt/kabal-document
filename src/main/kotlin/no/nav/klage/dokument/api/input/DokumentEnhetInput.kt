@@ -19,7 +19,7 @@ data class DokumentEnhetWithDokumentreferanserInput(
         data class Dokument(
             val mellomlagerId: String,
             val name: String,
-            val dokumentUnderArbeidReferanse: UUID?,
+            val sourceReference: UUID?,
         )
 
         data class JournalfoertDokument(

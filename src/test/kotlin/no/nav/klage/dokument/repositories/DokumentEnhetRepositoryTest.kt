@@ -110,13 +110,13 @@ class DokumentEnhetRepositoryTest {
                 mellomlagerId = "456",
                 name = "fil2.pdf",
                 index = 0,
-                dokumentUnderArbeidReferanse = UUID.randomUUID(),
+                sourceReference = UUID.randomUUID(),
             )
         ),
         hovedDokument = OpplastetHoveddokument(
             mellomlagerId = "4567",
             name = "fil1.pdf",
-            dokumentUnderArbeidReferanse = UUID.randomUUID(),
+            sourceReference = UUID.randomUUID(),
         ),
         dokumentType = DokumentType.VEDTAK,
         brevMottakerDistribusjoner = setOf(),

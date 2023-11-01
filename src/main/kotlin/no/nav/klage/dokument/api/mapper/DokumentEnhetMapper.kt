@@ -31,27 +31,27 @@ class DokumentEnhetMapper {
                 )
             },
             journalpostIdList = journalpostIdList,
-            dokumentUnderArbeidWithJoarkReferencesList = getDokumentUnderArbeidWithJoarkReferencesList(dokumentEnhet)
+            sourceReferenceWithJoarkReferencesList = getSourceReferenceWithJoarkReferencesList(dokumentEnhet)
         )
 
         return dokumentEnhetFullfoertView
     }
 
-    private fun getDokumentUnderArbeidWithJoarkReferencesList(dokumentEnhet: DokumentEnhet): List<DokumentUnderArbeidWithJoarkReferences> {
-        val output = mutableListOf<DokumentUnderArbeidWithJoarkReferences>()
+    private fun getSourceReferenceWithJoarkReferencesList(dokumentEnhet: DokumentEnhet): List<SourceReferenceWithJoarkReferences> {
+        val output = mutableListOf<SourceReferenceWithJoarkReferences>()
 
-        dokumentEnhet.hovedDokument?.let { getDokumentUnderArbeidWithJoarkReferences(it) }?.let { output.add(it) }
+        dokumentEnhet.hovedDokument?.let { getSourceReferenceWithJoarkReferences(it) }?.let { output.add(it) }
 
         dokumentEnhet.vedlegg.map {
-            output.add(getDokumentUnderArbeidWithJoarkReferences(it))
+            output.add(getSourceReferenceWithJoarkReferences(it))
         }
 
         return output
     }
 
-    private fun getDokumentUnderArbeidWithJoarkReferences(opplastetDokument: OpplastetDokument): DokumentUnderArbeidWithJoarkReferences {
-        return DokumentUnderArbeidWithJoarkReferences(
-            dokumentUnderArbeidReferanse = opplastetDokument.dokumentUnderArbeidReferanse,
+    private fun getSourceReferenceWithJoarkReferences(opplastetDokument: OpplastetDokument): SourceReferenceWithJoarkReferences {
+        return SourceReferenceWithJoarkReferences(
+            sourceReference = opplastetDokument.sourceReference,
             joarkReferenceList = opplastetDokument.dokumentInfoReferenceList.map { getJoarkReference(it) },
         )
     }

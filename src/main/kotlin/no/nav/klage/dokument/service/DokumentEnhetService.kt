@@ -54,7 +54,7 @@ class DokumentEnhetService(
                     )
                     brevMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
-                    journalpostResponse.dokumenter.mapIndexed{ index, dokument ->
+                    journalpostResponse.dokumenter.forEachIndexed{ index, dokument ->
                         if (index == 0) {
                             dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
                                 DokumentInfoReference(

@@ -6,7 +6,7 @@ data class DokumentEnhetFullfoertView(
     //Remove after kabal-api starts using journalpostIdList.
     val brevMottakerWithJoarkAndDokDistInfoList: List<BrevMottakerWithJoarkAndDokDistInfo>,
     val journalpostIdList: List<String>,
-    val dokumentUnderArbeidWithJoarkReferencesList: List<DokumentUnderArbeidWithJoarkReferences>,
+    val sourceReferenceWithJoarkReferencesList: List<SourceReferenceWithJoarkReferences>,
 )
 
 data class BrevMottakerWithJoarkAndDokDistInfo(
@@ -15,8 +15,8 @@ data class BrevMottakerWithJoarkAndDokDistInfo(
 
 data class JournalpostId(val value: String)
 
-data class DokumentUnderArbeidWithJoarkReferences(
-    val dokumentUnderArbeidReferanse: UUID?,
+data class SourceReferenceWithJoarkReferences(
+    val sourceReference: UUID?,
     val joarkReferenceList: List<JoarkReference>
 )
 

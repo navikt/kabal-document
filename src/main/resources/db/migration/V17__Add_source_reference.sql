@@ -1,5 +1,5 @@
 ALTER TABLE document.opplastetdokument
-    ADD COLUMN dokument_under_arbeid_referanse UUID;
+    ADD COLUMN source_reference UUID;
 
 CREATE TABLE document.dokument_info_reference
 (

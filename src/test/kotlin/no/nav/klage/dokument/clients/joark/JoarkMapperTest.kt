@@ -59,7 +59,7 @@ internal class JoarkMapperTest {
         id = OPPLASTET_DOKUMENT_ID,
         mellomlagerId = MELLOMLAGER_ID.toString(),
         name = DOKUMENT_NAME,
-        dokumentUnderArbeidReferanse = UUID.randomUUID(),
+        sourceReference = UUID.randomUUID(),
     )
 
     private val mellomlagretDokument = JournalfoeringService.MellomlagretDokument(

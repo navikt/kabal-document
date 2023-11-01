@@ -61,7 +61,7 @@ internal class DokumentEnhetServiceTest {
     val hovedDokument = OpplastetHoveddokument(
         mellomlagerId = "123",
         name = "fil.pdf",
-        dokumentUnderArbeidReferanse = UUID.randomUUID(),
+        sourceReference = UUID.randomUUID(),
     )
 
     val brevMottakerDistribusjon1 = BrevMottakerDistribusjon(
@@ -99,7 +99,7 @@ internal class DokumentEnhetServiceTest {
                 mellomlagerId = "456",
                 name = "fil2.pdf",
                 index = 0,
-                dokumentUnderArbeidReferanse = UUID.randomUUID(),
+                sourceReference = UUID.randomUUID(),
             )
         ),
         avsluttet = null,
