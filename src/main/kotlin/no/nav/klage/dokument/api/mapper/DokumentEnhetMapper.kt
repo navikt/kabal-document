@@ -34,6 +34,8 @@ class DokumentEnhetMapper {
             sourceReferenceWithJoarkReferencesList = getSourceReferenceWithJoarkReferencesList(dokumentEnhet)
         )
 
+        logger.debug("Returnerer til kabal-api: $dokumentEnhetFullfoertView")
+
         return dokumentEnhetFullfoertView
     }
 
