@@ -9,10 +9,10 @@ val springRetryVersion = "2.0.4"
 val springMockkVersion = "4.0.2"
 val springDocVersion = "2.2.0"
 val testContainersVersion = "1.19.1"
-val shedlockVersion = "5.9.0"
-val archunitVersion = "1.1.0"
+val shedlockVersion = "5.9.1"
+val archunitVersion = "1.2.0"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "1.6.12"
+val kodeverkVersion = "1.6.17"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -23,8 +23,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "1.9.10"
-    id("org.springframework.boot") version "3.1.4"
+    val kotlinVersion = "1.9.20"
+    id("org.springframework.boot") version "3.1.5"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
