@@ -9,11 +9,13 @@ import java.util.*
 class OpplastetHoveddokument(
     id: UUID = UUID.randomUUID(),
     mellomlagerId: String,
-    name: String
+    name: String,
+    sourceReference: UUID?,
 ) : OpplastetDokument(
     id = id,
     mellomlagerId = mellomlagerId,
     name = name,
     type = OpplastetDokumentType.HOVEDDOKUMENT,
     index = 0,
+    sourceReference = sourceReference,
 )

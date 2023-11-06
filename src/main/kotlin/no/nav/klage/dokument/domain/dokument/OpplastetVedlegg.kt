@@ -11,10 +11,12 @@ class OpplastetVedlegg(
     mellomlagerId: String,
     name: String,
     index: Int,
+    sourceReference: UUID?,
 ) : OpplastetDokument(
     id = id,
     mellomlagerId = mellomlagerId,
     name = name,
     type = OpplastetDokumentType.VEDLEGG,
     index = index,
+    sourceReference = sourceReference,
 )

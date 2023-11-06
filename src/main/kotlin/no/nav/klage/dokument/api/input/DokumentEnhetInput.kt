@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.api.input
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentEnhetWithDokumentreferanserInput(
@@ -18,6 +19,7 @@ data class DokumentEnhetWithDokumentreferanserInput(
         data class Dokument(
             val mellomlagerId: String,
             val name: String,
+            val sourceReference: UUID?,
         )
 
         data class JournalfoertDokument(

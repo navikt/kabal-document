@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.gateway
 
+import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
@@ -20,7 +21,7 @@ interface JoarkGateway {
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
         brevMottaker: BrevMottaker,
         journalfoerendeSaksbehandlerIdent: String,
-    ): String
+    ): JournalpostResponse
 
     fun updateDocumentTitleOnBehalfOf(
         journalpostId: String,

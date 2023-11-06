@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
+import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
@@ -29,6 +30,18 @@ internal class DokumentEnhetServiceTest {
     val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
     val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
 
+    val JOURNALPOST_RESPONSE_1 = JournalpostResponse(
+        journalpostId = JOURNALPOST_ID_1,
+        journalpostferdigstilt = false,
+        dokumenter = listOf()
+    )
+
+    val JOURNALPOST_RESPONSE_2 = JournalpostResponse(
+        journalpostId = JOURNALPOST_ID_2,
+        journalpostferdigstilt = false,
+        dokumenter = listOf()
+    )
+
     val brevMottaker1 = BrevMottaker(
         partId = PartId(
             type = PartIdType.PERSON,
@@ -47,7 +60,8 @@ internal class DokumentEnhetServiceTest {
 
     val hovedDokument = OpplastetHoveddokument(
         mellomlagerId = "123",
-        name = "fil.pdf"
+        name = "fil.pdf",
+        sourceReference = UUID.randomUUID(),
     )
 
     val brevMottakerDistribusjon1 = BrevMottakerDistribusjon(
@@ -85,6 +99,7 @@ internal class DokumentEnhetServiceTest {
                 mellomlagerId = "456",
                 name = "fil2.pdf",
                 index = 0,
+                sourceReference = UUID.randomUUID(),
             )
         ),
         avsluttet = null,
@@ -113,7 +128,7 @@ internal class DokumentEnhetServiceTest {
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
-        } returns JOURNALPOST_ID_1
+        } returns JOURNALPOST_RESPONSE_1
 
         every {
             journalfoeringService.createJournalpostAsSystemUser(
@@ -123,7 +138,7 @@ internal class DokumentEnhetServiceTest {
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
-        } returns JOURNALPOST_ID_2
+        } returns JOURNALPOST_RESPONSE_2
 
         every { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) } returns LocalDateTime.now()
         every { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any()) } returns UUID.randomUUID()
