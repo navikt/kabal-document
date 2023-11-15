@@ -8,11 +8,11 @@ val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.4"
 val springMockkVersion = "4.0.2"
 val springDocVersion = "2.2.0"
-val testContainersVersion = "1.19.1"
+val testContainersVersion = "1.19.2"
 val shedlockVersion = "5.10.0"
 val archunitVersion = "1.2.0"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "1.6.18"
+val kodeverkVersion = "1.6.19"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
