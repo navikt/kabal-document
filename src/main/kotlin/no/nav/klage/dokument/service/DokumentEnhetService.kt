@@ -95,11 +95,24 @@ class DokumentEnhetService(
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
             //TODO: Gjør et enkelt kall mot tilknyttVedlegg med alle vedleggene.
+
+            val toJournalfoering = brevMottakerDistribusjon.journalfoerteVedlegg.filter { it.journalfoertVedleggId == null }
+
+            journalfoeringService.tilknyttVedleggAsSystemUser(
+                journalpostId = brevMottakerDistribusjon.journalpostId!!,
+                journalfoerteVedlegg = toJournalfoering.map {
+                    JournalfoertVedlegg(
+                        kildeJournalpostId = it.
+                    )
+                }
+            )
+
+
             dokumentEnhet.journalfoerteVedlegg.forEach { journalfoertVedlegg ->
                 if (brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }) {
                     journalfoeringService.tilknyttVedleggAsSystemUser(
                         journalpostId = brevMottakerDistribusjon.journalpostId!!,
-                        journalfoertVedlegg = journalfoertVedlegg
+                        journalfoerteVedlegg = journalfoertVedlegg
                     )
 
                     brevMottakerDistribusjon.journalfoerteVedlegg.add(

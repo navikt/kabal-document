@@ -4,6 +4,8 @@ import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -54,14 +56,14 @@ class JoarkClient(
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
     }
 
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload) {
+    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): FeiledeDokumenter? {
         joarkWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(input)
             .retrieve()
-            .bodyToMono<String>()
+            .bodyToMono<FeiledeDokumenter>()
             .block()
             ?: throw RuntimeException("Could not tilknytt vedlegg.")
 

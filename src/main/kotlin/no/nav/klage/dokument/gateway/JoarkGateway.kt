@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.gateway
 
+import no.nav.klage.dokument.clients.joark.FeiledeDokumenter
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
@@ -29,5 +30,5 @@ interface JoarkGateway {
         newTitle: String
     )
 
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoertVedlegg: JournalfoertVedlegg)
+    fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoerteVedlegg: List<JournalfoertVedlegg>): FeiledeDokumenter?
 }
