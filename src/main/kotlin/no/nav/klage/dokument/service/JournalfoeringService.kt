@@ -2,8 +2,8 @@ package no.nav.klage.dokument.service
 
 
 import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
-import no.nav.klage.dokument.clients.joark.FeiledeDokumenter
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
+import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
@@ -73,7 +73,7 @@ class JournalfoeringService(
     fun tilknyttVedleggAsSystemUser(
         journalpostId: String,
         journalfoerteVedlegg: List<JournalfoertVedlegg>
-    ): FeiledeDokumenter? {
+    ): TilknyttVedleggResponse {
         return joarkGateway.tilknyttVedleggAsSystemUser(
             journalpostId = journalpostId,
             journalfoerteVedlegg = journalfoerteVedlegg,

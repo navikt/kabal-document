@@ -46,7 +46,7 @@ class DefaultJoarkGateway(
         joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
     }
 
-    override fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoerteVedlegg: List<JournalfoertVedlegg>): FeiledeDokumenter? {
+    override fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoerteVedlegg: List<JournalfoertVedlegg>): TilknyttVedleggResponse {
         return joarkClient.tilknyttVedleggAsSystemUser(
             journalpostId = journalpostId,
             input = TilknyttVedleggPayload(

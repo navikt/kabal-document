@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -56,18 +57,20 @@ class JoarkClient(
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
     }
 
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): FeiledeDokumenter? {
-        joarkWebClient.put()
+    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
+        val response = joarkWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(input)
             .retrieve()
-            .bodyToMono<FeiledeDokumenter>()
+            .bodyToMono<TilknyttVedleggResponse>()
             .block()
             ?: throw RuntimeException("Could not tilknytt vedlegg.")
 
         logger.debug("tilknyttVedleggAsSystemUser to journalpost with id $journalpostId was successful.")
+
+        return response
     }
 
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
