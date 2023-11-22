@@ -1,12 +1,9 @@
 package no.nav.klage.dokument.clients.joark
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
