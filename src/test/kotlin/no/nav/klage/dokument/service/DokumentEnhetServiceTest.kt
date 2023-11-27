@@ -6,6 +6,7 @@ import io.mockk.verify
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.clients.joark.JournalpostType
+import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
@@ -141,6 +142,7 @@ internal class DokumentEnhetServiceTest {
         } returns JOURNALPOST_RESPONSE_2
 
         every { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) } returns LocalDateTime.now()
+        every { journalfoeringService.tilknyttVedleggAsSystemUser(any(), any()) } returns TilknyttVedleggResponse(feiledeDokumenter = emptyList())
         every { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any()) } returns UUID.randomUUID()
     }
 

@@ -54,7 +54,7 @@ class DokumentEnhetService(
                     )
                     brevMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
-                    journalpostResponse.dokumenter.forEachIndexed{ index, dokument ->
+                    journalpostResponse.dokumenter.forEachIndexed { index, dokument ->
                         if (index == 0) {
                             dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
                                 DokumentInfoReference(
@@ -94,24 +94,35 @@ class DokumentEnhetService(
         }
 
         dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
-            //TODO: Gjør et enkelt kall mot tilknyttVedlegg med alle vedleggene.
-            dokumentEnhet.journalfoerteVedlegg.forEach { journalfoertVedlegg ->
-                if (brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }) {
-                    journalfoeringService.tilknyttVedleggAsSystemUser(
-                        journalpostId = brevMottakerDistribusjon.journalpostId!!,
-                        journalfoertVedlegg = journalfoertVedlegg
-                    )
+            val toJournalfoering = dokumentEnhet.journalfoerteVedlegg.filter { journalfoertVedlegg ->
+                brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }
+            }
 
-                    brevMottakerDistribusjon.journalfoerteVedlegg.add(
-                        JournalfoertVedleggId(
-                            journalfoertVedleggId = journalfoertVedlegg.id
-                        )
-                    )
+            val tilknyttVedleggResponse = journalfoeringService.tilknyttVedleggAsSystemUser(
+                journalpostId = brevMottakerDistribusjon.journalpostId!!,
+                journalfoerteVedlegg = toJournalfoering,
+            )
 
-                    brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
-                } else {
-                    logger.debug("JournalfoertVedlegg already added to brevmottakerDistribusjon.")
+            val setAsJournalfoert = if (tilknyttVedleggResponse.feiledeDokumenter.isEmpty()) {
+                toJournalfoering
+            } else {
+                logger.warn("Noen dokumenter kunne ikke bli tilknyttet: {}", tilknyttVedleggResponse)
+
+                toJournalfoering.filter { journalfoertVedlegg ->
+                    tilknyttVedleggResponse.feiledeDokumenter.none { feiletDokument ->
+                        feiletDokument.kildeJournalpostId == journalfoertVedlegg.kildeJournalpostId &&
+                                feiletDokument.dokumentInfoId == journalfoertVedlegg.dokumentInfoId
+                    }
                 }
+            }
+
+            setAsJournalfoert.forEach { journalfoertVedlegg ->
+                brevMottakerDistribusjon.journalfoerteVedlegg.add(
+                    JournalfoertVedleggId(
+                        journalfoertVedleggId = journalfoertVedlegg.id
+                    )
+                )
+                brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
             }
         }
 

@@ -6,7 +6,6 @@ NAIS_CLUSTER_NAME: local
 AZURE_APP_WELL_KNOWN_URL: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
 STS_APIKEY: 789
 
-SAF_BASE_URL: local
 SAF_SCOPE: uu-id
 nais:
   cluster:

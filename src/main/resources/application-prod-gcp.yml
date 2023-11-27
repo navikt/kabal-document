@@ -1,6 +1,5 @@
 TENANT_ID: 62366534-1ec3-4962-8869-9b5535279d0b
 
-SAF_BASE_URL: https://saf.prod-fss-pub.nais.io/
 SAF_SCOPE: prod-fss.teamdokumenthandtering.saf
 
 DOKARKIV_SCOPE: prod-fss.teamdokumenthandtering.dokarkiv/

@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.gateway
 
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
+import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
 import no.nav.klage.dokument.domain.dokument.BrevMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
@@ -29,5 +30,5 @@ interface JoarkGateway {
         newTitle: String
     )
 
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoertVedlegg: JournalfoertVedlegg)
+    fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoerteVedlegg: List<JournalfoertVedlegg>): TilknyttVedleggResponse
 }

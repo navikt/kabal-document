@@ -46,16 +46,16 @@ class DefaultJoarkGateway(
         joarkClient.finalizeJournalpostAsSystemUser(journalpostId, journalfoerendeEnhet)
     }
 
-    override fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoertVedlegg: JournalfoertVedlegg) {
-        joarkClient.tilknyttVedleggAsSystemUser(
+    override fun tilknyttVedleggAsSystemUser(journalpostId: String, journalfoerteVedlegg: List<JournalfoertVedlegg>): TilknyttVedleggResponse {
+        return joarkClient.tilknyttVedleggAsSystemUser(
             journalpostId = journalpostId,
             input = TilknyttVedleggPayload(
-                dokument = listOf(
+                dokument = journalfoerteVedlegg.map {
                     TilknyttVedleggPayload.VedleggReference(
-                        kildeJournalpostId = journalfoertVedlegg.kildeJournalpostId,
-                        dokumentInfoId = journalfoertVedlegg.dokumentInfoId
+                        kildeJournalpostId = it.kildeJournalpostId,
+                        dokumentInfoId = it.dokumentInfoId
                     )
-                )
+                }
             )
         )
     }

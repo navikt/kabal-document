@@ -54,18 +54,20 @@ class JoarkClient(
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
     }
 
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload) {
-        joarkWebClient.put()
+    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
+        val response = joarkWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(input)
             .retrieve()
-            .bodyToMono<String>()
+            .bodyToMono<TilknyttVedleggResponse>()
             .block()
             ?: throw RuntimeException("Could not tilknytt vedlegg.")
 
         logger.debug("tilknyttVedleggAsSystemUser to journalpost with id $journalpostId was successful.")
+
+        return response
     }
 
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
