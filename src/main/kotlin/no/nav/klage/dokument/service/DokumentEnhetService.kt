@@ -98,31 +98,37 @@ class DokumentEnhetService(
                 brevMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }
             }
 
-            val tilknyttVedleggResponse = journalfoeringService.tilknyttVedleggAsSystemUser(
-                journalpostId = brevMottakerDistribusjon.journalpostId!!,
-                journalfoerteVedlegg = toJournalfoering,
-            )
+            if (toJournalfoering.isNotEmpty()) {
+                val tilknyttVedleggResponse = journalfoeringService.tilknyttVedleggAsSystemUser(
+                    journalpostId = brevMottakerDistribusjon.journalpostId!!,
+                    journalfoerteVedlegg = toJournalfoering,
+                )
 
-            val setAsJournalfoert = if (tilknyttVedleggResponse.feiledeDokumenter.isEmpty()) {
-                toJournalfoering
-            } else {
-                logger.warn("Noen dokumenter kunne ikke bli tilknyttet: {}", tilknyttVedleggResponse)
+                val setAsJournalfoert = if (tilknyttVedleggResponse.feiledeDokumenter.isEmpty()) {
+                    toJournalfoering
+                } else {
+                    logger.warn("Noen dokumenter kunne ikke bli tilknyttet: {}", tilknyttVedleggResponse)
 
-                toJournalfoering.filter { journalfoertVedlegg ->
-                    tilknyttVedleggResponse.feiledeDokumenter.none { feiletDokument ->
-                        feiletDokument.kildeJournalpostId == journalfoertVedlegg.kildeJournalpostId &&
-                                feiletDokument.dokumentInfoId == journalfoertVedlegg.dokumentInfoId
+                    toJournalfoering.filter { journalfoertVedlegg ->
+                        tilknyttVedleggResponse.feiledeDokumenter.none { feiletDokument ->
+                            feiletDokument.kildeJournalpostId == journalfoertVedlegg.kildeJournalpostId &&
+                                    feiletDokument.dokumentInfoId == journalfoertVedlegg.dokumentInfoId
+                        }
                     }
                 }
-            }
 
-            setAsJournalfoert.forEach { journalfoertVedlegg ->
-                brevMottakerDistribusjon.journalfoerteVedlegg.add(
-                    JournalfoertVedleggId(
-                        journalfoertVedleggId = journalfoertVedlegg.id
+                setAsJournalfoert.forEach { journalfoertVedlegg ->
+                    brevMottakerDistribusjon.journalfoerteVedlegg.add(
+                        JournalfoertVedleggId(
+                            journalfoertVedleggId = journalfoertVedlegg.id
+                        )
                     )
-                )
-                brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+                    brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+                }
+
+                if (tilknyttVedleggResponse.feiledeDokumenter.isNotEmpty()) {
+                    throw RuntimeException("Could not call tilknyttDokument for all candidates, throwing error in order to retry.")
+                }
             }
         }
 
