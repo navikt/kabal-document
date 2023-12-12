@@ -41,8 +41,15 @@ class DokumentEnhetInputMapper {
         dokumentType: DokumentType,
     ): JournalfoeringData =
         try {
-        //Bruk input.journalpostType når den er innført i kabal-api.
-            val journalpostType = input.journalpostType ?: if (dokumentType == DokumentType.NOTAT) JournalpostType.NOTAT else JournalpostType.UTGAAENDE
+            val journalpostType = when (dokumentType) {
+                DokumentType.NOTAT -> {
+                    JournalpostType.NOTAT
+                }
+                DokumentType.INNGAAENDE -> {
+                    JournalpostType.INNGAAENDE
+                }
+                else -> JournalpostType.UTGAAENDE
+            }
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
                 tema = Tema.of(input.temaId),

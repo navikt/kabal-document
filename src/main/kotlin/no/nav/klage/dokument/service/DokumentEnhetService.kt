@@ -3,7 +3,6 @@ package no.nav.klage.dokument.service
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
-import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
@@ -231,8 +230,9 @@ class DokumentEnhetService(
         input: DokumentEnhetWithDokumentreferanserInput
     ): DokumentEnhet {
         logger.debug("Creating dokumentEnhet")
+        val dokumentType = DokumentType.of(input.dokumentTypeId)
 
-        if (input.journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
+        if (dokumentType == DokumentType.INNGAAENDE) {
             if (input.journalfoeringData.inngaaendeKanal == null) {
                 throw Exception("Missing inngaendeKanal")
             }
@@ -242,7 +242,6 @@ class DokumentEnhetService(
             }
         }
 
-        val dokumentType = DokumentType.of(input.dokumentTypeId)
         val journalfoeringData =
             dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData, dokumentType)
         val brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere)

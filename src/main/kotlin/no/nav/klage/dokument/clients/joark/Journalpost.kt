@@ -19,6 +19,25 @@ data class Journalpost(
 
 enum class Kanal {
     ALTINN,
+    EIA,
+    NAV_NO,
+    NAV_NO_UINNLOGGET,
+    NAV_NO_CHAT,
+    SKAN_NETS,
+    SKAN_PEN,
+    SKAN_IM,
+    INNSENDT_NAV_ANSATT,
+    EESSI,
+    EKST_OPPS,
+    SENTRAL_UTSKRIFT,
+    LOKAL_UTSKRIFT,
+    SDP,
+    TRYGDERETTEN,
+    HELSENETTET,
+    INGEN_DISTRIBUSJON,
+    DPV,
+    DPVS,
+    UKJENT,
 }
 
 enum class JournalpostType {
