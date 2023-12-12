@@ -1,6 +1,8 @@
 package no.nav.klage.dokument.api.input
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import no.nav.klage.dokument.clients.joark.JournalpostType
+import no.nav.klage.dokument.clients.joark.Kanal
 import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,7 +45,9 @@ data class DokumentEnhetWithDokumentreferanserInput(
         val behandlingstema: String,
         val tittel: String,
         val brevKode: String,
-        val tilleggsopplysning: TilleggsopplysningInput?
+        val tilleggsopplysning: TilleggsopplysningInput?,
+        val journalpostType: JournalpostType?,
+        val inngaaendeKanal: Kanal?,
     ) {
         data class TilleggsopplysningInput(val key: String, val value: String)
     }

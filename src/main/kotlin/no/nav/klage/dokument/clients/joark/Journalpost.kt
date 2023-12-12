@@ -7,6 +7,7 @@ data class Journalpost(
     val tema: Tema,
     val behandlingstema: String,
     val tittel: String,
+    val kanal: Kanal? = null,
     var avsenderMottaker: AvsenderMottaker? = null,
     val journalfoerendeEnhet: String? = null,
     val eksternReferanseId: String? = null,
@@ -15,6 +16,10 @@ data class Journalpost(
     val dokumenter: List<Dokument>? = mutableListOf(),
     val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf()
 )
+
+enum class Kanal {
+    ALTINN,
+}
 
 enum class JournalpostType {
     INNGAAENDE,

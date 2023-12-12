@@ -1,6 +1,8 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
@@ -29,6 +31,7 @@ class JoarkMapper {
             tema = journalfoeringData.tema,
             behandlingstema = journalfoeringData.behandlingstema,
             sak = createSak(journalfoeringData),
+            kanal =  if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) journalfoeringData.inngaaendeKanal else null,
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
             eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",
@@ -47,7 +50,7 @@ class JoarkMapper {
             } ?: emptyList()
         )
 
-        if (journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) {
+        if (journalfoeringData.journalpostType in listOf(JournalpostType.UTGAAENDE, JournalpostType.INNGAAENDE)) {
             journalpost.avsenderMottaker = createAvsenderMottager(brevMottaker)
         }
 
