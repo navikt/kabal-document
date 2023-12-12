@@ -53,6 +53,7 @@ internal class JoarkMapperTest {
         tittel = TITTEL,
         brevKode = BREVKODE,
         tilleggsopplysning = null,
+        inngaaendeKanal = null,
     )
 
     private val opplastetHovedDokument = OpplastetHoveddokument(

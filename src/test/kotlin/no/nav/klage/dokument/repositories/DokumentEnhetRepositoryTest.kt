@@ -94,7 +94,8 @@ class DokumentEnhetRepositoryTest {
             behandlingstema = "",
             tittel = "",
             brevKode = "",
-            tilleggsopplysning = null
+            tilleggsopplysning = null,
+            inngaaendeKanal = null,
         ),
         brevMottakere = setOf(
             BrevMottaker(
