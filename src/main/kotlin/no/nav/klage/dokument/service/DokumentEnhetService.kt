@@ -232,7 +232,7 @@ class DokumentEnhetService(
         logger.debug("Creating dokumentEnhet")
         val dokumentType = DokumentType.of(input.dokumentTypeId)
 
-        if (dokumentType == DokumentType.INNGAAENDE) {
+        if (dokumentType == DokumentType.KJENNELSE_FRA_TRYGDERETTEN) {
             if (input.journalfoeringData.inngaaendeKanal == null) {
                 throw Exception("Missing inngaendeKanal")
             }

@@ -45,7 +45,7 @@ class DokumentEnhetInputMapper {
                 DokumentType.NOTAT -> {
                     JournalpostType.NOTAT
                 }
-                DokumentType.INNGAAENDE -> {
+                DokumentType.KJENNELSE_FRA_TRYGDERETTEN -> {
                     JournalpostType.INNGAAENDE
                 }
                 else -> JournalpostType.UTGAAENDE
