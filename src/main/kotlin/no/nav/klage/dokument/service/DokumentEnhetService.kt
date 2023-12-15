@@ -238,7 +238,7 @@ class DokumentEnhetService(
             }
 
             if (input.brevMottakere.size != 1) {
-                throw Exception("brevMottakere.size must be exactly 1 for INNGAAENDE.")
+                throw Exception("brevMottakere.size must be exactly 1 for KJENNELSE_FRA_TRYGDERETTEN.")
             }
         }
 
