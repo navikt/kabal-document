@@ -32,20 +32,20 @@ enum class Distribusjonstidspunkt {
 fun DokumentType.toDistribusjonstidspunkt(): Distribusjonstidspunkt =
     when (this) {
         BREV -> Distribusjonstidspunkt.KJERNETID
-        //TODO: Denne er ikke i bruk i frontend enda. Skal antageligvis ha et annet regelsett, der det ikke skjer distribusjon.
-        NOTAT -> Distribusjonstidspunkt.KJERNETID
         VEDTAK -> Distribusjonstidspunkt.KJERNETID
         BESLUTNING -> Distribusjonstidspunkt.KJERNETID
+        //Disse blir ikke distribuert, tas med for fullstendighet.
+        NOTAT, KJENNELSE_FRA_TRYGDERETTEN -> Distribusjonstidspunkt.KJERNETID
     }
 
 
 fun DokumentType.toDistribusjonsType(): Distribusjonstype =
     when (this) {
         BREV -> Distribusjonstype.VIKTIG
-        //TODO: Denne er ikke i bruk i frontend enda. Skal antageligvis ha et annet regelsett, der det ikke skjer distribusjon.
-        NOTAT -> Distribusjonstype.ANNET
         VEDTAK -> Distribusjonstype.VEDTAK
         BESLUTNING -> Distribusjonstype.VIKTIG
+        //Disse blir ikke distribuert, tas med for fullstendighet.
+        NOTAT, KJENNELSE_FRA_TRYGDERETTEN -> Distribusjonstype.ANNET
     }
 
 

@@ -231,6 +231,17 @@ class DokumentEnhetService(
     ): DokumentEnhet {
         logger.debug("Creating dokumentEnhet")
         val dokumentType = DokumentType.of(input.dokumentTypeId)
+
+        if (dokumentType == DokumentType.KJENNELSE_FRA_TRYGDERETTEN) {
+            if (input.journalfoeringData.inngaaendeKanal == null) {
+                throw Exception("Missing inngaendeKanal")
+            }
+
+            if (input.brevMottakere.size != 1) {
+                throw Exception("brevMottakere.size must be exactly 1 for KJENNELSE_FRA_TRYGDERETTEN.")
+            }
+        }
+
         val journalfoeringData =
             dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData, dokumentType)
         val brevMottakere = dokumentEnhetInputMapper.mapBrevMottakereInput(input.brevMottakere)

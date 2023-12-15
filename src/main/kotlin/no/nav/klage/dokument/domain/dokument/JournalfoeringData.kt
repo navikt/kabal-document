@@ -2,6 +2,7 @@ package no.nav.klage.dokument.domain.dokument
 
 import jakarta.persistence.*
 import no.nav.klage.dokument.clients.joark.JournalpostType
+import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.Tema
 import java.util.*
@@ -47,6 +48,9 @@ class JournalfoeringData(
     val tilleggsopplysning: Tilleggsopplysning?,
     @Column(name = "journalposttype")
     @Enumerated(EnumType.STRING)
-    var journalpostType: JournalpostType = JournalpostType.UTGAAENDE
+    var journalpostType: JournalpostType = JournalpostType.UTGAAENDE,
+    @Column(name = "inngaaende_kanal")
+    @Enumerated(EnumType.STRING)
+    var inngaaendeKanal: Kanal?,
 )
 

@@ -38,9 +38,18 @@ class DokumentEnhetInputMapper {
 
     fun mapJournalfoeringDataInput(
         input: DokumentEnhetWithDokumentreferanserInput.JournalfoeringDataInput,
-        dokumentType: DokumentType
+        dokumentType: DokumentType,
     ): JournalfoeringData =
         try {
+            val journalpostType = when (dokumentType) {
+                DokumentType.NOTAT -> {
+                    JournalpostType.NOTAT
+                }
+                DokumentType.KJENNELSE_FRA_TRYGDERETTEN -> {
+                    JournalpostType.INNGAAENDE
+                }
+                else -> JournalpostType.UTGAAENDE
+            }
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
                 tema = Tema.of(input.temaId),
@@ -52,7 +61,8 @@ class DokumentEnhetInputMapper {
                 tittel = input.tittel,
                 brevKode = input.brevKode,
                 tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) },
-                journalpostType = if (dokumentType == DokumentType.NOTAT) JournalpostType.NOTAT else JournalpostType.UTGAAENDE,
+                journalpostType = journalpostType,
+                inngaaendeKanal = if (journalpostType == JournalpostType.INNGAAENDE) input.inngaaendeKanal else null
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)
