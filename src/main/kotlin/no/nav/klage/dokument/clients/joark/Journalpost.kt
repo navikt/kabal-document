@@ -19,8 +19,9 @@ data class Journalpost(
 
 enum class Kanal {
     ALTINN,
-    ALTINN_MELDINGSBOKS,
+    ALTINN_INNBOKS,
     EIA,
+    E_POST,
     NAV_NO,
     NAV_NO_UINNLOGGET,
     NAV_NO_CHAT,
