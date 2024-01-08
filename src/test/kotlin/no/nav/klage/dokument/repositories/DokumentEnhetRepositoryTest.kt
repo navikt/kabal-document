@@ -96,6 +96,7 @@ class DokumentEnhetRepositoryTest {
             brevKode = "",
             tilleggsopplysning = null,
             inngaaendeKanal = null,
+            datoMottatt = null,
         ),
         brevMottakere = setOf(
             BrevMottaker(

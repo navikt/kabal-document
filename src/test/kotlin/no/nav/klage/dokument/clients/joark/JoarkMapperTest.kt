@@ -11,6 +11,7 @@ import no.nav.klage.kodeverk.Tema
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import java.time.LocalDate
 import java.util.*
 
 internal class JoarkMapperTest {
@@ -54,6 +55,7 @@ internal class JoarkMapperTest {
         brevKode = BREVKODE,
         tilleggsopplysning = null,
         inngaaendeKanal = null,
+        datoMottatt = null,
     )
 
     private val opplastetHovedDokument = OpplastetHoveddokument(
@@ -133,7 +135,8 @@ internal class JoarkMapperTest {
             hovedDokument,
             vedleggDokument
         ),
-        tilleggsopplysninger = emptyList()
+        tilleggsopplysninger = emptyList(),
+        datoMottatt = null,
     )
 
     private val expectedJournalpostWithOneDocument = Journalpost(
@@ -161,7 +164,8 @@ internal class JoarkMapperTest {
         dokumenter = listOf(
             hovedDokument
         ),
-        tilleggsopplysninger = emptyList()
+        tilleggsopplysninger = emptyList(),
+        datoMottatt = null,
     )
 
     @Test
