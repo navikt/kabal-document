@@ -50,6 +50,12 @@ class DokumentEnhetInputMapper {
                 }
                 else -> JournalpostType.UTGAAENDE
             }
+
+            if (input.datoMottatt != null && journalpostType != JournalpostType.INNGAAENDE) {
+                logger.error("Data fra klient er ikke gyldig, datoMottatt kan kun settes for inngående journalpost.")
+                throw IllegalArgumentException("datoMottatt kan kun settes for inngående journalpost")
+            }
+
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
                 tema = Tema.of(input.temaId),
@@ -62,7 +68,8 @@ class DokumentEnhetInputMapper {
                 brevKode = input.brevKode,
                 tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) },
                 journalpostType = journalpostType,
-                inngaaendeKanal = if (journalpostType == JournalpostType.INNGAAENDE) input.inngaaendeKanal else null
+                inngaaendeKanal = if (journalpostType == JournalpostType.INNGAAENDE) input.inngaaendeKanal else null,
+                datoMottatt = if (journalpostType == JournalpostType.INNGAAENDE && input.datoMottatt != null) input.datoMottatt else null,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)

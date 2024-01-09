@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.clients.joark
 
 import no.nav.klage.kodeverk.Tema
+import java.time.LocalDate
 
 data class Journalpost(
     val journalposttype: JournalpostType? = null,
@@ -11,6 +12,7 @@ data class Journalpost(
     var avsenderMottaker: AvsenderMottaker? = null,
     val journalfoerendeEnhet: String? = null,
     val eksternReferanseId: String? = null,
+    val datoMottatt: LocalDate?,
     val bruker: Bruker? = null,
     val sak: Sak,
     val dokumenter: List<Dokument>? = mutableListOf(),

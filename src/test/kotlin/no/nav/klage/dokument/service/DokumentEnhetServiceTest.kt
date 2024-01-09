@@ -92,6 +92,7 @@ internal class DokumentEnhetServiceTest {
             tilleggsopplysning = Tilleggsopplysning("key", "value"),
             journalpostType = JournalpostType.UTGAAENDE,
             inngaaendeKanal = null,
+            datoMottatt = null,
         ),
         brevMottakere = setOf(brevMottaker1, brevMottaker2),
         brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon1, brevMottakerDistribusjon2),

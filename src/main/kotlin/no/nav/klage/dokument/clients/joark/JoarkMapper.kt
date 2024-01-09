@@ -35,6 +35,7 @@ class JoarkMapper {
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
             eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",
+            datoMottatt = journalfoeringData.datoMottatt,
             bruker = createBruker(journalfoeringData),
             dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
                 hoveddokument = hovedDokument,
