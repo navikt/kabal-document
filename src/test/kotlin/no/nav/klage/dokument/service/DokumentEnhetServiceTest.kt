@@ -30,6 +30,7 @@ internal class DokumentEnhetServiceTest {
 
     val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
     val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
+    val JOURNALPOST_ID_3 = "JOURNALPOST_ID_3"
 
     val JOURNALPOST_RESPONSE_1 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_1,
@@ -43,12 +44,19 @@ internal class DokumentEnhetServiceTest {
         dokumenter = listOf()
     )
 
+    val JOURNALPOST_RESPONSE_3 = JournalpostResponse(
+        journalpostId = JOURNALPOST_ID_3,
+        journalpostferdigstilt = false,
+        dokumenter = listOf()
+    )
+
     val brevMottaker1 = BrevMottaker(
         partId = PartId(
             type = PartIdType.PERSON,
             value = "01011012345"
         ),
         navn = "Test Person",
+        localPrint = false,
     )
 
     val brevMottaker2 = BrevMottaker(
@@ -57,6 +65,16 @@ internal class DokumentEnhetServiceTest {
             value = "20022012345"
         ),
         navn = "Mottaker Person",
+        localPrint = false,
+    )
+
+    val brevMottaker3 = BrevMottaker(
+        partId = PartId(
+            type = PartIdType.PERSON,
+            value = "01011012345"
+        ),
+        navn = "Test Person",
+        localPrint = true,
     )
 
     val hovedDokument = OpplastetHoveddokument(
@@ -72,6 +90,11 @@ internal class DokumentEnhetServiceTest {
 
     val brevMottakerDistribusjon2 = BrevMottakerDistribusjon(
         brevMottaker = brevMottaker2,
+        opplastetDokumentId = hovedDokument.id,
+    )
+
+    val brevMottakerDistribusjon3 = BrevMottakerDistribusjon(
+        brevMottaker = brevMottaker3,
         opplastetDokumentId = hovedDokument.id,
     )
 
@@ -96,6 +119,41 @@ internal class DokumentEnhetServiceTest {
         ),
         brevMottakere = setOf(brevMottaker1, brevMottaker2),
         brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon1, brevMottakerDistribusjon2),
+        hovedDokument = hovedDokument,
+        vedlegg = setOf(
+            OpplastetVedlegg(
+                mellomlagerId = "456",
+                name = "fil2.pdf",
+                index = 0,
+                sourceReference = UUID.randomUUID(),
+            )
+        ),
+        avsluttet = null,
+        journalfoerendeSaksbehandlerIdent = "S123456",
+        dokumentType = DokumentType.VEDTAK,
+    )
+
+    val dokumentEnhetWithLocalPrint = DokumentEnhet(
+        journalfoeringData = JournalfoeringData(
+            sakenGjelder = PartId(
+                type = PartIdType.PERSON,
+                value = "20022012345"
+            ),
+            tema = Tema.OMS,
+            sakFagsakId = "sakFagsakId",
+            sakFagsystem = Fagsystem.FS36,
+            kildeReferanse = "kildeReferanse",
+            enhet = "Enhet",
+            behandlingstema = "behandlingstema",
+            tittel = "Tittel",
+            brevKode = "brevKode",
+            tilleggsopplysning = Tilleggsopplysning("key", "value"),
+            journalpostType = JournalpostType.UTGAAENDE,
+            inngaaendeKanal = null,
+            datoMottatt = null,
+        ),
+        brevMottakere = setOf(brevMottaker3),
+        brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon3),
         hovedDokument = hovedDokument,
         vedlegg = setOf(
             OpplastetVedlegg(
@@ -143,6 +201,16 @@ internal class DokumentEnhetServiceTest {
             )
         } returns JOURNALPOST_RESPONSE_2
 
+        every {
+            journalfoeringService.createJournalpostAsSystemUser(
+                brevMottaker = brevMottaker3,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
+            )
+        } returns JOURNALPOST_RESPONSE_3
+
         every { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) } returns LocalDateTime.now()
         every { journalfoeringService.tilknyttVedleggAsSystemUser(any(), any()) } returns TilknyttVedleggResponse(feiledeDokumenter = emptyList())
         every { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any()) } returns UUID.randomUUID()
@@ -169,8 +237,25 @@ internal class DokumentEnhetServiceTest {
     }
 
     @Test
-    fun `ubehandlet dokumentEnhet uten distribusjon skal journalfoeres`() {
-        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakereNotForDistribution()
+    fun `ubehandlet dokumentEnhet med lokal print skal journalfoeres, men ikke distribueres`() {
+        val dokumentEnhetTilDist = ikkeDistribuertDokumentEnhetMedVedleggOgEnBrevMottakerLokalPrint()
+
+        every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
+
+        assertFerdigJournalfoert(
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+        )
+
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker3, any(), any(), any(), any()) }
+
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon3) }
+
+        verify(exactly = 0) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any()) }
+    }
+
+    @Test
+    fun `ubehandlet dokumentEnhet av typen Notat skal journalfoeres og ikke distribueres`() {
+        val dokumentEnhetTilDist = ikkeDistribuertNotatDokumentEnhetMedVedleggOgToBrevMottakere()
 
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
@@ -248,7 +333,11 @@ internal class DokumentEnhetServiceTest {
         return baseDokumentEnhet
     }
 
-    fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakereNotForDistribution(): DokumentEnhet {
+    fun ikkeDistribuertDokumentEnhetMedVedleggOgEnBrevMottakerLokalPrint(): DokumentEnhet {
+        return dokumentEnhetWithLocalPrint
+    }
+
+    fun ikkeDistribuertNotatDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
         dokumentEnhet.journalfoeringData.journalpostType = JournalpostType.NOTAT
         return dokumentEnhet

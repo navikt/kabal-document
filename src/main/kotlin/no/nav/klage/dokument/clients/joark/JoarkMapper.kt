@@ -26,12 +26,20 @@ class JoarkMapper {
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         brevMottaker: BrevMottaker
     ): Journalpost {
+
+        val kanal =  if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
+            journalfoeringData.inngaaendeKanal
+        } else if (brevMottaker.localPrint) {
+            Kanal.L
+        } else null
+
         val journalpost = Journalpost(
+            avsenderMottaker = null,
             journalposttype = journalfoeringData.journalpostType,
             tema = journalfoeringData.tema,
             behandlingstema = journalfoeringData.behandlingstema,
             sak = createSak(journalfoeringData),
-            kanal =  if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) journalfoeringData.inngaaendeKanal else null,
+            kanal = kanal,
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
             eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",

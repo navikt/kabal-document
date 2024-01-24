@@ -30,6 +30,7 @@ class DokumentEnhetInputMapper {
             BrevMottaker(
                 partId = mapPartIdInput(brevMottakerInput.partId),
                 navn = brevMottakerInput.navn,
+                localPrint = brevMottakerInput.localPrint,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)

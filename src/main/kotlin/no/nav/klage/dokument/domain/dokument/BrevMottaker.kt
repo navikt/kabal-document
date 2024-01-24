@@ -18,4 +18,6 @@ class BrevMottaker(
     val partId: PartId,
     @Column(name = "navn")
     val navn: String?,
+    @Column(name = "local_print")
+    val localPrint: Boolean,
 )

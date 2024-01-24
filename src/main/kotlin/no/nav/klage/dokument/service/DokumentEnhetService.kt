@@ -154,25 +154,27 @@ class DokumentEnhetService(
 
         if (dokumentEnhet.shouldBeDistributed()) {
             dokumentEnhet.brevMottakerDistribusjoner.forEach { brevMottakerDistribusjon ->
-                if (brevMottakerDistribusjon.dokdistReferanse == null) {
-                    try {
-                        logger.debug("Distributing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
-                        brevMottakerDistribusjon.dokdistReferanse =
-                            dokumentDistribusjonService.distribuerJournalpostTilMottaker(
-                                journalpostId = brevMottakerDistribusjon.journalpostId!!,
-                                dokumentType = dokumentEnhet.dokumentType
+                if (brevMottakerDistribusjon.shouldBeDistributed()) {
+                    if (brevMottakerDistribusjon.dokdistReferanse == null) {
+                        try {
+                            logger.debug("Distributing journalpost ${brevMottakerDistribusjon.journalpostId} for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
+                            brevMottakerDistribusjon.dokdistReferanse =
+                                dokumentDistribusjonService.distribuerJournalpostTilMottaker(
+                                    journalpostId = brevMottakerDistribusjon.journalpostId!!,
+                                    dokumentType = dokumentEnhet.dokumentType
+                                )
+                            brevMottakerDistribusjon.modified = LocalDateTime.now()
+                            brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
+                        } catch (t: Throwable) {
+                            logger.error(
+                                "Failed to distribute journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
+                                t
                             )
-                        brevMottakerDistribusjon.modified = LocalDateTime.now()
-                        brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)
-                    } catch (t: Throwable) {
-                        logger.error(
-                            "Failed to distribute journalpost for brevMottakerDistribusjon ${brevMottakerDistribusjon.id}",
-                            t
-                        )
-                        throw t
+                            throw t
+                        }
+                    } else {
+                        logger.debug("Dokdist for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists, with id ${brevMottakerDistribusjon.dokdistReferanse}")
                     }
-                } else {
-                    logger.debug("Dokdist for brevMottakerDistribusjon ${brevMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists, with id ${brevMottakerDistribusjon.dokdistReferanse}")
                 }
             }
         }

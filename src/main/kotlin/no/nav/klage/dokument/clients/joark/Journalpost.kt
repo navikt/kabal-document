@@ -4,16 +4,16 @@ import no.nav.klage.kodeverk.Tema
 import java.time.LocalDate
 
 data class Journalpost(
-    val journalposttype: JournalpostType? = null,
+    val journalposttype: JournalpostType?,
     val tema: Tema,
     val behandlingstema: String,
     val tittel: String,
-    val kanal: Kanal? = null,
-    var avsenderMottaker: AvsenderMottaker? = null,
-    val journalfoerendeEnhet: String? = null,
-    val eksternReferanseId: String? = null,
+    val kanal: Kanal?,
+    var avsenderMottaker: AvsenderMottaker?,
+    val journalfoerendeEnhet: String?,
+    val eksternReferanseId: String?,
     val datoMottatt: LocalDate?,
-    val bruker: Bruker? = null,
+    val bruker: Bruker?,
     val sak: Sak,
     val dokumenter: List<Dokument>? = mutableListOf(),
     val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf()
@@ -35,6 +35,7 @@ enum class Kanal {
     EKST_OPPS,
     SENTRAL_UTSKRIFT,
     LOKAL_UTSKRIFT,
+    L,
     SDP,
     TRYGDERETTEN,
     HELSENETTET,

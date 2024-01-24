@@ -81,6 +81,7 @@ internal class JoarkMapperTest {
         id = BREVMOTTAGER_ID,
         partId = sakenGjelder,
         navn = NAVN,
+        localPrint = false,
     )
 
     private val hovedDokument = Dokument(
@@ -137,6 +138,7 @@ internal class JoarkMapperTest {
         ),
         tilleggsopplysninger = emptyList(),
         datoMottatt = null,
+        kanal = null,
     )
 
     private val expectedJournalpostWithOneDocument = Journalpost(
@@ -166,6 +168,7 @@ internal class JoarkMapperTest {
         ),
         tilleggsopplysninger = emptyList(),
         datoMottatt = null,
+        kanal = null,
     )
 
     @Test
