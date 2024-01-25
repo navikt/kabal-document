@@ -1,2 +1,2 @@
 ALTER TABLE document.brevmottaker
-    ADD COLUMN local_print BOOLEAN;
+    ADD COLUMN local_print BOOLEAN default false;
