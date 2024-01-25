@@ -6,6 +6,10 @@ data class JournalpostResponse(
     val dokumenter: List<DokumentInfoId>,
 )
 
+data class UpdateJournalpostResponse(
+    val journalpostId: String,
+)
+
 data class DokumentInfoId(
     val dokumentInfoId: String,
 )
