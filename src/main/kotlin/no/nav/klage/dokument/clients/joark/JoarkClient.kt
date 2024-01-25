@@ -81,7 +81,7 @@ class JoarkClient(
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(input)
                 .retrieve()
-                .bodyToMono(JournalpostResponse::class.java)
+                .bodyToMono(UpdateJournalpostResponse::class.java)
                 .block()
                 ?: throw RuntimeException("Journalpost could not be updated.")
         } catch (e: Exception) {
