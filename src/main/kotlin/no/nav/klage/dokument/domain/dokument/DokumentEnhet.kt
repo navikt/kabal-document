@@ -66,17 +66,20 @@ class DokumentEnhet(
     fun isJournalfoertFor(brevMottaker: BrevMottaker): Boolean =
         findBrevMottakerDistribusjon(brevMottaker)?.journalpostId != null && findBrevMottakerDistribusjon(brevMottaker)?.ferdigstiltIJoark != null
 
-    //Trengs dette?
     fun isProcessedForAll(): Boolean {
         return if (shouldBeDistributed()) {
-            isDistributedToAll()
+            brevMottakere.all {
+                val brevMottakerDistribusjon = findBrevMottakerDistribusjon(it)
+                if (brevMottakerDistribusjon!!.shouldBeDistributed()) {
+                    isDistributedTo(it)
+                } else {
+                    isJournalfoertFor(it)
+                }
+            }
         } else {
             isJournalfoertForAll()
         }
     }
-
-    fun isDistributedToAll(): Boolean =
-        brevMottakere.all { isDistributedTo(it) }
 
     fun isJournalfoertForAll(): Boolean =
         brevMottakere.all { isJournalfoertFor(it) }

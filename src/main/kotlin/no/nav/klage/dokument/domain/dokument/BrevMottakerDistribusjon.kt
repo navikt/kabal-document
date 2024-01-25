@@ -48,4 +48,8 @@ class BrevMottakerDistribusjon(
     }
 
     override fun hashCode(): Int = id.hashCode()
+
+    fun shouldBeDistributed(): Boolean {
+        return !brevMottaker.localPrint
+    }
 }
