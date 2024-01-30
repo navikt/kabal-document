@@ -33,8 +33,7 @@ data class DokumentEnhetWithDokumentreferanserInput(
     data class BrevMottakerInput(
         val partId: PartIdInput,
         val navn: String?,
-        //TODO: Remove default value after consumer adjustment
-        val localPrint: Boolean = false,
+        val localPrint: Boolean,
     )
 
     data class JournalfoeringDataInput(

@@ -8,6 +8,7 @@ import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -234,13 +235,13 @@ class DokumentEnhetService(
         logger.debug("Creating dokumentEnhet")
         val dokumentType = DokumentType.of(input.dokumentTypeId)
 
-        if (dokumentType == DokumentType.KJENNELSE_FRA_TRYGDERETTEN) {
+        if (dokumentType.isInngaaende()) {
             if (input.journalfoeringData.inngaaendeKanal == null) {
                 throw Exception("Missing inngaendeKanal")
             }
 
             if (input.brevMottakere.size != 1) {
-                throw Exception("brevMottakere.size must be exactly 1 for KJENNELSE_FRA_TRYGDERETTEN.")
+                throw Exception("brevMottakere.size must be exactly 1 for ${dokumentType.navn}.")
             }
         }
 

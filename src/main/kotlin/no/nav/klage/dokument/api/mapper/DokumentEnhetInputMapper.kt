@@ -46,13 +46,13 @@ class DokumentEnhetInputMapper {
                 DokumentType.NOTAT -> {
                     JournalpostType.NOTAT
                 }
-                DokumentType.KJENNELSE_FRA_TRYGDERETTEN -> {
+                DokumentType.KJENNELSE_FRA_TRYGDERETTEN, DokumentType.ANNEN_INNGAAENDE_POST -> {
                     JournalpostType.INNGAAENDE
                 }
-                else -> JournalpostType.UTGAAENDE
+                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> JournalpostType.UTGAAENDE
             }
 
-            if (input.datoMottatt != null && journalpostType != JournalpostType.INNGAAENDE) {
+            if (journalpostType != JournalpostType.INNGAAENDE && input.datoMottatt != null) {
                 logger.error("Data fra klient er ikke gyldig, datoMottatt kan kun settes for inngående journalpost.")
                 throw IllegalArgumentException("datoMottatt kan kun settes for inngående journalpost")
             }
