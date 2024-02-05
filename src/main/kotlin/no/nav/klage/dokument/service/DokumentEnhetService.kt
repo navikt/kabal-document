@@ -162,7 +162,9 @@ class DokumentEnhetService(
                             brevMottakerDistribusjon.dokdistReferanse =
                                 dokumentDistribusjonService.distribuerJournalpostTilMottaker(
                                     journalpostId = brevMottakerDistribusjon.journalpostId!!,
-                                    dokumentType = dokumentEnhet.dokumentType
+                                    dokumentType = dokumentEnhet.dokumentType,
+                                    tvingSentralPrint = brevMottakerDistribusjon.brevMottaker.tvingSentralPrint,
+                                    adresse = brevMottakerDistribusjon.brevMottaker.adresse,
                                 )
                             brevMottakerDistribusjon.modified = LocalDateTime.now()
                             brevMottakerDistribusjonRepository.save(brevMottakerDistribusjon)

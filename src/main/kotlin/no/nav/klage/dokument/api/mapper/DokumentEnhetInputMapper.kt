@@ -30,12 +30,40 @@ class DokumentEnhetInputMapper {
             BrevMottaker(
                 partId = mapPartIdInput(brevMottakerInput.partId),
                 navn = brevMottakerInput.navn,
+                tvingSentralPrint = brevMottakerInput.tvingSentralPrint,
+                adresse = validateAndMapAdresseInput(brevMottakerInput.adresse),
                 localPrint = brevMottakerInput.localPrint,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
+
+    private fun validateAndMapAdresseInput(input: DokumentEnhetWithDokumentreferanserInput.AdresseInput?): Adresse? {
+        if (input == null) return null
+        when (input.adressetype) {
+            DokumentEnhetWithDokumentreferanserInput.Adressetype.NORSK_POSTADRESSE -> {
+                if (input.adresselinje1 == null) {
+                    throw IllegalArgumentException("Adressetype utenlandskPostadresse krever adresselinje1.")
+                }
+            }
+            DokumentEnhetWithDokumentreferanserInput.Adressetype.UTENLANDSK_POSTADRESSE -> {
+                if (input.poststed == null || input.postnummer == null) {
+                    throw IllegalArgumentException("Adressetype utenlandskPostadresse krever postnummer og poststed.")
+                }
+            }
+        }
+
+        return Adresse(
+            adressetype = input.adressetype.navn,
+            adresselinje1 = input.adresselinje1,
+            adresselinje2 = input.adresselinje2,
+            adresselinje3 = input.adresselinje3,
+            postnummer = input.postnummer,
+            poststed = input.poststed,
+            land = input.land,
+        )
+    }
 
     fun mapJournalfoeringDataInput(
         input: DokumentEnhetWithDokumentreferanserInput.JournalfoeringDataInput,
