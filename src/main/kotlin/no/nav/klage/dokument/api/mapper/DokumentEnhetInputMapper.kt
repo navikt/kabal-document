@@ -44,7 +44,7 @@ class DokumentEnhetInputMapper {
         when (input.adressetype) {
             DokumentEnhetWithDokumentreferanserInput.Adressetype.NORSK_POSTADRESSE -> {
                 if (input.adresselinje1 == null) {
-                    throw IllegalArgumentException("Adressetype utenlandskPostadresse krever adresselinje1.")
+                    throw IllegalArgumentException("Adressetype norskPostadresse krever adresselinje1.")
                 }
             }
             DokumentEnhetWithDokumentreferanserInput.Adressetype.UTENLANDSK_POSTADRESSE -> {
