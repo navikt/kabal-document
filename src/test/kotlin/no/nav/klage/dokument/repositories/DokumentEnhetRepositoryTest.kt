@@ -105,6 +105,8 @@ class DokumentEnhetRepositoryTest {
                     value = "01011012345"
                 ),
                 navn = "Test Person",
+                adresse = null,
+                tvingSentralPrint = false,
                 localPrint = false,
             ),
         ),

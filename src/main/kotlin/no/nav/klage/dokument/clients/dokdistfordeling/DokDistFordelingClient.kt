@@ -26,14 +26,15 @@ class DokDistFordelingClient(
     fun distribuerJournalpost(
         journalpostId: String,
         dokumentType: DokumentType,
+        adresse: Adresse?,
+        tvingSentralPrint: Boolean,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
-        val payload = DistribuerJournalpostRequestTo(
+        val payload = mapToDistribuerJournalpostRequest(
             journalpostId = journalpostId,
-            bestillendeFagSystem = applicationName,
-            dokumentProdApp = applicationName,
-            distribusjonstype = dokumentType.toDistribusjonsType(),
-            distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt()
+            dokumentType = dokumentType,
+            adresse = adresse,
+            tvingSentralPrint = tvingSentralPrint
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
@@ -51,5 +52,22 @@ class DokDistFordelingClient(
         )
 
         return distribuerJournalpostResponse
+    }
+
+    private fun mapToDistribuerJournalpostRequest(
+        journalpostId: String,
+        dokumentType: DokumentType,
+        tvingSentralPrint: Boolean,
+        adresse: Adresse?,
+    ): DistribuerJournalpostRequest {
+        return DistribuerJournalpostRequest(
+            journalpostId = journalpostId,
+            bestillendeFagSystem = applicationName,
+            dokumentProdApp = applicationName,
+            distribusjonstype = dokumentType.toDistribusjonsType(),
+            distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
+            adresse = adresse,
+            tvingSentralPrint = tvingSentralPrint,
+        )
     }
 }

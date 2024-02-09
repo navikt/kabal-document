@@ -4,15 +4,32 @@ import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.DokumentType.*
 import java.util.*
 
-data class DistribuerJournalpostRequestTo(
+data class DistribuerJournalpostRequest(
     val batchId: String? = null,
     val bestillendeFagSystem: String? = null,
     val dokumentProdApp: String? = null,
     val journalpostId: String,
     val distribusjonstype: Distribusjonstype,
     val distribusjonstidspunkt: Distribusjonstidspunkt,
-
+    val adresse: Adresse?,
+    val tvingSentralPrint: Boolean,
 )
+
+data class Adresse(
+    val adressetype: Adressetype,
+    val adresselinje1: String?,
+    val adresselinje2: String?,
+    val adresselinje3: String?,
+    val postnummer: String?,
+    val poststed: String?,
+    val land: String,
+)
+
+enum class Adressetype {
+    norskPostadresse,
+    utenlandskPostadresse,
+}
+
 
 data class DistribuerJournalpostResponse(
     val bestillingsId: UUID

@@ -81,6 +81,8 @@ internal class JoarkMapperTest {
         id = BREVMOTTAGER_ID,
         partId = sakenGjelder,
         navn = NAVN,
+        adresse = null,
+        tvingSentralPrint = false,
         localPrint = false,
     )
 

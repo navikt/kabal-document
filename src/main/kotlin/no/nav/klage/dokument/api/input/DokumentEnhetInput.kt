@@ -34,7 +34,25 @@ data class DokumentEnhetWithDokumentreferanserInput(
         val partId: PartIdInput,
         val navn: String?,
         val localPrint: Boolean,
+        //TODO: Remove default value after consumer adjustment
+        val tvingSentralPrint: Boolean = false,
+        val adresse: AdresseInput?,
     )
+
+    data class AdresseInput(
+        val adressetype: Adressetype,
+        val adresselinje1: String?,
+        val adresselinje2: String?,
+        val adresselinje3: String?,
+        val postnummer: String?,
+        val poststed: String?,
+        val land: String,
+    )
+
+    enum class Adressetype(val navn: String) {
+        NORSK_POSTADRESSE("norskPostadresse"),
+        UTENLANDSK_POSTADRESSE("utenlandskPostadresse"),
+    }
 
     data class JournalfoeringDataInput(
         val sakenGjelder: PartIdInput,
@@ -50,8 +68,15 @@ data class DokumentEnhetWithDokumentreferanserInput(
         val inngaaendeKanal: Kanal?,
         val datoMottatt: LocalDate?,
     ) {
-        data class TilleggsopplysningInput(val key: String, val value: String)
+        data class TilleggsopplysningInput(
+            val key: String,
+            val value: String
+        )
     }
 
-    data class PartIdInput(val type: String?, val partIdTypeId: String?, val value: String)
+    data class PartIdInput(
+        val type: String?,
+        val partIdTypeId: String?,
+        val value: String
+    )
 }
