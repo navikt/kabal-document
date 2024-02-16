@@ -42,14 +42,14 @@ class DokumentEnhetInputMapper {
     private fun validateAndMapAdresseInput(input: DokumentEnhetWithDokumentreferanserInput.AdresseInput?): Adresse? {
         if (input == null) return null
         when (input.adressetype) {
-            DokumentEnhetWithDokumentreferanserInput.Adressetype.NORSK_POSTADRESSE -> {
+            DokumentEnhetWithDokumentreferanserInput.Adressetype.UTENLANDSK_POSTADRESSE -> {
                 if (input.adresselinje1 == null) {
-                    throw IllegalArgumentException("Adressetype norskPostadresse krever adresselinje1.")
+                    throw IllegalArgumentException("Adressetype utenlandskPostadresse krever adresselinje1.")
                 }
             }
-            DokumentEnhetWithDokumentreferanserInput.Adressetype.UTENLANDSK_POSTADRESSE -> {
+            DokumentEnhetWithDokumentreferanserInput.Adressetype.NORSK_POSTADRESSE -> {
                 if (input.poststed == null || input.postnummer == null) {
-                    throw IllegalArgumentException("Adressetype utenlandskPostadresse krever postnummer og poststed.")
+                    throw IllegalArgumentException("Adressetype norskPostadresse krever postnummer og poststed.")
                 }
             }
         }
