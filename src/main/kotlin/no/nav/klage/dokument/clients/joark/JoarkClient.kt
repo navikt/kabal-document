@@ -24,6 +24,8 @@ class JoarkClient(
         journalpost: Journalpost,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
+        //Debugging purposes
+        secureLogger.debug("Creating journalpost: {}", journalpost)
         val journalpostResponse = joarkWebClient.post()
             .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")

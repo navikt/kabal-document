@@ -36,6 +36,8 @@ class DokDistFordelingClient(
             adresse = adresse,
             tvingSentralPrint = tvingSentralPrint
         )
+        //Debugging purposes
+        secureLogger.debug("Payload in dokdist: {}", payload)
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithSafScope()}")
