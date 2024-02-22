@@ -140,7 +140,7 @@ internal class JoarkMapperTest {
         ),
         tilleggsopplysninger = emptyList(),
         datoMottatt = null,
-        kanal = null,
+        kanal = Kanal.DPV,
     )
 
     private val expectedJournalpostWithOneDocument = Journalpost(
@@ -170,7 +170,7 @@ internal class JoarkMapperTest {
         ),
         tilleggsopplysninger = emptyList(),
         datoMottatt = null,
-        kanal = null,
+        kanal = Kanal.DPV,
     )
 
     @Test
