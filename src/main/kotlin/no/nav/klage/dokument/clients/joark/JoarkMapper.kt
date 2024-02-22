@@ -39,7 +39,7 @@ class JoarkMapper {
             tema = journalfoeringData.tema,
             behandlingstema = journalfoeringData.behandlingstema,
             sak = createSak(journalfoeringData),
-            kanal = if(journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) Kanal.DPV else kanal,
+            kanal = if(journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) Kanal.SDP else kanal,
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
             eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",
