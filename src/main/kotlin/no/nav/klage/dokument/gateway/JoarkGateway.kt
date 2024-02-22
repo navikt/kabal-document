@@ -2,7 +2,7 @@ package no.nav.klage.dokument.gateway
 
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
@@ -20,7 +20,7 @@ interface JoarkGateway {
         opplastetHovedDokument: OpplastetHoveddokument,
         hoveddokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
-        brevMottaker: BrevMottaker,
+        avsenderMottaker: AvsenderMottaker,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse
 

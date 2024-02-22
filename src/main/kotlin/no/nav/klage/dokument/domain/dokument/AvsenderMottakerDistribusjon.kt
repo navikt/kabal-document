@@ -12,12 +12,13 @@ import java.util.*
 @Entity
 @Table(name = "brevmottakerdist", schema = "document")
 @DynamicUpdate
-class BrevMottakerDistribusjon(
+class AvsenderMottakerDistribusjon(
+    //TODO: Rename in db
     @Id
     val id: UUID = UUID.randomUUID(),
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "brev_mottaker_id", referencedColumnName = "id", nullable = false)
-    val brevMottaker: BrevMottaker,
+    val avsenderMottaker: AvsenderMottaker,
     @Column(name = "opplastet_dokument_id")
     val opplastetDokumentId: UUID,
     @Column(name = "journalpost_id")
@@ -38,7 +39,7 @@ class BrevMottakerDistribusjon(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BrevMottakerDistribusjon
+        other as AvsenderMottakerDistribusjon
 
         if (id != other.id) return false
         if (opplastetDokumentId != other.opplastetDokumentId) return false
@@ -50,6 +51,6 @@ class BrevMottakerDistribusjon(
     override fun hashCode(): Int = id.hashCode()
 
     fun shouldBeDistributed(): Boolean {
-        return !brevMottaker.localPrint
+        return !avsenderMottaker.localPrint
     }
 }

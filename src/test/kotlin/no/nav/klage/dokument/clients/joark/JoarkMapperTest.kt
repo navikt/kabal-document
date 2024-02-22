@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.domain.dokument.PartId
@@ -11,7 +11,6 @@ import no.nav.klage.kodeverk.Tema
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
-import java.time.LocalDate
 import java.util.*
 
 internal class JoarkMapperTest {
@@ -27,7 +26,7 @@ internal class JoarkMapperTest {
     private val BREVKODE = "BREVKODE"
     private val OPPLASTET_DOKUMENT_ID = UUID.randomUUID()
     private val MELLOMLAGER_ID = UUID.randomUUID()
-    private val BREVMOTTAGER_ID = UUID.randomUUID()
+    private val AVSENDERMOTTAGER_ID = UUID.randomUUID()
     private val SIZE = 16L
     private val DOKUMENT_NAME = "DOKUMENT_NAME"
     private val MELLOMLAGER_TITLE = "MELLOMLAGER_TITLE"
@@ -77,13 +76,14 @@ internal class JoarkMapperTest {
         contentType = MediaType.APPLICATION_JSON
     )
 
-    private val brevMottaker = BrevMottaker(
-        id = BREVMOTTAGER_ID,
+    private val avsenderMottaker = AvsenderMottaker(
+        id = AVSENDERMOTTAGER_ID,
         partId = sakenGjelder,
         navn = NAVN,
         adresse = null,
         tvingSentralPrint = false,
         localPrint = false,
+        kanal = null,
     )
 
     private val hovedDokument = Dokument(
@@ -117,14 +117,14 @@ internal class JoarkMapperTest {
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
         tittel = TITTEL,
-        avsenderMottaker = AvsenderMottaker(
+        avsenderMottaker = JournalpostAvsenderMottaker(
             id = FNR,
             idType = AvsenderMottakerIdType.FNR,
             navn = NAVN,
             land = null
         ),
         journalfoerendeEnhet = ENHET,
-        eksternReferanseId = "${OPPLASTET_DOKUMENT_ID}_$BREVMOTTAGER_ID",
+        eksternReferanseId = "${OPPLASTET_DOKUMENT_ID}_$AVSENDERMOTTAGER_ID",
         bruker = Bruker(
             id = FNR,
             idType = BrukerIdType.FNR
@@ -148,14 +148,14 @@ internal class JoarkMapperTest {
         tema = TEMA,
         behandlingstema = BEHANDLINGSTEMA,
         tittel = TITTEL,
-        avsenderMottaker = AvsenderMottaker(
+        avsenderMottaker = JournalpostAvsenderMottaker(
             id = FNR,
             idType = AvsenderMottakerIdType.FNR,
             navn = NAVN,
             land = null
         ),
         journalfoerendeEnhet = ENHET,
-        eksternReferanseId = "${OPPLASTET_DOKUMENT_ID}_$BREVMOTTAGER_ID",
+        eksternReferanseId = "${OPPLASTET_DOKUMENT_ID}_$AVSENDERMOTTAGER_ID",
         bruker = Bruker(
             id = FNR,
             idType = BrukerIdType.FNR
@@ -180,7 +180,7 @@ internal class JoarkMapperTest {
             journalfoeringData = journalfoeringData,
             opplastetHovedDokument = opplastetHovedDokument,
             hovedDokument = mellomlagretDokument,
-            brevMottaker = brevMottaker
+            avsenderMottaker = avsenderMottaker
         )
 
         assertEquals(expectedJournalpostWithOneDocument, resultingJournalpost)
@@ -194,7 +194,7 @@ internal class JoarkMapperTest {
             opplastetHovedDokument = opplastetHovedDokument,
             hovedDokument = mellomlagretDokument,
             vedleggDokumentList = listOf(mellomlagretVedleggDokument),
-            brevMottaker = brevMottaker
+            avsenderMottaker = avsenderMottaker
         )
 
         assertEquals(expectedJournalpostWithTwoDocuments, resultingJournalpost)

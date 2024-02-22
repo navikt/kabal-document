@@ -53,9 +53,9 @@ class DokumentEnhetRepositoryTest {
     @Transactional
     fun `update child property works as expected`() {
         val dokumentEnhet = dokumentEnhet
-        dokumentEnhet.brevMottakerDistribusjoner = setOf(
-            BrevMottakerDistribusjon(
-                brevMottaker = dokumentEnhet.brevMottakere.first(),
+        dokumentEnhet.avsenderMottakerDistribusjoner = setOf(
+            AvsenderMottakerDistribusjon(
+                avsenderMottaker = dokumentEnhet.avsenderMottakere.first(),
                 opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
             )
         )
@@ -64,13 +64,13 @@ class DokumentEnhetRepositoryTest {
 
         val retrievedObject = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
 
-        retrievedObject.brevMottakerDistribusjoner.first().journalpostId = "JOURNALPOST_ID"
+        retrievedObject.avsenderMottakerDistribusjoner.first().journalpostId = "JOURNALPOST_ID"
 
         dokumentEnhetRepository.save(retrievedObject)
 
         val retrievedObject2 = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
 
-        assertThat(retrievedObject2.brevMottakerDistribusjoner.first().journalpostId).isEqualTo(retrievedObject.brevMottakerDistribusjoner.first().journalpostId)
+        assertThat(retrievedObject2.avsenderMottakerDistribusjoner.first().journalpostId).isEqualTo(retrievedObject.avsenderMottakerDistribusjoner.first().journalpostId)
     }
 
     @Test
@@ -98,8 +98,8 @@ class DokumentEnhetRepositoryTest {
             inngaaendeKanal = null,
             datoMottatt = null,
         ),
-        brevMottakere = setOf(
-            BrevMottaker(
+        avsenderMottakere = setOf(
+            AvsenderMottaker(
                 partId = PartId(
                     type = PartIdType.PERSON,
                     value = "01011012345"
@@ -108,6 +108,7 @@ class DokumentEnhetRepositoryTest {
                 adresse = null,
                 tvingSentralPrint = false,
                 localPrint = false,
+                kanal = null,
             ),
         ),
         vedlegg = setOf(
@@ -124,7 +125,7 @@ class DokumentEnhetRepositoryTest {
             sourceReference = UUID.randomUUID(),
         ),
         dokumentType = DokumentType.VEDTAK,
-        brevMottakerDistribusjoner = setOf(),
+        avsenderMottakerDistribusjoner = setOf(),
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
         modified = LocalDateTime.now()

@@ -27,15 +27,15 @@ class JournalfoeringService(
 
     fun createJournalpostAsSystemUser(
         //Skal kanskje være noe annet, om vi skal støtte både utgående og inngående?
-        brevMottaker: BrevMottaker,
+        avsenderMottaker: AvsenderMottaker,
         hoveddokument: OpplastetHoveddokument,
         vedleggDokumentSet: Set<OpplastetVedlegg> = emptySet(),
         journalfoeringData: JournalfoeringData,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
         logger.debug(
-            "Skal opprette journalpost som systembruker for brevMottaker {} og dokument {}",
-            brevMottaker.id,
+            "Skal opprette journalpost som systembruker for avsenderMottaker {} og dokument {}",
+            avsenderMottaker.id,
             hoveddokument.id
         )
         val mellomlagretHovedDokument = MellomlagretDokument(
@@ -56,7 +56,7 @@ class JournalfoeringService(
             opplastetHovedDokument = hoveddokument,
             hoveddokument = mellomlagretHovedDokument,
             vedleggDokumentList = mellomlagredeVedleggDokument,
-            brevMottaker = brevMottaker,
+            avsenderMottaker = avsenderMottaker,
             journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent,
         )
     }
@@ -80,13 +80,13 @@ class JournalfoeringService(
         )
     }
 
-    fun ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon: BrevMottakerDistribusjon): LocalDateTime {
-        if (brevMottakerDistribusjon.journalpostId == null) {
-            throw JournalpostNotFoundException("Ingen journalpostId registrert i brevmottakerDistribusjon ${brevMottakerDistribusjon.id}")
+    fun ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon: AvsenderMottakerDistribusjon): LocalDateTime {
+        if (avsenderMottakerDistribusjon.journalpostId == null) {
+            throw JournalpostNotFoundException("Ingen journalpostId registrert i avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}")
         }
 
         finalizeJournalpostAsSystemUser(
-            journalpostId = brevMottakerDistribusjon.journalpostId!!
+            journalpostId = avsenderMottakerDistribusjon.journalpostId!!
         )
 
         return LocalDateTime.now()
