@@ -61,16 +61,16 @@ class DokumentEnhet(
     fun isAvsluttet() = avsluttet != null
 
     private fun isDistributedTo(avsenderMottaker: AvsenderMottaker): Boolean =
-        findAvsenderMottakerDistribusjon(avsenderMottaker)?.dokdistReferanse != null
+        findAvsenderMottakerDistribusjon(avsenderMottaker).dokdistReferanse != null
 
     private fun isJournalfoertFor(avsenderMottaker: AvsenderMottaker): Boolean =
-        findAvsenderMottakerDistribusjon(avsenderMottaker)?.journalpostId != null && findAvsenderMottakerDistribusjon(avsenderMottaker)?.ferdigstiltIJoark != null
+        findAvsenderMottakerDistribusjon(avsenderMottaker).journalpostId != null && findAvsenderMottakerDistribusjon(avsenderMottaker).ferdigstiltIJoark != null
 
     fun isProcessedForAll(): Boolean {
         return if (shouldBeDistributed()) {
             avsenderMottakere.all {
                 val avsenderMottakerDistribusjon = findAvsenderMottakerDistribusjon(it)
-                if (avsenderMottakerDistribusjon!!.shouldBeDistributed()) {
+                if (avsenderMottakerDistribusjon.shouldBeDistributed()) {
                     isDistributedTo(it)
                 } else {
                     isJournalfoertFor(it)
@@ -84,8 +84,8 @@ class DokumentEnhet(
     private fun isJournalfoertForAll(): Boolean =
         avsenderMottakere.all { isJournalfoertFor(it) }
 
-    private fun findAvsenderMottakerDistribusjon(avsenderMottaker: AvsenderMottaker): AvsenderMottakerDistribusjon? =
-        avsenderMottakerDistribusjoner.find { it.avsenderMottaker == avsenderMottaker }
+    private fun findAvsenderMottakerDistribusjon(avsenderMottaker: AvsenderMottaker): AvsenderMottakerDistribusjon =
+        avsenderMottakerDistribusjoner.find { it.avsenderMottaker == avsenderMottaker }!!
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
