@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
@@ -27,7 +27,7 @@ class DefaultJoarkGateway(
         opplastetHovedDokument: OpplastetHoveddokument,
         hoveddokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument>,
-        brevMottaker: BrevMottaker,
+        avsenderMottaker: AvsenderMottaker,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse =
         joarkClient.createJournalpostInJoarkAsSystemUser(
@@ -36,7 +36,7 @@ class DefaultJoarkGateway(
                 opplastetHovedDokument = opplastetHovedDokument,
                 hovedDokument = hoveddokument,
                 vedleggDokumentList = vedleggDokumentList,
-                brevMottaker = brevMottaker
+                avsenderMottaker = avsenderMottaker
             ),
             journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
         )

@@ -10,14 +10,14 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Entity
-@Table(name = "brevmottakerdist", schema = "document")
+@Table(name = "avsender_mottaker_dist", schema = "document")
 @DynamicUpdate
-class BrevMottakerDistribusjon(
+class AvsenderMottakerDistribusjon(
     @Id
     val id: UUID = UUID.randomUUID(),
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "brev_mottaker_id", referencedColumnName = "id", nullable = false)
-    val brevMottaker: BrevMottaker,
+    @JoinColumn(name = "avsender_mottaker_id", referencedColumnName = "id", nullable = false)
+    val avsenderMottaker: AvsenderMottaker,
     @Column(name = "opplastet_dokument_id")
     val opplastetDokumentId: UUID,
     @Column(name = "journalpost_id")
@@ -29,7 +29,7 @@ class BrevMottakerDistribusjon(
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "brevmottakerdist_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "avsender_mottaker_dist_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
     var journalfoerteVedlegg: MutableSet<JournalfoertVedleggId> = mutableSetOf(),
@@ -38,7 +38,7 @@ class BrevMottakerDistribusjon(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BrevMottakerDistribusjon
+        other as AvsenderMottakerDistribusjon
 
         if (id != other.id) return false
         if (opplastetDokumentId != other.opplastetDokumentId) return false
@@ -50,6 +50,6 @@ class BrevMottakerDistribusjon(
     override fun hashCode(): Int = id.hashCode()
 
     fun shouldBeDistributed(): Boolean {
-        return !brevMottaker.localPrint
+        return !avsenderMottaker.localPrint
     }
 }

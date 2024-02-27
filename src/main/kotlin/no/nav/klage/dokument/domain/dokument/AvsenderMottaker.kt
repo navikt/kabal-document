@@ -1,11 +1,12 @@
 package no.nav.klage.dokument.domain.dokument
 
 import jakarta.persistence.*
+import no.nav.klage.dokument.clients.joark.Kanal
 import java.util.*
 
 @Entity
-@Table(name = "brevmottaker", schema = "document")
-class BrevMottaker(
+@Table(name = "avsender_mottaker", schema = "document")
+class AvsenderMottaker(
     @Id
     val id: UUID = UUID.randomUUID(),
     @Embedded
@@ -35,4 +36,7 @@ class BrevMottaker(
     val adresse: Adresse?,
     @Column(name = "local_print")
     val localPrint: Boolean,
+    @Column(name = "kanal")
+    @Enumerated(EnumType.STRING)
+    var kanal: Kanal?,
 )

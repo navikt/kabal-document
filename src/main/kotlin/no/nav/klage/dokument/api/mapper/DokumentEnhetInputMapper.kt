@@ -3,6 +3,7 @@ package no.nav.klage.dokument.api.mapper
 
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.clients.joark.JournalpostType
+import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
@@ -22,17 +23,40 @@ class DokumentEnhetInputMapper {
         private val secureLogger = getSecureLogger()
     }
 
-    fun mapBrevMottakereInput(brevMottakereInput: List<DokumentEnhetWithDokumentreferanserInput.BrevMottakerInput>): Set<BrevMottaker> =
-        brevMottakereInput.map { mapBrevMottakerInput(it) }.toSet()
+    fun mapAvsenderMottakerInputList(avsenderMottakerInput: List<DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput>): Set<AvsenderMottaker> =
+        avsenderMottakerInput.map { mapAvsenderMottakerInput(it) }.toSet()
 
-    fun mapBrevMottakerInput(brevMottakerInput: DokumentEnhetWithDokumentreferanserInput.BrevMottakerInput): BrevMottaker =
+    fun mapAvsenderMottakerInput(avsenderMottakerInput: DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput): AvsenderMottaker =
         try {
-            BrevMottaker(
-                partId = mapPartIdInput(brevMottakerInput.partId),
-                navn = brevMottakerInput.navn,
-                tvingSentralPrint = brevMottakerInput.tvingSentralPrint,
-                adresse = validateAndMapAdresseInput(brevMottakerInput.adresse),
-                localPrint = brevMottakerInput.localPrint,
+            if (avsenderMottakerInput.kanal != null) {
+                if (avsenderMottakerInput.kanal !in listOf(
+                        Kanal.EESSI,
+                        Kanal.ALTINN,
+                        Kanal.ALTINN_INNBOKS,
+                        Kanal.E_POST,
+                        Kanal.NAV_NO,
+                        Kanal.S,
+                        Kanal.L,
+                        Kanal.SDP,
+                        Kanal.EIA,
+                        Kanal.HELSENETTET,
+                        Kanal.TRYGDERETTEN,
+                        Kanal.INGEN_DISTRIBUSJON,
+                        Kanal.NAV_NO_CHAT,
+                        Kanal.DPVT
+                    )
+                ) {
+                    throw Exception("Invalid kanal in avsenderMottakerInput: ${avsenderMottakerInput.kanal.name}")
+                }
+            }
+
+            AvsenderMottaker(
+                partId = mapPartIdInput(avsenderMottakerInput.partId),
+                navn = avsenderMottakerInput.navn,
+                tvingSentralPrint = avsenderMottakerInput.tvingSentralPrint,
+                adresse = validateAndMapAdresseInput(avsenderMottakerInput.adresse),
+                localPrint = avsenderMottakerInput.localPrint,
+                kanal = avsenderMottakerInput.kanal,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)
@@ -47,6 +71,7 @@ class DokumentEnhetInputMapper {
                     throw IllegalArgumentException("Adressetype utenlandskPostadresse krever adresselinje1.")
                 }
             }
+
             DokumentEnhetWithDokumentreferanserInput.Adressetype.NORSK_POSTADRESSE -> {
                 if (input.poststed == null || input.postnummer == null) {
                     throw IllegalArgumentException("Adressetype norskPostadresse krever postnummer og poststed.")
@@ -74,10 +99,14 @@ class DokumentEnhetInputMapper {
                 DokumentType.NOTAT -> {
                     JournalpostType.NOTAT
                 }
+
                 DokumentType.KJENNELSE_FRA_TRYGDERETTEN, DokumentType.ANNEN_INNGAAENDE_POST -> {
                     JournalpostType.INNGAAENDE
                 }
-                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> JournalpostType.UTGAAENDE
+
+                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> {
+                    JournalpostType.UTGAAENDE
+                }
             }
 
             if (journalpostType != JournalpostType.INNGAAENDE && input.datoMottatt != null) {
@@ -112,7 +141,10 @@ class DokumentEnhetInputMapper {
             sourceReference = dokument.sourceReference,
         )
 
-    fun mapDokumentInputToVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument, index: Int): OpplastetVedlegg =
+    fun mapDokumentInputToVedlegg(
+        dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument,
+        index: Int
+    ): OpplastetVedlegg =
         OpplastetVedlegg(
             mellomlagerId = dokument.mellomlagerId,
             name = dokument.name,
@@ -120,7 +152,10 @@ class DokumentEnhetInputMapper {
             sourceReference = dokument.sourceReference
         )
 
-    fun mapDokumentInputToJournalfoertVedlegg(dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument, index: Int): JournalfoertVedlegg =
+    fun mapDokumentInputToJournalfoertVedlegg(
+        dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument,
+        index: Int
+    ): JournalfoertVedlegg =
         JournalfoertVedlegg(
             kildeJournalpostId = dokument.kildeJournalpostId,
             dokumentInfoId = dokument.dokumentInfoId,

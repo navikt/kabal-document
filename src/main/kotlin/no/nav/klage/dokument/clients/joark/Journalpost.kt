@@ -9,7 +9,7 @@ data class Journalpost(
     val behandlingstema: String,
     val tittel: String,
     val kanal: Kanal?,
-    var avsenderMottaker: AvsenderMottaker?,
+    var avsenderMottaker: JournalpostAvsenderMottaker?,
     val journalfoerendeEnhet: String?,
     val eksternReferanseId: String?,
     val datoMottatt: LocalDate?,
@@ -33,15 +33,13 @@ enum class Kanal {
     INNSENDT_NAV_ANSATT,
     EESSI,
     EKST_OPPS,
-    SENTRAL_UTSKRIFT,
-    LOKAL_UTSKRIFT,
+    S,
     L,
     SDP,
     TRYGDERETTEN,
     HELSENETTET,
     INGEN_DISTRIBUSJON,
-    DPV,
-    DPVS,
+    DPVT,
     UKJENT,
 }
 
@@ -51,7 +49,7 @@ enum class JournalpostType {
     NOTAT
 }
 
-data class AvsenderMottaker(
+data class JournalpostAvsenderMottaker(
     val id: String,
     val idType: AvsenderMottakerIdType,
     val navn: String? = null,

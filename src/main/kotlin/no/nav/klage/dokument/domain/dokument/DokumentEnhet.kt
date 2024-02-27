@@ -23,7 +23,7 @@ class DokumentEnhet(
     @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
-    val brevMottakere: Set<BrevMottaker>,
+    val avsenderMottakere: Set<AvsenderMottaker>,
     @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "hoveddokument_id", referencedColumnName = "id")
     val hovedDokument: OpplastetHoveddokument? = null,
@@ -46,7 +46,7 @@ class DokumentEnhet(
     @JoinColumn(name = "dokumentenhet_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
-    var brevMottakerDistribusjoner: Set<BrevMottakerDistribusjon> = emptySet(),
+    var avsenderMottakerDistribusjoner: Set<AvsenderMottakerDistribusjon> = emptySet(),
     @Column(name = "avsluttet")
     var avsluttet: LocalDateTime? = null,
     @Column(name = "journalfoerende_saksbehandler_ident")
@@ -60,17 +60,17 @@ class DokumentEnhet(
 
     fun isAvsluttet() = avsluttet != null
 
-    fun isDistributedTo(brevMottaker: BrevMottaker): Boolean =
-        findBrevMottakerDistribusjon(brevMottaker)?.dokdistReferanse != null
+    private fun isDistributedTo(avsenderMottaker: AvsenderMottaker): Boolean =
+        findAvsenderMottakerDistribusjon(avsenderMottaker).dokdistReferanse != null
 
-    fun isJournalfoertFor(brevMottaker: BrevMottaker): Boolean =
-        findBrevMottakerDistribusjon(brevMottaker)?.journalpostId != null && findBrevMottakerDistribusjon(brevMottaker)?.ferdigstiltIJoark != null
+    private fun isJournalfoertFor(avsenderMottaker: AvsenderMottaker): Boolean =
+        findAvsenderMottakerDistribusjon(avsenderMottaker).journalpostId != null && findAvsenderMottakerDistribusjon(avsenderMottaker).ferdigstiltIJoark != null
 
     fun isProcessedForAll(): Boolean {
         return if (shouldBeDistributed()) {
-            brevMottakere.all {
-                val brevMottakerDistribusjon = findBrevMottakerDistribusjon(it)
-                if (brevMottakerDistribusjon!!.shouldBeDistributed()) {
+            avsenderMottakere.all {
+                val avsenderMottakerDistribusjon = findAvsenderMottakerDistribusjon(it)
+                if (avsenderMottakerDistribusjon.shouldBeDistributed()) {
                     isDistributedTo(it)
                 } else {
                     isJournalfoertFor(it)
@@ -81,11 +81,11 @@ class DokumentEnhet(
         }
     }
 
-    fun isJournalfoertForAll(): Boolean =
-        brevMottakere.all { isJournalfoertFor(it) }
+    private fun isJournalfoertForAll(): Boolean =
+        avsenderMottakere.all { isJournalfoertFor(it) }
 
-    fun findBrevMottakerDistribusjon(brevMottaker: BrevMottaker): BrevMottakerDistribusjon? =
-        brevMottakerDistribusjoner.find { it.brevMottaker == brevMottaker }
+    private fun findAvsenderMottakerDistribusjon(avsenderMottaker: AvsenderMottaker): AvsenderMottakerDistribusjon =
+        avsenderMottakerDistribusjoner.find { it.avsenderMottaker == avsenderMottaker }!!
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

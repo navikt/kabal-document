@@ -8,7 +8,7 @@ import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
 import no.nav.klage.dokument.domain.dokument.*
-import no.nav.klage.dokument.repositories.BrevMottakerDistribusjonRepository
+import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
@@ -26,7 +26,7 @@ internal class DokumentEnhetServiceTest {
     private val journalfoeringService = mockk<JournalfoeringService>()
     private val dokumentDistribusjonService = mockk<DokumentDistribusjonService>()
     private val mellomlagerService = mockk<MellomlagerService>()
-    private val brevMottakerDistribusjonRepository = mockk<BrevMottakerDistribusjonRepository>()
+    private val avsenderMottakerDistribusjonRepository = mockk<AvsenderMottakerDistribusjonRepository>()
 
     val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
     val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
@@ -50,7 +50,7 @@ internal class DokumentEnhetServiceTest {
         dokumenter = listOf()
     )
 
-    val brevMottaker1 = BrevMottaker(
+    val avsenderMottaker1 = AvsenderMottaker(
         partId = PartId(
             type = PartIdType.PERSON,
             value = "01011012345"
@@ -59,9 +59,10 @@ internal class DokumentEnhetServiceTest {
         adresse = null,
         tvingSentralPrint = false,
         localPrint = false,
+        kanal = null,
     )
 
-    val brevMottaker2 = BrevMottaker(
+    val avsenderMottaker2 = AvsenderMottaker(
         partId = PartId(
             type = PartIdType.PERSON,
             value = "20022012345"
@@ -70,9 +71,10 @@ internal class DokumentEnhetServiceTest {
         adresse = null,
         tvingSentralPrint = false,
         localPrint = false,
+        kanal = null,
     )
 
-    val brevMottaker3 = BrevMottaker(
+    val avsenderMottaker3 = AvsenderMottaker(
         partId = PartId(
             type = PartIdType.PERSON,
             value = "01011012345"
@@ -81,6 +83,7 @@ internal class DokumentEnhetServiceTest {
         adresse = null,
         tvingSentralPrint = false,
         localPrint = true,
+        kanal = null,
     )
 
     val hovedDokument = OpplastetHoveddokument(
@@ -89,18 +92,18 @@ internal class DokumentEnhetServiceTest {
         sourceReference = UUID.randomUUID(),
     )
 
-    val brevMottakerDistribusjon1 = BrevMottakerDistribusjon(
-        brevMottaker = brevMottaker1,
+    val avsenderMottakerDistribusjon1 = AvsenderMottakerDistribusjon(
+        avsenderMottaker = avsenderMottaker1,
         opplastetDokumentId = hovedDokument.id,
     )
 
-    val brevMottakerDistribusjon2 = BrevMottakerDistribusjon(
-        brevMottaker = brevMottaker2,
+    val avsenderMottakerDistribusjon2 = AvsenderMottakerDistribusjon(
+        avsenderMottaker = avsenderMottaker2,
         opplastetDokumentId = hovedDokument.id,
     )
 
-    val brevMottakerDistribusjon3 = BrevMottakerDistribusjon(
-        brevMottaker = brevMottaker3,
+    val avsenderMottakerDistribusjon3 = AvsenderMottakerDistribusjon(
+        avsenderMottaker = avsenderMottaker3,
         opplastetDokumentId = hovedDokument.id,
     )
 
@@ -123,8 +126,8 @@ internal class DokumentEnhetServiceTest {
             inngaaendeKanal = null,
             datoMottatt = null,
         ),
-        brevMottakere = setOf(brevMottaker1, brevMottaker2),
-        brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon1, brevMottakerDistribusjon2),
+        avsenderMottakere = setOf(avsenderMottaker1, avsenderMottaker2),
+        avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon1, avsenderMottakerDistribusjon2),
         hovedDokument = hovedDokument,
         vedlegg = setOf(
             OpplastetVedlegg(
@@ -158,8 +161,8 @@ internal class DokumentEnhetServiceTest {
             inngaaendeKanal = null,
             datoMottatt = null,
         ),
-        brevMottakere = setOf(brevMottaker3),
-        brevMottakerDistribusjoner = setOf(brevMottakerDistribusjon3),
+        avsenderMottakere = setOf(avsenderMottaker3),
+        avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon3),
         hovedDokument = hovedDokument,
         vedlegg = setOf(
             OpplastetVedlegg(
@@ -180,16 +183,16 @@ internal class DokumentEnhetServiceTest {
         journalfoeringService = journalfoeringService,
         dokumentDistribusjonService = dokumentDistribusjonService,
         mellomlagerService = mellomlagerService,
-        brevMottakerDistribusjonRepository = brevMottakerDistribusjonRepository
+        avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository
     )
 
     @BeforeEach
     fun setup() {
         every { dokumentEnhetRepository.save(any()) } returns baseDokumentEnhet
-        every { brevMottakerDistribusjonRepository.save(any()) } returns brevMottakerDistribusjon1
+        every { avsenderMottakerDistribusjonRepository.save(any()) } returns avsenderMottakerDistribusjon1
         every {
             journalfoeringService.createJournalpostAsSystemUser(
-                brevMottaker = brevMottaker1,
+                avsenderMottaker = avsenderMottaker1,
                 hoveddokument = any(),
                 vedleggDokumentSet = any(),
                 journalfoeringData = any(),
@@ -199,7 +202,7 @@ internal class DokumentEnhetServiceTest {
 
         every {
             journalfoeringService.createJournalpostAsSystemUser(
-                brevMottaker = brevMottaker2,
+                avsenderMottaker = avsenderMottaker2,
                 hoveddokument = any(),
                 vedleggDokumentSet = any(),
                 journalfoeringData = any(),
@@ -209,7 +212,7 @@ internal class DokumentEnhetServiceTest {
 
         every {
             journalfoeringService.createJournalpostAsSystemUser(
-                brevMottaker = brevMottaker3,
+                avsenderMottaker = avsenderMottaker3,
                 hoveddokument = any(),
                 vedleggDokumentSet = any(),
                 journalfoeringData = any(),
@@ -217,7 +220,7 @@ internal class DokumentEnhetServiceTest {
             )
         } returns JOURNALPOST_RESPONSE_3
 
-        every { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) } returns LocalDateTime.now()
+        every { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) } returns LocalDateTime.now()
         every { journalfoeringService.tilknyttVedleggAsSystemUser(any(), any()) } returns TilknyttVedleggResponse(feiledeDokumenter = emptyList())
         every { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any(), any(), any()) } returns UUID.randomUUID()
     }
@@ -232,11 +235,11 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any(), any()) }
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(avsenderMottaker1, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(avsenderMottaker2, any(), any(), any(), any()) }
 
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon1) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon2) }
 
         verify(exactly = 1) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(JOURNALPOST_ID_1, any(), any(), any()) }
         verify(exactly = 1) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(JOURNALPOST_ID_2, any(), any(), any()) }
@@ -252,9 +255,9 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker3, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(avsenderMottaker3, any(), any(), any(), any()) }
 
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon3) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon3) }
 
         verify(exactly = 0) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any(), any(), any()) }
     }
@@ -269,11 +272,11 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker1, any(), any(), any(), any()) }
-        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(brevMottaker2, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(avsenderMottaker1, any(), any(), any(), any()) }
+        verify(exactly = 1) { journalfoeringService.createJournalpostAsSystemUser(avsenderMottaker2, any(), any(), any(), any()) }
 
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon1) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon2) }
 
         verify(exactly = 0) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any(), any(), any()) }
     }
@@ -291,8 +294,8 @@ internal class DokumentEnhetServiceTest {
 
         verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
 
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon1) }
-        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(brevMottakerDistribusjon2) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon1) }
+        verify(exactly = 1) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon2) }
 
         verify(exactly = 1) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(JOURNALPOST_ID_1, any(), any(), any()) }
         verify(exactly = 1) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(JOURNALPOST_ID_2, any(), any(), any()) }
@@ -310,14 +313,14 @@ internal class DokumentEnhetServiceTest {
         )
 
         verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
-        verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForBrevMottaker(any()) }
+        verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) }
         verify(exactly = 0) { dokumentDistribusjonService.distribuerJournalpostTilMottaker(any(), any(), any(), any()) }
     }
 
     private fun assertFerdigDistribuert(dokumentEnhet: DokumentEnhet) {
         assertThat(dokumentEnhet.isAvsluttet())
-        assertThat(dokumentEnhet.brevMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.brevMottakere.size)
-        dokumentEnhet.brevMottakerDistribusjoner.forEach {
+        assertThat(dokumentEnhet.avsenderMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.avsenderMottakere.size)
+        dokumentEnhet.avsenderMottakerDistribusjoner.forEach {
             assertThat(it.journalpostId).isNotNull
             assertThat(it.ferdigstiltIJoark).isNotNull
             assertThat(it.dokdistReferanse).isNotNull
@@ -327,8 +330,8 @@ internal class DokumentEnhetServiceTest {
 
     private fun assertFerdigJournalfoert(dokumentEnhet: DokumentEnhet) {
         assertThat(dokumentEnhet.isAvsluttet())
-        assertThat(dokumentEnhet.brevMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.brevMottakere.size)
-        dokumentEnhet.brevMottakerDistribusjoner.forEach {
+        assertThat(dokumentEnhet.avsenderMottakerDistribusjoner.size).isEqualTo(dokumentEnhet.avsenderMottakere.size)
+        dokumentEnhet.avsenderMottakerDistribusjoner.forEach {
             assertThat(it.journalpostId).isNotNull
             assertThat(it.ferdigstiltIJoark).isNotNull
         }
@@ -351,19 +354,19 @@ internal class DokumentEnhetServiceTest {
 
     fun journalfoertMenIkkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
-        dokumentEnhet.brevMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
-        dokumentEnhet.brevMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
         return dokumentEnhet
     }
 
     fun journalfoertOgDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
-        dokumentEnhet.brevMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
-        dokumentEnhet.brevMottakerDistribusjoner.first().ferdigstiltIJoark = LocalDateTime.now()
-        dokumentEnhet.brevMottakerDistribusjoner.first().dokdistReferanse = UUID.randomUUID()
-        dokumentEnhet.brevMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
-        dokumentEnhet.brevMottakerDistribusjoner.last().ferdigstiltIJoark = LocalDateTime.now()
-        dokumentEnhet.brevMottakerDistribusjoner.last().dokdistReferanse = UUID.randomUUID()
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().ferdigstiltIJoark = LocalDateTime.now()
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().dokdistReferanse = UUID.randomUUID()
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().ferdigstiltIJoark = LocalDateTime.now()
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().dokdistReferanse = UUID.randomUUID()
         return dokumentEnhet
     }
 }

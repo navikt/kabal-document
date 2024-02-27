@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
-import no.nav.klage.dokument.domain.dokument.BrevMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.service.JournalfoeringService
@@ -24,13 +24,15 @@ class JoarkMapper {
         opplastetHovedDokument: OpplastetHoveddokument,
         hovedDokument: JournalfoeringService.MellomlagretDokument,
         vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
-        brevMottaker: BrevMottaker
+        avsenderMottaker: AvsenderMottaker
     ): Journalpost {
 
-        val kanal =  if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
+        val kanal = if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
             journalfoeringData.inngaaendeKanal
-        } else if (brevMottaker.localPrint) {
+        } else if (avsenderMottaker.localPrint) {
             Kanal.L
+        } else if (journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) {
+            avsenderMottaker.kanal
         } else null
 
         val journalpost = Journalpost(
@@ -42,7 +44,7 @@ class JoarkMapper {
             kanal = kanal,
             tittel = journalfoeringData.tittel,
             journalfoerendeEnhet = journalfoeringData.enhet,
-            eksternReferanseId = "${opplastetHovedDokument.id}_${brevMottaker.id}",
+            eksternReferanseId = "${opplastetHovedDokument.id}_${avsenderMottaker.id}",
             datoMottatt = journalfoeringData.datoMottatt,
             bruker = createBruker(journalfoeringData),
             dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
@@ -60,21 +62,21 @@ class JoarkMapper {
         )
 
         if (journalfoeringData.journalpostType in listOf(JournalpostType.UTGAAENDE, JournalpostType.INNGAAENDE)) {
-            journalpost.avsenderMottaker = createAvsenderMottager(brevMottaker)
+            journalpost.avsenderMottaker = createJournalpostAvsenderMottager(avsenderMottaker)
         }
 
         return journalpost
     }
 
-    private fun createAvsenderMottager(brevMottaker: BrevMottaker): AvsenderMottaker =
-        AvsenderMottaker(
-            id = brevMottaker.partId.value,
-            idType = if (brevMottaker.partId.type == PartIdType.PERSON) {
+    private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker =
+        JournalpostAvsenderMottaker(
+            id = avsenderMottaker.partId.value,
+            idType = if (avsenderMottaker.partId.type == PartIdType.PERSON) {
                 AvsenderMottakerIdType.FNR
             } else {
                 AvsenderMottakerIdType.ORGNR
             },
-            navn = brevMottaker.navn
+            navn = avsenderMottaker.navn
         )
 
     private fun createSak(journalfoeringData: JournalfoeringData): Sak =

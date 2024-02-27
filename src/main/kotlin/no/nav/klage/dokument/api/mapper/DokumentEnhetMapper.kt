@@ -21,16 +21,7 @@ class DokumentEnhetMapper {
     }
 
     fun mapToDokumentEnhetFullfoertView(dokumentEnhet: DokumentEnhet): DokumentEnhetFullfoertView {
-        val journalpostIdList = dokumentEnhet.brevMottakerDistribusjoner.map {
-            it.journalpostId!!
-        }
         val dokumentEnhetFullfoertView = DokumentEnhetFullfoertView(
-            journalpostIdList.map {
-                BrevMottakerWithJoarkAndDokDistInfo(
-                    journalpostId = JournalpostId(value = it),
-                )
-            },
-            journalpostIdList = journalpostIdList,
             sourceReferenceWithJoarkReferencesList = getSourceReferenceWithJoarkReferencesList(dokumentEnhet)
         )
 
