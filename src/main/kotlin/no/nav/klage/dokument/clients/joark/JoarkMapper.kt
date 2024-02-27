@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.joark
 
-//import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
@@ -28,9 +27,9 @@ class JoarkMapper {
         avsenderMottaker: AvsenderMottaker
     ): Journalpost {
 
-        val kanal =  if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
-            avsenderMottaker.kanal ?: journalfoeringData.inngaaendeKanal
-        } else if(avsenderMottaker.localPrint) {
+        val kanal = if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
+            journalfoeringData.inngaaendeKanal
+        } else if (avsenderMottaker.localPrint) {
             Kanal.L
         } else if (journalfoeringData.journalpostType == JournalpostType.UTGAAENDE) {
             avsenderMottaker.kanal

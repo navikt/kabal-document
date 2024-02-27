@@ -5,9 +5,8 @@ import no.nav.klage.dokument.clients.joark.Kanal
 import java.util.*
 
 @Entity
-@Table(name = "brevmottaker", schema = "document")
+@Table(name = "avsender_mottaker", schema = "document")
 class AvsenderMottaker(
-    //TODO: Rename in db
     @Id
     val id: UUID = UUID.randomUUID(),
     @Embedded

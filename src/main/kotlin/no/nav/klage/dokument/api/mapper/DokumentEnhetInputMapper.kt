@@ -50,8 +50,6 @@ class DokumentEnhetInputMapper {
                 }
             }
 
-
-
             AvsenderMottaker(
                 partId = mapPartIdInput(avsenderMottakerInput.partId),
                 navn = avsenderMottakerInput.navn,
@@ -106,7 +104,9 @@ class DokumentEnhetInputMapper {
                     JournalpostType.INNGAAENDE
                 }
 
-                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> JournalpostType.UTGAAENDE
+                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> {
+                    JournalpostType.UTGAAENDE
+                }
             }
 
             if (journalpostType != JournalpostType.INNGAAENDE && input.datoMottatt != null) {

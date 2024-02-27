@@ -239,9 +239,8 @@ class DokumentEnhetService(
 
         val avsenderMottakerList = input.avsenderMottakerList ?: input.brevMottakere!!
 
-        //TODO: Bruk brevmottakerkanal også for inngående.
         if (dokumentType.isInngaaende()) {
-            if (input.journalfoeringData.inngaaendeKanal == null && avsenderMottakerList.all { it.kanal == null }) {
+            if (input.journalfoeringData.inngaaendeKanal == null) {
                 throw Exception("Missing inngaendeKanal")
             }
 
