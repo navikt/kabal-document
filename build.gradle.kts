@@ -15,7 +15,7 @@ val ehcacheVersion = "3.10.8"
 val kodeverkVersion = "1.8.6"
 val syslog4jVersion = "1.0.0"
 
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
     mavenCentral()
@@ -94,7 +94,7 @@ idea {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
 }
 

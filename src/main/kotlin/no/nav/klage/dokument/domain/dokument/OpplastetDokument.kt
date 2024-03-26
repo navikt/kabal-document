@@ -27,7 +27,7 @@ abstract class OpplastetDokument(
     @JoinColumn(name = "opplastet_dokument_id", referencedColumnName = "id", nullable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 100)
-    var dokumentInfoReferenceList: MutableList<DokumentInfoReference> = mutableListOf(),
+    val dokumentInfoReferenceList: MutableList<DokumentInfoReference> = mutableListOf(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
