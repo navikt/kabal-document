@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.13.10"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "4.1.3"
+val tokenValidationVersion = "4.1.4"
 val logstashVersion = "7.4"
 val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.5"
@@ -12,7 +12,7 @@ val testContainersVersion = "1.19.7"
 val shedlockVersion = "5.12.0"
 val archunitVersion = "1.2.1"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "1.8.6"
+val kodeverkVersion = "1.8.7"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
