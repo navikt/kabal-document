@@ -104,7 +104,7 @@ class DokumentEnhetInputMapper {
                     JournalpostType.INNGAAENDE
                 }
 
-                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING -> {
+                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING, DokumentType.SVARBREV -> {
                     JournalpostType.UTGAAENDE
                 }
             }

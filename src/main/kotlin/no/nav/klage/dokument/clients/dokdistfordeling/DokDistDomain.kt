@@ -48,7 +48,7 @@ enum class Distribusjonstidspunkt {
 
 fun DokumentType.toDistribusjonstidspunkt(): Distribusjonstidspunkt =
     when (this) {
-        BREV -> Distribusjonstidspunkt.KJERNETID
+        BREV, SVARBREV -> Distribusjonstidspunkt.KJERNETID
         VEDTAK -> Distribusjonstidspunkt.KJERNETID
         BESLUTNING -> Distribusjonstidspunkt.KJERNETID
         //Disse blir ikke distribuert, tas med for fullstendighet.
@@ -58,7 +58,7 @@ fun DokumentType.toDistribusjonstidspunkt(): Distribusjonstidspunkt =
 
 fun DokumentType.toDistribusjonsType(): Distribusjonstype =
     when (this) {
-        BREV -> Distribusjonstype.VIKTIG
+        BREV, SVARBREV -> Distribusjonstype.VIKTIG
         VEDTAK -> Distribusjonstype.VEDTAK
         BESLUTNING -> Distribusjonstype.VIKTIG
         //Disse blir ikke distribuert, tas med for fullstendighet.
