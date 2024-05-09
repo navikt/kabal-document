@@ -7,12 +7,12 @@ val logstashVersion = "7.4"
 val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.5"
 val springMockkVersion = "4.0.2"
-val springDocVersion = "2.4.0"
-val testContainersVersion = "1.19.7"
-val shedlockVersion = "5.12.0"
-val archunitVersion = "1.2.1"
+val springDocVersion = "2.5.0"
+val testContainersVersion = "1.19.8"
+val shedlockVersion = "5.13.0"
+val archunitVersion = "1.3.0"
 val ehcacheVersion = "3.10.8"
-val kodeverkVersion = "1.8.7"
+val kodeverkVersion = "1.8.17"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -23,9 +23,9 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "1.9.23"
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
+    val kotlinVersion = "1.9.24"
+    id("org.springframework.boot") version "3.2.5"
+    id("io.spring.dependency-management") version "1.1.5"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
