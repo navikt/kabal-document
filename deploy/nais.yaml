@@ -6,7 +6,7 @@ metadata:
   labels:
     team: klage
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "100M"
+    nginx.ingress.kubernetes.io/proxy-body-size: "300M"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
 spec:
   image: {{image}}
@@ -54,11 +54,10 @@ spec:
     timeout: 1
   resources:
     limits:
-      cpu: 2000m
       memory: 2048Mi
     requests:
       cpu: 150m
-      memory: 256Mi
+      memory: 512Mi
   ingresses:
     {{#each ingresses as |ingress|}}
     - {{ingress}}

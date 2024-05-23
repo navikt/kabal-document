@@ -22,7 +22,6 @@ class FileApiClient(
 
         val token = tokenUtil.getAppAccessTokenWithKabalFileApiScope()
 
-
         return this.fileWebClient.get()
             .uri { it.path("/document/{id}").build(id) }
             .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
