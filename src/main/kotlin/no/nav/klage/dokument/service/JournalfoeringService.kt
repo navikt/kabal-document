@@ -73,17 +73,12 @@ class JournalfoeringService(
         journalpostRequestAsFileOutputStream.write(",\"dokumenter\":[".toByteArray())
 
         writeDocumentsToJournalpostRequestAsFile(
-            mellomlagretDokumenter = listOf(mellomlagretHovedDokument),
-            journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
-            brevkode = journalfoeringData.brevKode
-        )
-        writeDocumentsToJournalpostRequestAsFile(
-            mellomlagretDokumenter = mellomlagredeVedleggDokument,
+            mellomlagretDokumenter = listOf(mellomlagretHovedDokument) + mellomlagredeVedleggDokument,
             journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
             brevkode = journalfoeringData.brevKode
         )
 
-        journalpostRequestAsFileOutputStream.write("\"]}".toByteArray())
+        journalpostRequestAsFileOutputStream.write("]}".toByteArray())
         journalpostRequestAsFileOutputStream.flush()
 
         return joarkClient.createJournalpostInJoarkAsSystemUser(
@@ -112,7 +107,7 @@ class JournalfoeringService(
                     journalpostRequestAsFileOutputStream.write(buffer, 0, length)
                 }
             }
-            journalpostRequestAsFileOutputStream.write("\"]}".toByteArray())
+            journalpostRequestAsFileOutputStream.write("\"}]}".toByteArray())
             if (index < mellomlagretDokumenter.size - 1) {
                 journalpostRequestAsFileOutputStream.write(",".toByteArray())
             }
