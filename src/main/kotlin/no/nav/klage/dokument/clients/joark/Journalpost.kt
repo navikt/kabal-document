@@ -15,8 +15,23 @@ data class Journalpost(
     val datoMottatt: LocalDate?,
     val bruker: Bruker?,
     val sak: Sak,
-    val dokumenter: List<Dokument>? = mutableListOf(),
-    val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf()
+    val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf(),
+    val dokumenter: List<Dokument>? = mutableListOf()
+)
+
+data class JournalpostPartial(
+    val journalposttype: JournalpostType?,
+    val tema: Tema,
+    val behandlingstema: String,
+    val tittel: String,
+    val kanal: Kanal?,
+    var avsenderMottaker: JournalpostAvsenderMottaker?,
+    val journalfoerendeEnhet: String?,
+    val eksternReferanseId: String?,
+    val datoMottatt: LocalDate?,
+    val bruker: Bruker?,
+    val sak: Sak,
+    val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf(),
 )
 
 enum class Kanal {
@@ -119,7 +134,7 @@ enum class ArkivsaksSystem {
 
 data class Dokument(
     val tittel: String,
-    val brevkode: String? = null,
+    val brevkode: String,
     val dokumentVarianter: List<DokumentVariant> = mutableListOf()
 )
 

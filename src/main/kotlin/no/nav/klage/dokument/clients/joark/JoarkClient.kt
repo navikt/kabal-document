@@ -3,11 +3,15 @@ package no.nav.klage.dokument.clients.joark
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
+import java.io.File
 
 @Component
 class JoarkClient(
@@ -21,21 +25,26 @@ class JoarkClient(
     }
 
     fun createJournalpostInJoarkAsSystemUser(
-        journalpost: Journalpost,
+        journalpostRequestAsFile: File,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
+        val dataBufferFactory = DefaultDataBufferFactory()
+        val dataBuffer = DataBufferUtils.read(journalpostRequestAsFile.toPath(), dataBufferFactory, 256 * 256)
+
         val journalpostResponse = joarkWebClient.post()
             .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(journalpost)
+            .body(dataBuffer, DataBuffer::class.java)
             .retrieve()
             .bodyToMono(JournalpostResponse::class.java)
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
         logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
+
+        journalpostRequestAsFile.delete()
 
         return journalpostResponse
     }

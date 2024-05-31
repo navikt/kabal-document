@@ -1,20 +1,26 @@
 package no.nav.klage.dokument.service
 
 
-import no.nav.klage.dokument.clients.joark.DefaultJoarkGateway
-import no.nav.klage.dokument.clients.joark.JournalpostResponse
-import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.klage.dokument.clients.joark.*
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.file.Files
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class JournalfoeringService(
-    private val joarkGateway: DefaultJoarkGateway,
+    private val joarkClient: JoarkClient,
+    private val joarkMapper: JoarkMapper,
     private val mellomlagerService: MellomlagerService,
 ) {
 
@@ -40,31 +46,103 @@ class JournalfoeringService(
         )
         val mellomlagretHovedDokument = MellomlagretDokument(
             title = hoveddokument.name,
-            content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
+            file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
             contentType = MediaType.APPLICATION_PDF
         )
         val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
             MellomlagretDokument(
                 title = it.name,
-                content = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
+                file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
                 contentType = MediaType.APPLICATION_PDF
             )
         }
 
-        return joarkGateway.createJournalpostAsSystemUser(
+        val partialJournalpostWithoutDocuments = joarkMapper.createPartialJournalpostWithoutDocuments(
             journalfoeringData = journalfoeringData,
             opplastetHovedDokument = hoveddokument,
-            hoveddokument = mellomlagretHovedDokument,
-            vedleggDokumentList = mellomlagredeVedleggDokument,
-            avsenderMottaker = avsenderMottaker,
-            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent,
+            avsenderMottaker = avsenderMottaker
         )
+
+        val partialJournalpostAsJson = jacksonObjectMapper().writeValueAsString(partialJournalpostWithoutDocuments)
+        val partialJournalpostAppendable = partialJournalpostAsJson.substring(0, partialJournalpostAsJson.length - 1)
+        val journalpostRequestAsFile = Files.createTempFile(null, null)
+        val journalpostRequestAsFileOutputStream = FileOutputStream(journalpostRequestAsFile.toFile())
+        journalpostRequestAsFileOutputStream.write(partialJournalpostAppendable.toByteArray())
+
+        //add documents (base64 encoded) to the request
+        journalpostRequestAsFileOutputStream.write(",\"dokumenter\":[".toByteArray())
+
+        writeDocumentsToJournalpostRequestAsFile(
+            mellomlagretDokumenter = listOf(mellomlagretHovedDokument),
+            journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
+            brevkode = journalfoeringData.brevKode
+        )
+        writeDocumentsToJournalpostRequestAsFile(
+            mellomlagretDokumenter = mellomlagredeVedleggDokument,
+            journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
+            brevkode = journalfoeringData.brevKode
+        )
+
+        journalpostRequestAsFileOutputStream.write("\"]}".toByteArray())
+        journalpostRequestAsFileOutputStream.flush()
+
+        return joarkClient.createJournalpostInJoarkAsSystemUser(
+            journalpostRequestAsFile = journalpostRequestAsFile.toFile(),
+            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
+        )
+    }
+
+    private fun writeDocumentsToJournalpostRequestAsFile(
+        mellomlagretDokumenter: List<MellomlagretDokument>,
+        journalpostRequestAsFileOutputStream: FileOutputStream,
+        brevkode: String,
+    ) {
+        mellomlagretDokumenter.forEachIndexed { index, dokument ->
+            val base64File = Files.createTempFile(null, null).toFile()
+            encodeFileToBase64(dokument.file, base64File)
+
+            val base64FileInputStream = FileInputStream(base64File)
+
+            journalpostRequestAsFileOutputStream.write("{\"tittel\":\"${dokument.title}\",\"brevkode\":\"$brevkode\",\"dokumentvarianter\":[{\"filnavn\":\"${dokument.title}\",\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+
+            base64FileInputStream.use { input ->
+                val buffer = ByteArray(1024) // Use a buffer size of 1K for example
+                var length: Int
+                while (input.read(buffer).also { length = it } != -1) {
+                    journalpostRequestAsFileOutputStream.write(buffer, 0, length)
+                }
+            }
+            journalpostRequestAsFileOutputStream.write("\"]}".toByteArray())
+            if (index < mellomlagretDokumenter.size - 1) {
+                journalpostRequestAsFileOutputStream.write(",".toByteArray())
+            }
+
+            base64File.delete()
+            dokument.file.delete()
+        }
+
+    }
+
+    private fun encodeFileToBase64(sourceFile: File, destinationFile: File) {
+        val sourceFileInputStream = FileInputStream(sourceFile)
+        val destinationFileOutputStream = FileOutputStream(destinationFile)
+        val encoder = Base64.getEncoder().wrap(destinationFileOutputStream)
+
+        BufferedInputStream(sourceFileInputStream).use { input ->
+            val buffer = ByteArray(3 * 1024) // Use a buffer size of 3K for example
+            var length: Int
+            while (input.read(buffer).also { length = it } != -1) {
+                encoder.write(buffer, 0, length)
+            }
+        }
+
+        destinationFileOutputStream.close()
     }
 
     fun finalizeJournalpostAsSystemUser(
         journalpostId: String,
     ) {
-        return joarkGateway.finalizeJournalpostAsSystemUser(
+        return joarkClient.finalizeJournalpostAsSystemUser(
             journalpostId = journalpostId,
             journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
         )
@@ -74,9 +152,16 @@ class JournalfoeringService(
         journalpostId: String,
         journalfoerteVedlegg: List<JournalfoertVedlegg>
     ): TilknyttVedleggResponse {
-        return joarkGateway.tilknyttVedleggAsSystemUser(
+        return joarkClient.tilknyttVedleggAsSystemUser(
             journalpostId = journalpostId,
-            journalfoerteVedlegg = journalfoerteVedlegg,
+            input = TilknyttVedleggPayload(
+                dokument = journalfoerteVedlegg.map {
+                    TilknyttVedleggPayload.VedleggReference(
+                        kildeJournalpostId = it.kildeJournalpostId,
+                        dokumentInfoId = it.dokumentInfoId
+                    )
+                }
+            )
         )
     }
 
@@ -93,34 +178,17 @@ class JournalfoeringService(
     }
 
     fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, title: String) {
-        joarkGateway.updateDocumentTitleOnBehalfOf(
+        joarkClient.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
-            dokumentInfoId = dokumentInfoId,
-            newTitle = title
+            input = joarkMapper.createUpdateDocumentTitleJournalpostInput(
+                dokumentInfoId = dokumentInfoId, title = title
+            )
         )
     }
 
     data class MellomlagretDokument(
         val title: String,
-        val content: ByteArray,
-        val contentType: MediaType
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as MellomlagretDokument
-
-            if (title != other.title) return false
-            if (!content.contentEquals(other.content)) return false
-            return contentType == other.contentType
-        }
-
-        override fun hashCode(): Int {
-            var result = title.hashCode()
-            result = 31 * result + content.contentHashCode()
-            result = 31 * result + contentType.hashCode()
-            return result
-        }
-    }
+        val file: File,
+        val contentType: MediaType,
+    )
 }

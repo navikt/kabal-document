@@ -19,13 +19,11 @@ class JoarkMapper {
         private val securelogger = getSecureLogger()
     }
 
-    fun createJournalpost(
+    fun createPartialJournalpostWithoutDocuments(
         journalfoeringData: JournalfoeringData,
         opplastetHovedDokument: OpplastetHoveddokument,
-        hovedDokument: JournalfoeringService.MellomlagretDokument,
-        vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         avsenderMottaker: AvsenderMottaker
-    ): Journalpost {
+    ): JournalpostPartial {
 
         val kanal = if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
             journalfoeringData.inngaaendeKanal
@@ -35,7 +33,7 @@ class JoarkMapper {
             avsenderMottaker.kanal
         } else null
 
-        val journalpost = Journalpost(
+        val partialJournalpostWithoutDocuments = JournalpostPartial(
             avsenderMottaker = null,
             journalposttype = journalfoeringData.journalpostType,
             tema = journalfoeringData.tema,
@@ -47,11 +45,6 @@ class JoarkMapper {
             eksternReferanseId = "${opplastetHovedDokument.id}_${avsenderMottaker.id}",
             datoMottatt = journalfoeringData.datoMottatt,
             bruker = createBruker(journalfoeringData),
-            dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
-                hoveddokument = hovedDokument,
-                vedleggList = vedleggDokumentList,
-                journalfoeringData = journalfoeringData
-            ),
             tilleggsopplysninger = journalfoeringData.tilleggsopplysning?.let {
                 listOf(
                     Tilleggsopplysning(
@@ -62,10 +55,10 @@ class JoarkMapper {
         )
 
         if (journalfoeringData.journalpostType in listOf(JournalpostType.UTGAAENDE, JournalpostType.INNGAAENDE)) {
-            journalpost.avsenderMottaker = createJournalpostAvsenderMottager(avsenderMottaker)
+            partialJournalpostWithoutDocuments.avsenderMottaker = createJournalpostAvsenderMottager(avsenderMottaker)
         }
 
-        return journalpost
+        return partialJournalpostWithoutDocuments
     }
 
     private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker =
@@ -93,9 +86,10 @@ class JoarkMapper {
         )
 
     private fun createDokument(
-        mellomlagretDokument: JournalfoeringService.MellomlagretDokument, journalfoeringData: JournalfoeringData
-    ): Dokument =
-        Dokument(
+        mellomlagretDokument: JournalfoeringService.MellomlagretDokument,
+        journalfoeringData: JournalfoeringData,
+    ): Dokument {
+        return Dokument(
             tittel = mellomlagretDokument.title,
             brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
             dokumentVarianter = listOf(
@@ -105,10 +99,11 @@ class JoarkMapper {
                     //Might work in the future if we need it.
                     filtype = "PDF",
                     variantformat = "ARKIV",
-                    fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
+                    fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.file.readBytes())
                 )
             )
         )
+    }
 
     private fun createDokumentListFromHoveddokumentAndVedleggList(
         hoveddokument: JournalfoeringService.MellomlagretDokument,
