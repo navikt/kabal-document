@@ -32,7 +32,6 @@ class FileApiClient(
 
         val tempFile = Files.createTempFile(null, null)
 
-        //TODO Remember to clean up in Kabal.
         DataBufferUtils.write(dataBufferFlux, tempFile).block()
         return tempFile.toFile()
     }
