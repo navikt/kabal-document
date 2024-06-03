@@ -19,6 +19,9 @@ data class Journalpost(
     val dokumenter: List<Dokument>? = mutableListOf()
 )
 
+/**
+ * Without documents
+ */
 data class JournalpostPartial(
     val journalposttype: JournalpostType?,
     val tema: Tema,
