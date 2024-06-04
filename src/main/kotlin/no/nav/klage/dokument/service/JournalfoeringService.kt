@@ -1,13 +1,13 @@
 package no.nav.klage.dokument.service
 
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.klage.dokument.clients.joark.*
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
@@ -15,6 +15,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
 
@@ -23,8 +24,6 @@ class JournalfoeringService(
     private val joarkClient: JoarkClient,
     private val joarkMapper: JoarkMapper,
     private val mellomlagerService: MellomlagerService,
-    @Qualifier("ourJacksonObjectMapper")
-    private val ourJacksonObjectMapper: ObjectMapper,
 ) {
 
     companion object {
@@ -32,6 +31,10 @@ class JournalfoeringService(
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
         const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
+
+        val ourJacksonObjectMapper = jacksonObjectMapper()
+            .registerModule(JavaTimeModule())
+            .setDateFormat(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))
     }
 
     fun createJournalpostAsSystemUser(
@@ -189,4 +192,5 @@ class JournalfoeringService(
         val file: File,
         val contentType: MediaType,
     )
+
 }
