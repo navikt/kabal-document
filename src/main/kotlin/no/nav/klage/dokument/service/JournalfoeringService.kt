@@ -1,6 +1,8 @@
 package no.nav.klage.dokument.service
 
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.klage.dokument.clients.joark.*
 import no.nav.klage.dokument.domain.dokument.*
@@ -29,6 +31,8 @@ class JournalfoeringService(
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
         const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
+
+        val jacksonObjectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
     }
 
     fun createJournalpostAsSystemUser(
@@ -63,7 +67,7 @@ class JournalfoeringService(
             avsenderMottaker = avsenderMottaker
         )
 
-        val partialJournalpostAsJson = jacksonObjectMapper().writeValueAsString(partialJournalpostWithoutDocuments)
+        val partialJournalpostAsJson = jacksonObjectMapper.writeValueAsString(partialJournalpostWithoutDocuments)
         val partialJournalpostAppendable = partialJournalpostAsJson.substring(0, partialJournalpostAsJson.length - 1)
         val journalpostRequestAsFile = Files.createTempFile(null, null)
         val journalpostRequestAsFileOutputStream = FileOutputStream(journalpostRequestAsFile.toFile())
