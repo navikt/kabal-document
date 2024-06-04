@@ -85,6 +85,8 @@ class JournalfoeringService(
         journalpostRequestAsFileOutputStream.write("]}".toByteArray())
         journalpostRequestAsFileOutputStream.flush()
 
+       logger.debug(journalpostRequestAsFile.toFile().readText())
+
         return joarkClient.createJournalpostInJoarkAsSystemUser(
             journalpostRequestAsFile = journalpostRequestAsFile.toFile(),
             journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
