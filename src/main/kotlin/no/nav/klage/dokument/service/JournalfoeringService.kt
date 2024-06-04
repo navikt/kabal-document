@@ -2,13 +2,12 @@ package no.nav.klage.dokument.service
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.klage.dokument.clients.joark.*
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import java.io.BufferedInputStream
@@ -24,6 +23,8 @@ class JournalfoeringService(
     private val joarkClient: JoarkClient,
     private val joarkMapper: JoarkMapper,
     private val mellomlagerService: MellomlagerService,
+    @Qualifier("ourJacksonObjectMapper")
+    private val ourJacksonObjectMapper: ObjectMapper,
 ) {
 
     companion object {
@@ -31,8 +32,6 @@ class JournalfoeringService(
         private val logger = getLogger(javaClass.enclosingClass)
         private val secureLogger = getSecureLogger()
         const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
-
-        val jacksonObjectMapper: ObjectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
     }
 
     fun createJournalpostAsSystemUser(
@@ -67,7 +66,7 @@ class JournalfoeringService(
             avsenderMottaker = avsenderMottaker
         )
 
-        val partialJournalpostAsJson = jacksonObjectMapper.writeValueAsString(partialJournalpostWithoutDocuments)
+        val partialJournalpostAsJson = ourJacksonObjectMapper.writeValueAsString(partialJournalpostWithoutDocuments)
         val partialJournalpostAppendable = partialJournalpostAsJson.substring(0, partialJournalpostAsJson.length - 1)
         val journalpostRequestAsFile = Files.createTempFile(null, null)
         val journalpostRequestAsFileOutputStream = FileOutputStream(journalpostRequestAsFile.toFile())
@@ -84,8 +83,6 @@ class JournalfoeringService(
 
         journalpostRequestAsFileOutputStream.write("]}".toByteArray())
         journalpostRequestAsFileOutputStream.flush()
-
-       logger.debug(journalpostRequestAsFile.toFile().readText())
 
         return joarkClient.createJournalpostInJoarkAsSystemUser(
             journalpostRequestAsFile = journalpostRequestAsFile.toFile(),
