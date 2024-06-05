@@ -3,6 +3,7 @@ package no.nav.klage.dokument.service
 import no.nav.klage.dokument.clients.klagefileapi.FileApiClient
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.stereotype.Service
+import java.io.File
 
 @Service
 class MellomlagerService(
@@ -13,7 +14,7 @@ class MellomlagerService(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): ByteArray =
+    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): File =
         fileApiClient.getDocument(mellomlagerId)
 
     fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =

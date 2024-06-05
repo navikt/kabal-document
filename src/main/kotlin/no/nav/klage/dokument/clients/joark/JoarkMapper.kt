@@ -3,12 +3,10 @@ package no.nav.klage.dokument.clients.joark
 import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
-import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.PartIdType
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class JoarkMapper {
@@ -19,13 +17,11 @@ class JoarkMapper {
         private val securelogger = getSecureLogger()
     }
 
-    fun createJournalpost(
+    fun createPartialJournalpostWithoutDocuments(
         journalfoeringData: JournalfoeringData,
         opplastetHovedDokument: OpplastetHoveddokument,
-        hovedDokument: JournalfoeringService.MellomlagretDokument,
-        vedleggDokumentList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
         avsenderMottaker: AvsenderMottaker
-    ): Journalpost {
+    ): JournalpostPartial {
 
         val kanal = if (journalfoeringData.journalpostType == JournalpostType.INNGAAENDE) {
             journalfoeringData.inngaaendeKanal
@@ -35,7 +31,7 @@ class JoarkMapper {
             avsenderMottaker.kanal
         } else null
 
-        val journalpost = Journalpost(
+        val partialJournalpostWithoutDocuments = JournalpostPartial(
             avsenderMottaker = null,
             journalposttype = journalfoeringData.journalpostType,
             tema = journalfoeringData.tema,
@@ -47,11 +43,6 @@ class JoarkMapper {
             eksternReferanseId = "${opplastetHovedDokument.id}_${avsenderMottaker.id}",
             datoMottatt = journalfoeringData.datoMottatt,
             bruker = createBruker(journalfoeringData),
-            dokumenter = createDokumentListFromHoveddokumentAndVedleggList(
-                hoveddokument = hovedDokument,
-                vedleggList = vedleggDokumentList,
-                journalfoeringData = journalfoeringData
-            ),
             tilleggsopplysninger = journalfoeringData.tilleggsopplysning?.let {
                 listOf(
                     Tilleggsopplysning(
@@ -62,10 +53,10 @@ class JoarkMapper {
         )
 
         if (journalfoeringData.journalpostType in listOf(JournalpostType.UTGAAENDE, JournalpostType.INNGAAENDE)) {
-            journalpost.avsenderMottaker = createJournalpostAvsenderMottager(avsenderMottaker)
+            partialJournalpostWithoutDocuments.avsenderMottaker = createJournalpostAvsenderMottager(avsenderMottaker)
         }
 
-        return journalpost
+        return partialJournalpostWithoutDocuments
     }
 
     private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker =
@@ -91,34 +82,6 @@ class JoarkMapper {
             journalfoeringData.sakenGjelder.value,
             if (journalfoeringData.sakenGjelder.type == PartIdType.VIRKSOMHET) BrukerIdType.ORGNR else BrukerIdType.FNR
         )
-
-    private fun createDokument(
-        mellomlagretDokument: JournalfoeringService.MellomlagretDokument, journalfoeringData: JournalfoeringData
-    ): Dokument =
-        Dokument(
-            tittel = mellomlagretDokument.title,
-            brevkode = journalfoeringData.brevKode, //TODO: Har alle dokumentene samme brevkode?
-            dokumentVarianter = listOf(
-                DokumentVariant(
-                    filnavn = mellomlagretDokument.title,
-                    //Hardcode to 'PDF' for now. Had some issues with Vera (old) and Spring Boot (new).
-                    //Might work in the future if we need it.
-                    filtype = "PDF",
-                    variantformat = "ARKIV",
-                    fysiskDokument = Base64.getEncoder().encodeToString(mellomlagretDokument.content)
-                )
-            )
-        )
-
-    private fun createDokumentListFromHoveddokumentAndVedleggList(
-        hoveddokument: JournalfoeringService.MellomlagretDokument,
-        vedleggList: List<JournalfoeringService.MellomlagretDokument> = emptyList(),
-        journalfoeringData: JournalfoeringData
-    ): List<Dokument> {
-        val documents = mutableListOf(createDokument(hoveddokument, journalfoeringData))
-        documents.addAll(vedleggList.map { createDokument(it, journalfoeringData) })
-        return documents
-    }
 
     fun createUpdateDocumentTitleJournalpostInput(
         dokumentInfoId: String,
