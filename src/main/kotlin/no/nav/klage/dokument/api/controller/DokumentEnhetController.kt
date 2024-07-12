@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.api.controller
 
+import io.opentelemetry.api.trace.Span
 import io.swagger.v3.oas.annotations.tags.Tag
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
@@ -30,6 +31,7 @@ class DokumentEnhetController(
         @RequestBody input: DokumentEnhetWithDokumentreferanserInput,
     ): DokumentEnhetView {
         logger.debug("Kall mottatt på createDokumentEnhetWithDokumentreferanser")
+        logger.debug("TraceId from OTEL: {}", Span.current().spanContext.traceId)
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetMedDokumentreferanser(
                 input

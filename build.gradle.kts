@@ -14,6 +14,7 @@ val archunitVersion = "1.2.1"
 val ehcacheVersion = "3.10.8"
 val kodeverkVersion = "1.8.7"
 val syslog4jVersion = "1.0.0"
+val otelVersion = "1.40.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -32,8 +33,6 @@ plugins {
     idea
 }
 
-//apply(plugin = "io.spring.dependency-management")
-
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -49,6 +48,8 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
+    implementation("io.opentelemetry:opentelemetry-api:$otelVersion")
+
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
@@ -61,7 +62,6 @@ dependencies {
     implementation("org.postgresql:postgresql")
 
     implementation("io.micrometer:micrometer-registry-prometheus")
-    implementation("io.micrometer:micrometer-tracing-bridge-brave")
 
     implementation("ch.qos.logback:logback-classic")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashVersion")
