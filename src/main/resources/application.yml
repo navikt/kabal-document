@@ -36,8 +36,6 @@ server:
       enabled: false
   shutdown: graceful
 
-navCallIdName: Nav-Callid
-
 management:
   health:
     elasticsearch:

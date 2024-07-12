@@ -14,7 +14,6 @@ val archunitVersion = "1.2.1"
 val ehcacheVersion = "3.10.8"
 val kodeverkVersion = "1.8.7"
 val syslog4jVersion = "1.0.0"
-val otelVersion = "1.40.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -47,8 +46,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
-
-    implementation("io.opentelemetry:opentelemetry-api:$otelVersion")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
