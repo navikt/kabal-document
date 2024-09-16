@@ -35,7 +35,7 @@ class JoarkClient(
             .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
 
-        if (journalfoerendeSaksbehandlerIdent == "SYSTEMBRUKER") {
+        if (journalfoerendeSaksbehandlerIdent != "SYSTEMBRUKER") {
             post.header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
         }
 
