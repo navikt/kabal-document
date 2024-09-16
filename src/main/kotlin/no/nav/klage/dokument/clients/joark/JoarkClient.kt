@@ -31,28 +31,20 @@ class JoarkClient(
         val dataBufferFactory = DefaultDataBufferFactory()
         val dataBuffer = DataBufferUtils.read(journalpostRequestAsFile.toPath(), dataBufferFactory, 256 * 256)
 
-        val journalpostResponse = if (journalfoerendeSaksbehandlerIdent == "SYSTEMBRUKER") {
-            joarkWebClient.post()
-                .uri("?forsoekFerdigstill=false")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dataBuffer, DataBuffer::class.java)
-                .retrieve()
-                .bodyToMono(JournalpostResponse::class.java)
-                .block()
-                ?: throw RuntimeException("Journalpost could not be created.")
-        } else {
-            joarkWebClient.post()
-                .uri("?forsoekFerdigstill=false")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
-                .header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(dataBuffer, DataBuffer::class.java)
-                .retrieve()
-                .bodyToMono(JournalpostResponse::class.java)
-                .block()
-                ?: throw RuntimeException("Journalpost could not be created.")
+        val post = joarkWebClient.post()
+            .uri("?forsoekFerdigstill=false")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+
+        if (journalfoerendeSaksbehandlerIdent == "SYSTEMBRUKER") {
+            post.header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
         }
+
+        val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
+            .body(dataBuffer, DataBuffer::class.java)
+            .retrieve()
+            .bodyToMono(JournalpostResponse::class.java)
+            .block()
+            ?: throw RuntimeException("Journalpost could not be created.")
 
         logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
 
