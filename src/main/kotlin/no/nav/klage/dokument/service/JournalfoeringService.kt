@@ -104,7 +104,7 @@ class JournalfoeringService(
 
             val base64FileInputStream = FileInputStream(base64File)
 
-            journalpostRequestAsFileOutputStream.write("{\"tittel\":\"${dokument.title}\",\"brevkode\":\"$brevkode\",\"dokumentvarianter\":[{\"filnavn\":\"${dokument.title}\",\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+            journalpostRequestAsFileOutputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"brevkode\":\"$brevkode\",\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
 
             base64FileInputStream.use { input ->
                 val buffer = ByteArray(1024) // Use a buffer size of 1K for example
