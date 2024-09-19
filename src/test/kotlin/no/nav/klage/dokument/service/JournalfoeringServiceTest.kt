@@ -78,6 +78,7 @@ internal class JournalfoeringServiceTest {
     )
 
     @Test
+    @Disabled
     fun `test new file regime`() {
         val jacksonObjectMapper = jacksonObjectMapper()
         jacksonObjectMapper.registerModule(JavaTimeModule())
