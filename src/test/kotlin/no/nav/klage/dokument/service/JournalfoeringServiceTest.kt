@@ -33,7 +33,7 @@ internal class JournalfoeringServiceTest {
 
     val hovedDokument = OpplastetHoveddokument(
         mellomlagerId = "123",
-        name = "fil.pdf",
+        name = "Title with \"quotes\"",
         sourceReference = UUID.randomUUID(),
     )
 
@@ -104,6 +104,21 @@ internal class JournalfoeringServiceTest {
             journalfoerendeSaksbehandlerIdent = baseDokumentEnhet.journalfoerendeSaksbehandlerIdent
         )
 
+    }
+
+    @Test
+    @Disabled
+    fun `test escaping invalid characters in json`() {
+        val jacksonObjectMapper = jacksonObjectMapper()
+
+        val invalidTitle = "Title with \"quotes\""
+        val invalidContent = "Content with \n newline"
+
+        println(invalidTitle)
+        println(invalidContent)
+
+        println(jacksonObjectMapper.writeValueAsString(invalidTitle))
+        println(jacksonObjectMapper.writeValueAsString(invalidContent))
     }
 
 }
