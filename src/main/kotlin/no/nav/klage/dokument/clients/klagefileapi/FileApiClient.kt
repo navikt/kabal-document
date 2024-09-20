@@ -35,24 +35,4 @@ class FileApiClient(
         DataBufferUtils.write(dataBufferFlux, tempFile).block()
         return tempFile.toFile()
     }
-
-    fun deleteDocument(id: String) {
-        logger.debug("Deleting document with id {}", id)
-
-        val token = tokenUtil.getAppAccessTokenWithKabalFileApiScope()
-
-        val deletedInGCS = fileWebClient
-            .delete()
-            .uri("/document/$id")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer $token")
-            .retrieve()
-            .bodyToMono<Boolean>()
-            .block()
-
-        if (deletedInGCS == true) {
-            logger.debug("Document successfully deleted in file store.")
-        } else {
-            logger.warn("Could not successfully delete document in file store.")
-        }
-    }
 }

@@ -16,7 +16,4 @@ class MellomlagerService(
 
     fun getUploadedDocumentAsSystemUser(mellomlagerId: String): File =
         fileApiClient.getDocument(mellomlagerId)
-
-    fun deleteDocumentAsSystemUser(mellomlagerId: String): Unit =
-        fileApiClient.deleteDocument(mellomlagerId)
 }

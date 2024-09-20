@@ -188,7 +188,6 @@ class DokumentEnhetService(
             dokumentEnhet.avsluttet = timestamp
             dokumentEnhet.modified = timestamp
             dokumentEnhetRepository.save(dokumentEnhet)
-            slettMellomlagretDokument(dokumentEnhet)
         } else {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
         }
@@ -273,14 +272,5 @@ class DokumentEnhetService(
                 journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
             )
         )
-    }
-
-    private fun slettMellomlagretDokument(dokumentEnhet: DokumentEnhet) {
-        try {
-            logger.debug("Sletter mellomlagret fil i dokumentEnhet ${dokumentEnhet.id}")
-            dokumentEnhet.hovedDokument?.let { mellomlagerService.deleteDocumentAsSystemUser(mellomlagerId = it.mellomlagerId) }
-        } catch (t: Throwable) {
-            logger.warn("Klarte ikke å slette mellomlagret dokument ${dokumentEnhet.hovedDokument?.mellomlagerId}")
-        }
     }
 }
