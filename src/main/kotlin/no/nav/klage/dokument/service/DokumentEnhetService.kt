@@ -11,6 +11,7 @@ import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import java.util.*
 
@@ -188,7 +189,8 @@ class DokumentEnhetService(
             dokumentEnhet.avsluttet = timestamp
             dokumentEnhet.modified = timestamp
             dokumentEnhetRepository.save(dokumentEnhet)
-//            slettMellomlagretDokument(dokumentEnhet)
+            slettMellomlagretDokument(dokumentEnhet)
+            sleep(5000)
         } else {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
         }
