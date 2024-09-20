@@ -54,6 +54,8 @@ class DokumentEnhetService(
                         avsenderMottakerDistribusjon = avsenderMottakerDistribusjon,
                         dokumentEnhet = dokumentEnhet
                     )
+                    //For testing
+                    slettMellomlagretDokument(dokumentEnhet)
                     avsenderMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
                     journalpostResponse.dokumenter.forEachIndexed { index, dokument ->
@@ -189,7 +191,7 @@ class DokumentEnhetService(
             dokumentEnhet.avsluttet = timestamp
             dokumentEnhet.modified = timestamp
             dokumentEnhetRepository.save(dokumentEnhet)
-            slettMellomlagretDokument(dokumentEnhet)
+//            slettMellomlagretDokument(dokumentEnhet)
             sleep(5000)
         } else {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
