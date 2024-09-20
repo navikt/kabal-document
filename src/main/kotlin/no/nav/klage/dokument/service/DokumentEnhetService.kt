@@ -188,7 +188,7 @@ class DokumentEnhetService(
             dokumentEnhet.avsluttet = timestamp
             dokumentEnhet.modified = timestamp
             dokumentEnhetRepository.save(dokumentEnhet)
-            slettMellomlagretDokument(dokumentEnhet)
+//            slettMellomlagretDokument(dokumentEnhet)
         } else {
             logger.debug("dokumentEnhet ${dokumentEnhet.id} er ikke distribuert til alle, markerer ikke som ferdig")
         }
