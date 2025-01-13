@@ -236,21 +236,19 @@ class DokumentEnhetService(
         logger.debug("Creating dokumentEnhet")
         val dokumentType = DokumentType.of(input.dokumentTypeId)
 
-        val avsenderMottakerList = input.avsenderMottakerList ?: input.brevMottakere!!
-
         if (dokumentType.isInngaaende()) {
             if (input.journalfoeringData.inngaaendeKanal == null) {
                 throw Exception("Missing inngaendeKanal")
             }
 
-            if (avsenderMottakerList.size != 1) {
+            if (input.avsenderMottakerList.size != 1) {
                 throw Exception("avsenderMottakerList.size must be exactly 1 for ${dokumentType.navn}.")
             }
         }
 
         val journalfoeringData =
             dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData, dokumentType)
-        val avsenderMottakere = dokumentEnhetInputMapper.mapAvsenderMottakerInputList(avsenderMottakerList)
+        val avsenderMottakere = dokumentEnhetInputMapper.mapAvsenderMottakerInputList(input.avsenderMottakerList)
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
         val vedlegg = input.dokumentreferanser.vedlegg?.mapIndexed { index, document ->
