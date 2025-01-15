@@ -68,10 +68,10 @@ enum class JournalpostType {
 }
 
 data class JournalpostAvsenderMottaker(
-    val id: String,
-    val idType: AvsenderMottakerIdType,
-    val navn: String? = null,
-    val land: String? = null
+    val id: String?,
+    val idType: AvsenderMottakerIdType?,
+    val navn: String?,
+    val land: String?,
 )
 
 enum class AvsenderMottakerIdType {

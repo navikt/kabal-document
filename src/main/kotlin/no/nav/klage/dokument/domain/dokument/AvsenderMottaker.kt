@@ -16,7 +16,7 @@ class AvsenderMottaker(
             AttributeOverride(name = "value", column = Column(name = "part_id_value"))
         ]
     )
-    val partId: PartId,
+    val partId: PartId?,
     @Column(name = "navn")
     val navn: String?,
     @Column(name = "tving_sentral_print")

@@ -59,16 +59,27 @@ class JoarkMapper {
         return partialJournalpostWithoutDocuments
     }
 
-    private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker =
-        JournalpostAvsenderMottaker(
-            id = avsenderMottaker.partId.value,
-            idType = if (avsenderMottaker.partId.type == PartIdType.PERSON) {
-                AvsenderMottakerIdType.FNR
-            } else {
-                AvsenderMottakerIdType.ORGNR
-            },
-            navn = avsenderMottaker.navn
-        )
+    private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker {
+        return if (avsenderMottaker.partId != null) {
+            JournalpostAvsenderMottaker(
+                id = avsenderMottaker.partId.value,
+                idType = if (avsenderMottaker.partId.type == PartIdType.PERSON) {
+                    AvsenderMottakerIdType.FNR
+                } else {
+                    AvsenderMottakerIdType.ORGNR
+                },
+                land = null,
+                navn = null,
+            )
+        } else {
+            JournalpostAvsenderMottaker(
+                id = null,
+                idType = null,
+                land = avsenderMottaker.adresse?.land,
+                navn = avsenderMottaker.navn!!,
+            )
+        }
+    }
 
     private fun createSak(journalfoeringData: JournalfoeringData): Sak =
         Sak(

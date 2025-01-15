@@ -50,8 +50,17 @@ class DokumentEnhetInputMapper {
                 }
             }
 
+            if (avsenderMottakerInput.partId == null) {
+                if (avsenderMottakerInput.navn == null) {
+                    throw IllegalArgumentException("Avsender/Mottaker må ha enten partId eller navn")
+                }
+                if (avsenderMottakerInput.adresse == null) {
+                    throw IllegalArgumentException("Avsender/Mottaker må ha adresse")
+                }
+            }
+
             AvsenderMottaker(
-                partId = mapPartIdInput(avsenderMottakerInput.partId),
+                partId = avsenderMottakerInput.partId?.let { mapPartIdInput(avsenderMottakerInput.partId) },
                 navn = avsenderMottakerInput.navn,
                 tvingSentralPrint = avsenderMottakerInput.tvingSentralPrint,
                 adresse = validateAndMapAdresseInput(avsenderMottakerInput.adresse),

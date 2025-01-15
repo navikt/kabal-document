@@ -7,9 +7,7 @@ import java.util.*
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentEnhetWithDokumentreferanserInput(
-    //TODO: Remove after avsenderMottakerList is in use.
-    val brevMottakere: List<AvsenderMottakerInput>?,
-    val avsenderMottakerList: List<AvsenderMottakerInput>?,
+    val avsenderMottakerList: List<AvsenderMottakerInput>,
     val journalfoeringData: JournalfoeringDataInput,
     val dokumentreferanser: DokumentInput,
     val dokumentTypeId: String,
@@ -33,7 +31,7 @@ data class DokumentEnhetWithDokumentreferanserInput(
     }
 
     data class AvsenderMottakerInput(
-        val partId: PartIdInput,
+        val partId: PartIdInput?,
         val navn: String?,
         val localPrint: Boolean,
         val tvingSentralPrint: Boolean,
