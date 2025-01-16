@@ -69,7 +69,7 @@ class JoarkMapper {
                     AvsenderMottakerIdType.ORGNR
                 },
                 land = null,
-                navn = null,
+                navn = avsenderMottaker.navn,
             )
         } else {
             JournalpostAvsenderMottaker(
