@@ -113,7 +113,7 @@ class DokumentEnhetInputMapper {
                     JournalpostType.INNGAAENDE
                 }
 
-                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING, DokumentType.SVARBREV -> {
+                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING, DokumentType.SVARBREV, DokumentType.FORLENGET_BEHANDLINGSTIDSBREV -> {
                     JournalpostType.UTGAAENDE
                 }
             }
