@@ -67,7 +67,7 @@ class DokDistFordelingClient(
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = tvingSentralPrint.let { DistribuerJournalpostRequest.Kanal.PRINT },
+            tvingKanal = if (tvingSentralPrint) DistribuerJournalpostRequest.Kanal.PRINT else null,
         )
     }
 }
