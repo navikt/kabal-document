@@ -131,6 +131,7 @@ enum class FagsaksSystem {
     KABAL,
     TILLEGGSSTONADER,
     KOMPYS,
+    KELVIN,
 }
 
 enum class ArkivsaksSystem {
