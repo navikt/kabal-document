@@ -132,6 +132,7 @@ enum class FagsaksSystem {
     TILLEGGSSTONADER,
     KOMPYS,
     KELVIN,
+    DAGPENGER,
 }
 
 enum class ArkivsaksSystem {
