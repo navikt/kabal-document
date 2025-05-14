@@ -106,33 +106,42 @@ enum class Sakstype {
     ARKIVSAK
 }
 
+//Should match no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem
 enum class FagsaksSystem {
+    FS38,
+    FS36,
+    UFM,
+    OEBS,
+    OB36,
     AO01,
     AO11,
-    BISYS,
-    FS36,
-    FS38,
     IT01,
-    K9,
-    OB36,
-    OEBS,
     PP01,
-    UFM,
+    K9,
+    BISYS,
     BA,
     EF,
     KONT,
     SUPSTONAD,
     OMSORGSPENGER,
-    NEESSI,
-    FS22,
     HJELPEMIDLER,
     BARNEBRILLER,
     EY,
-    KABAL,
-    TILLEGGSSTONADER,
-    KOMPYS,
     KELVIN,
     DAGPENGER,
+    KOMPYS,
+    ARGUS,
+    NEESSI,
+    TILLEGGSSTONADER,
+    ARBEIDSOPPFOLGING,
+    TILTAKTSPENGER,
+    TILTAKSADMINISTRASJON,
+    FIA,
+    HELT,
+    //Not listed in dokarkiv:
+    FS22,
+    //Not listed in dokarkiv:
+    KABAL,
 }
 
 enum class ArkivsaksSystem {
