@@ -138,10 +138,6 @@ enum class FagsaksSystem {
     TILTAKSADMINISTRASJON,
     FIA,
     HELT,
-    //Not listed in dokarkiv:
-    FS22,
-    //Not listed in dokarkiv:
-    KABAL,
 }
 
 enum class ArkivsaksSystem {
