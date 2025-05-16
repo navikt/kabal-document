@@ -60,6 +60,7 @@ fun DokumentType.toDistribusjonstidspunkt(): Distribusjonstidspunkt =
         BESLUTNING -> Distribusjonstidspunkt.KJERNETID
         //Disse blir ikke distribuert, tas med for fullstendighet.
         NOTAT, KJENNELSE_FRA_TRYGDERETTEN, ANNEN_INNGAAENDE_POST -> Distribusjonstidspunkt.KJERNETID
+        EKSPEDISJONSBREV_TIL_TRYGDERETTEN -> Distribusjonstidspunkt.UMIDDELBART
     }
 
 
@@ -69,7 +70,7 @@ fun DokumentType.toDistribusjonsType(): Distribusjonstype =
         VEDTAK -> Distribusjonstype.VEDTAK
         BESLUTNING -> Distribusjonstype.VIKTIG
         //Disse blir ikke distribuert, tas med for fullstendighet.
-        NOTAT, KJENNELSE_FRA_TRYGDERETTEN, ANNEN_INNGAAENDE_POST -> Distribusjonstype.ANNET
+        NOTAT, KJENNELSE_FRA_TRYGDERETTEN, ANNEN_INNGAAENDE_POST, EKSPEDISJONSBREV_TIL_TRYGDERETTEN -> Distribusjonstype.ANNET
     }
 
 

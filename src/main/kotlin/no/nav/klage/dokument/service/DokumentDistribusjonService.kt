@@ -25,12 +25,14 @@ class DokumentDistribusjonService(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
+        arkivmeldingTilTrygderetten: String?,
     ): UUID {
         return dokDistFordelingClient.distribuerJournalpost(
             journalpostId = journalpostId,
             dokumentType = dokumentType,
             tvingSentralPrint = tvingSentralPrint,
-            adresse = adresse?.toDokDistAdresse()
+            adresse = adresse?.toDokDistAdresse(),
+            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
         ).bestillingsId
     }
 

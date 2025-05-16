@@ -165,6 +165,7 @@ class DokumentEnhetService(
                                     dokumentType = dokumentEnhet.dokumentType,
                                     tvingSentralPrint = avsenderMottakerDistribusjon.avsenderMottaker.tvingSentralPrint,
                                     adresse = avsenderMottakerDistribusjon.avsenderMottaker.adresse,
+                                    arkivmeldingTilTrygderetten = dokumentEnhet.arkivmeldingTilTrygderetten,
                                 )
                             avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                             avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
@@ -268,6 +269,7 @@ class DokumentEnhetService(
                 journalfoerteVedlegg = journalfoerteVedlegg,
                 dokumentType = dokumentType,
                 journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
+                arkivmeldingTilTrygderetten = input.arkivmeldingTilTrygderetten,
             )
         )
     }
