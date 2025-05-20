@@ -233,6 +233,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         } returns UUID.randomUUID()
     }
@@ -283,7 +284,8 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),,
+                arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
         verify(exactly = 1) {
@@ -292,7 +294,8 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),,
+                arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
     }
@@ -330,6 +333,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
     }
@@ -381,6 +385,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
     }
@@ -415,7 +420,8 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),,
+                arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
         verify(exactly = 1) {
@@ -424,7 +430,8 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),,
+                arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
     }
@@ -449,6 +456,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 arkivmeldingTilTrygderetten = any(),
+                avsenderMottakerDistribusjonId = any(),
             )
         }
     }

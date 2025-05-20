@@ -10,6 +10,7 @@ data class HentPersonResponse(val data: PdlPersonDataWrapper?, val errors: List<
 data class PdlPersonDataWrapper(val hentPerson: PdlPerson?)
 
 data class PdlPerson(
+    val folkeregisteridentifikator: Folkeregisteridentifikator,
     val adressebeskyttelse: List<Adressebeskyttelse>,
     val navn: List<Navn>,
     val kjoenn: List<Kjoenn>,
@@ -18,6 +19,10 @@ data class PdlPerson(
     val doedsfall: List<Doedsfall>,
     val sikkerhetstiltak: List<Sikkerhetstiltak>
 ) {
+    data class Folkeregisteridentifikator(
+        val identifikasjonsnummer: String
+    )
+
     data class Adressebeskyttelse(val gradering: GraderingType) {
         enum class GraderingType { STRENGT_FORTROLIG_UTLAND, STRENGT_FORTROLIG, FORTROLIG, UGRADERT }
     }

@@ -1,5 +1,8 @@
 query($ident: ID!){
     hentPerson(ident: $ident) {
+        folkeregisteridentifikator {
+          identifikasjonsnummer
+        }
         adressebeskyttelse {
             gradering
         },
