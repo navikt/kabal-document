@@ -12,6 +12,7 @@ import java.util.*
 @Service
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
+    private val arkivmeldingService: ArkivmeldingService,
 ) {
 
     companion object {
@@ -26,7 +27,17 @@ class DokumentDistribusjonService(
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
         arkivmeldingTilTrygderetten: String?,
+        avsenderMottakerDistribusjonId: UUID,
     ): UUID {
+        val arkivmelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+            arkivmeldingService.generateArkivmelding(
+                journalpostId = journalpostId,
+                avsenderMottakerDistribusjonId = avsenderMottakerDistribusjonId,
+            )
+        } else {
+            null
+        }
+
         return dokDistFordelingClient.distribuerJournalpost(
             journalpostId = journalpostId,
             dokumentType = dokumentType,

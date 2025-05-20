@@ -1,0 +1,39 @@
+query($ident: ID!){
+    hentPerson(ident: $ident) {
+        adressebeskyttelse {
+            gradering
+        },
+        navn {
+            fornavn,
+            mellomnavn,
+            etternavn
+        },
+        kjoenn {
+            kjoenn
+        },
+        sivilstand {
+            type
+            gyldigFraOgMed
+            relatertVedSivilstand
+            bekreftelsesdato
+        },
+        vergemaalEllerFremtidsfullmakt(historikk: false) {
+            type
+            embete
+            vergeEllerFullmektig {
+                motpartsPersonident
+                omfang
+                omfangetErInnenPersonligOmraade
+            }
+        },
+        doedsfall {
+            doedsdato
+        },
+        sikkerhetstiltak {
+            tiltakstype
+            beskrivelse
+            gyldigFraOgMed
+            gyldigTilOgMed
+        }
+    }
+}
