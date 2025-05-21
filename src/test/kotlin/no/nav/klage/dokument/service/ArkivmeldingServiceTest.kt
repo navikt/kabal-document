@@ -30,7 +30,11 @@ class ArkivmeldingServiceTest {
             journalposttype = Journalposttype.I,
             journalstatus = Journalstatus.MOTTATT,
             tema = Tema.AAP,
-            sak = null,
+            sak = Sak(
+                datoOpprettet = null,
+                fagsakId = "in",
+                fagsaksystem = "aperiri"
+            ),
             bruker = Bruker(
                 id = "neglegentur", type = "dui"
             ),

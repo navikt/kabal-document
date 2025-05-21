@@ -1,22 +1,23 @@
 package no.nav.klage.dokument.service
 
+import jakarta.xml.bind.JAXBContext
+import jakarta.xml.bind.JAXBElement
+import jakarta.xml.bind.Marshaller
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.gradle.plugin.xsd2java.xsd.*
 import no.nav.klage.kodeverk.Tema
+import no.nav.klage.trygderetten.xsd.arkivmelding.*
+import no.nav.klage.trygderetten.xsd.navmetadata.NavMappe
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.StringWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.util.*
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.JAXBElement
-import javax.xml.bind.Marshaller
 import javax.xml.datatype.DatatypeConfigurationException
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
@@ -59,11 +60,12 @@ class ArkivmeldingService(
         arkivmelding.meldingId = avsenderMottakerDistribusjonId.toString()
         arkivmelding.tidspunkt = getNow()
         arkivmelding.antallFiler = journalpost.dokumenter?.size ?: throw RuntimeException("No files in journalpost")
+
         arkivmelding.mappe.add(Saksmappe().apply {
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-//            virksomhetsspesifikkeMetadata = getNavMappe(journalpost.sak?.fagsakId)
+            virksomhetsspesifikkeMetadata = getNavMappe(journalpost.sak?.fagsakId)
             part.add(Part().apply {
                 partNavn = NAV_KLAGEINSTANS
                 partRolle = SAKSPART_ROLLE_AMP
@@ -111,7 +113,7 @@ class ArkivmeldingService(
         }
         )
 
-        val jaxbElement: JAXBElement<Arkivmelding> = ObjectFactory().createArkivmelding(arkivmelding)
+        val jaxbElement: JAXBElement<Arkivmelding> = no.nav.klage.trygderetten.xsd.arkivmelding.ObjectFactory().createArkivmelding(arkivmelding)
         val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
 
         val marshaller: Marshaller = jaxbContext.createMarshaller()
@@ -121,20 +123,19 @@ class ArkivmeldingService(
         return sw.toString()
     }
 
-    private fun getNavMappe(fagsakId: String?): Any {
+    private fun getNavMappe(fagsakId: String?): JAXBElement<*> {
         val navMappe = NavMappe().apply {
             saksnummer = fagsakId
         }
 
-        val jaxbElement: JAXBElement<NavMappe> = ObjectFactory().createNavMappe(navMappe)
+        val jaxbElement: JAXBElement<NavMappe> = no.nav.klage.trygderetten.xsd.navmetadata.ObjectFactory().createNavMappe(navMappe)
+
         return JAXBElement(
             QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),
             JAXBElement::class.java,
             jaxbElement
         )
-//        return jaxbElement
     }
-
 
     private fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
         val mellomnavn = navn?.mellomnavn?.let { " ${it.trim()}" } ?: ""

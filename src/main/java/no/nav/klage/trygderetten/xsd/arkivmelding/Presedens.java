@@ -1,0 +1,366 @@
+
+package no.nav.klage.trygderetten.xsd.arkivmelding;
+
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
+
+/**
+ * <p>Java class for presedens complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="presedens"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="presedensDato" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}presedensDato"/&gt;
+ *         &lt;element name="opprettetDato" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}opprettetDato"/&gt;
+ *         &lt;element name="opprettetAv" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}opprettetAv"/&gt;
+ *         &lt;element name="tittel" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}tittel"/&gt;
+ *         &lt;element name="beskrivelse" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}beskrivelse" minOccurs="0"/&gt;
+ *         &lt;element name="presedensHjemmel" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}presedensHjemmel" minOccurs="0"/&gt;
+ *         &lt;element name="rettskildefaktor" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}rettskildefaktor"/&gt;
+ *         &lt;element name="presedensGodkjentDato" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}presedensGodkjentDato" minOccurs="0"/&gt;
+ *         &lt;element name="presedensGodkjentAv" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}presedensGodkjentAv" minOccurs="0"/&gt;
+ *         &lt;element name="avsluttetDato" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}avsluttetDato" minOccurs="0"/&gt;
+ *         &lt;element name="avsluttetAv" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}avsluttetAv" minOccurs="0"/&gt;
+ *         &lt;element name="presedensStatus" type="{http://www.arkivverket.no/standarder/noark5/metadatakatalog}presedensStatus" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "presedens", propOrder = {
+    "presedensDato",
+    "opprettetDato",
+    "opprettetAv",
+    "tittel",
+    "beskrivelse",
+    "presedensHjemmel",
+    "rettskildefaktor",
+    "presedensGodkjentDato",
+    "presedensGodkjentAv",
+    "avsluttetDato",
+    "avsluttetAv",
+    "presedensStatus"
+})
+public class Presedens {
+
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar presedensDato;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar opprettetDato;
+    @XmlElement(required = true)
+    protected String opprettetAv;
+    @XmlElement(required = true)
+    protected String tittel;
+    protected String beskrivelse;
+    protected String presedensHjemmel;
+    @XmlElement(required = true)
+    protected String rettskildefaktor;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar presedensGodkjentDato;
+    protected String presedensGodkjentAv;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar avsluttetDato;
+    protected String avsluttetAv;
+    protected String presedensStatus;
+
+    /**
+     * Gets the value of the presedensDato property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getPresedensDato() {
+        return presedensDato;
+    }
+
+    /**
+     * Sets the value of the presedensDato property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setPresedensDato(XMLGregorianCalendar value) {
+        this.presedensDato = value;
+    }
+
+    /**
+     * Gets the value of the opprettetDato property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getOpprettetDato() {
+        return opprettetDato;
+    }
+
+    /**
+     * Sets the value of the opprettetDato property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setOpprettetDato(XMLGregorianCalendar value) {
+        this.opprettetDato = value;
+    }
+
+    /**
+     * Gets the value of the opprettetAv property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOpprettetAv() {
+        return opprettetAv;
+    }
+
+    /**
+     * Sets the value of the opprettetAv property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOpprettetAv(String value) {
+        this.opprettetAv = value;
+    }
+
+    /**
+     * Gets the value of the tittel property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTittel() {
+        return tittel;
+    }
+
+    /**
+     * Sets the value of the tittel property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTittel(String value) {
+        this.tittel = value;
+    }
+
+    /**
+     * Gets the value of the beskrivelse property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getBeskrivelse() {
+        return beskrivelse;
+    }
+
+    /**
+     * Sets the value of the beskrivelse property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setBeskrivelse(String value) {
+        this.beskrivelse = value;
+    }
+
+    /**
+     * Gets the value of the presedensHjemmel property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPresedensHjemmel() {
+        return presedensHjemmel;
+    }
+
+    /**
+     * Sets the value of the presedensHjemmel property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPresedensHjemmel(String value) {
+        this.presedensHjemmel = value;
+    }
+
+    /**
+     * Gets the value of the rettskildefaktor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRettskildefaktor() {
+        return rettskildefaktor;
+    }
+
+    /**
+     * Sets the value of the rettskildefaktor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRettskildefaktor(String value) {
+        this.rettskildefaktor = value;
+    }
+
+    /**
+     * Gets the value of the presedensGodkjentDato property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getPresedensGodkjentDato() {
+        return presedensGodkjentDato;
+    }
+
+    /**
+     * Sets the value of the presedensGodkjentDato property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setPresedensGodkjentDato(XMLGregorianCalendar value) {
+        this.presedensGodkjentDato = value;
+    }
+
+    /**
+     * Gets the value of the presedensGodkjentAv property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPresedensGodkjentAv() {
+        return presedensGodkjentAv;
+    }
+
+    /**
+     * Sets the value of the presedensGodkjentAv property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPresedensGodkjentAv(String value) {
+        this.presedensGodkjentAv = value;
+    }
+
+    /**
+     * Gets the value of the avsluttetDato property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getAvsluttetDato() {
+        return avsluttetDato;
+    }
+
+    /**
+     * Sets the value of the avsluttetDato property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setAvsluttetDato(XMLGregorianCalendar value) {
+        this.avsluttetDato = value;
+    }
+
+    /**
+     * Gets the value of the avsluttetAv property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAvsluttetAv() {
+        return avsluttetAv;
+    }
+
+    /**
+     * Sets the value of the avsluttetAv property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAvsluttetAv(String value) {
+        this.avsluttetAv = value;
+    }
+
+    /**
+     * Gets the value of the presedensStatus property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPresedensStatus() {
+        return presedensStatus;
+    }
+
+    /**
+     * Sets the value of the presedensStatus property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPresedensStatus(String value) {
+        this.presedensStatus = value;
+    }
+
+}

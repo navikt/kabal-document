@@ -26,7 +26,6 @@ plugins {
     val kotlinVersion = "2.1.20"
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
-    id("de.qaware.gradle.plugin.xsd2java") version "3.0.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
@@ -48,8 +47,8 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.3")
-    implementation("org.glassfish.jaxb:jaxb-runtime:2.3.8")
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
@@ -91,19 +90,6 @@ idea {
     module {
         isDownloadJavadoc = true
     }
-}
-
-xsd2java {
-    schemas {
-        create("dummy") {
-            schemaDirPath = file("src/main/resources/schema").toPath()
-            packageName = "no.nav.klage.gradle.plugin.xsd2java.xsd"
-        }
-    }
-
-    extension = true
-    arguments = listOf("-verbose")
-    outputDir = file("${project.buildDir}/generated-sources/xsd2java")
 }
 
 tasks.withType<KotlinCompile> {
