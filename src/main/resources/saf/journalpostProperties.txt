@@ -58,6 +58,7 @@ tilleggsopplysninger {
 }
 dokumenter {
     dokumentInfoId
+    dokumentstatus
     tittel
     brevkode
     dokumentstatus

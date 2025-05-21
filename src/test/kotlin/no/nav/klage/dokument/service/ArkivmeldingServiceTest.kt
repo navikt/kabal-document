@@ -51,15 +51,20 @@ class ArkivmeldingServiceTest {
                     logiskeVedlegg = listOf(),
                     dokumentvarianter = listOf(),
                     datoFerdigstilt = LocalDateTime.now().minusMonths(2),
-                    originalJournalpostId = "vulputate"
+                    originalJournalpostId = "vulputate",
+                    dokumentstatus = "MOTTATT",
                 )
             ),
-            relevanteDatoer = listOf(),
+            relevanteDatoer = listOf(RelevantDato(
+                dato = LocalDateTime.now(), datotype = Datotype.DATO_JOURNALFOERT
+
+            )),
             kanal = "possit",
             kanalnavn = "posidonium",
             utsendingsinfo = null,
             journalforendeEnhet = "iuvaret",
-            tittel = "journalpost-tittel"
+            tittel = "journalpost-tittel",
+            journalfortAvNavn = "journalfortAvNavn",
         )
 
         every { pdlClient.getPersonInfo(any()) } returns HentPersonResponse(

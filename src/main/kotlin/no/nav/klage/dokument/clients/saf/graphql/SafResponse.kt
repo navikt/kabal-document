@@ -22,6 +22,7 @@ data class Journalpost(
     val bruker: Bruker,
     val avsenderMottaker: AvsenderMottaker?,
     val opprettetAvNavn: String?,
+    val journalfortAvNavn: String,
     val skjerming: String?,
     val datoOpprettet: LocalDateTime,
     val dokumenter: List<DokumentInfo>?,
@@ -31,7 +32,11 @@ data class Journalpost(
     val utsendingsinfo: Utsendingsinfo?,
     val journalforendeEnhet: String?,
     val tittel: String,
-)
+) {
+    fun getDatoJournalfoert(): LocalDateTime? {
+        return relevanteDatoer?.firstOrNull { it.datotype == Datotype.DATO_JOURNALFOERT }?.dato
+    }
+}
 
 data class Bruker(
     val id: String,
@@ -86,14 +91,20 @@ data class RelevantDato(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentInfo(
     val dokumentInfoId: String,
-    val tittel: String?,
+    val dokumentstatus: String,
+    val tittel: String,
     val brevkode: String?,
     val skjerming: String?,
     val logiskeVedlegg: List<LogiskVedlegg>?,
     val dokumentvarianter: List<Dokumentvariant>,
     val datoFerdigstilt: LocalDateTime?,
-    val originalJournalpostId: String?,
-)
+    val originalJournalpostId: String,
+) {
+    fun isFerdigstilt(): Boolean {
+        return dokumentstatus == "FERDIGSTILT" || dokumentstatus.isBlank()
+    }
+}
+
 
 data class LogiskVedlegg(
     val tittel: String,
