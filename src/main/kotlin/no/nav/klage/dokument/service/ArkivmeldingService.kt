@@ -10,12 +10,17 @@ import no.nav.klage.gradle.plugin.xsd2java.xsd.*
 import no.nav.klage.kodeverk.Tema
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.io.StringWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.util.*
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.JAXBElement
+import javax.xml.bind.Marshaller
 import javax.xml.datatype.DatatypeConfigurationException
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
+import javax.xml.namespace.QName
 
 
 @Service
@@ -35,6 +40,9 @@ class ArkivmeldingService(
         const val TRYGDERETTEN_ORGNR = "974761084"
         const val NAV_KLAGEINSTANS_ORGNR = "991078045"
         const val UNDER_BEHANDLING = "Under behandling"
+        const val MOTTAKER = "Mottaker"
+        const val AVSENDER = "Avsender"
+        const val ARKIVMELDING_NAMESPACE = "http://www.arkivverket.no/standarder/noark5/arkivmelding"
     }
 
     fun generateArkivmelding(journalpostId: String, avsenderMottakerDistribusjonId: UUID): String? {
@@ -55,9 +63,7 @@ class ArkivmeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-            virksomhetsspesifikkeMetadata = NavMappe().apply {
-                saksnummer = journalpost.sak?.fagsakId //Arkivsaksnummer?
-            }
+//            virksomhetsspesifikkeMetadata = getNavMappe(journalpost.sak?.fagsakId)
             part.add(Part().apply {
                 partNavn = NAV_KLAGEINSTANS
                 partRolle = SAKSPART_ROLLE_AMP
@@ -69,7 +75,8 @@ class ArkivmeldingService(
                 partNavn = getSammensattNavn(personInfo.data?.hentPerson?.navn?.firstOrNull())
                 partRolle = SAKSPART_ROLLE_DAP
                 foedselsnummer = FoedselsnummerType().apply {
-                    foedselsnummer = personInfo.data?.hentPerson?.folkeregisteridentifikator?.identifikasjonsnummer ?: throw RuntimeException("Foedselsnummer not found")
+                    foedselsnummer = personInfo.data?.hentPerson?.folkeregisteridentifikator?.identifikasjonsnummer
+                        ?: throw RuntimeException("Foedselsnummer not found")
                 }
                 kontaktperson = journalpost.opprettetAvNavn
             }
@@ -80,10 +87,52 @@ class ArkivmeldingService(
             saksansvarlig = journalpost.opprettetAvNavn
             journalenhet = journalpost.journalforendeEnhet
             saksstatus = UNDER_BEHANDLING
+//            registrering.add(Registrering().apply {
+//                opprettetDato = convertLocalDateTimeToXmlGregorianCalendar(journalpost.datoOpprettet)
+//                opprettetAv = journalpost.opprettetAvNavn
+//                tittel = journalpost.tittel
+//                //mottaker
+//                korrespondansepart.add(Korrespondansepart().apply {
+//                    korrespondanseparttype = MOTTAKER
+//                    korrespondansepartNavn = TRYGDERETTEN
+//                    organisasjonsnummer = EnhetsidentifikatorType().apply {
+//                        organisasjonsnummer = TRYGDERETTEN_ORGNR
+//                    }
+//                }
+//                )
+//                //avsender
+//                korrespondansepart.add(Korrespondansepart().apply {
+//
+//                }
+//                )
+//
+//            }
+//            )
         }
         )
 
-        return arkivmelding.toString()
+        val jaxbElement: JAXBElement<Arkivmelding> = ObjectFactory().createArkivmelding(arkivmelding)
+        val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
+
+        val marshaller: Marshaller = jaxbContext.createMarshaller()
+        val sw = StringWriter()
+        marshaller.marshal(jaxbElement, sw)
+
+        return sw.toString()
+    }
+
+    private fun getNavMappe(fagsakId: String?): Any {
+        val navMappe = NavMappe().apply {
+            saksnummer = fagsakId
+        }
+
+        val jaxbElement: JAXBElement<NavMappe> = ObjectFactory().createNavMappe(navMappe)
+        return JAXBElement(
+            QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),
+            JAXBElement::class.java,
+            jaxbElement
+        )
+//        return jaxbElement
     }
 
 

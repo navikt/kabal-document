@@ -54,7 +54,8 @@ class ArkivmeldingServiceTest {
             kanal = "possit",
             kanalnavn = "posidonium",
             utsendingsinfo = null,
-            journalforendeEnhet = "iuvaret"
+            journalforendeEnhet = "iuvaret",
+            tittel = "journalpost-tittel"
         )
 
         every { pdlClient.getPersonInfo(any()) } returns HentPersonResponse(
@@ -81,7 +82,7 @@ class ArkivmeldingServiceTest {
             errors = listOf()
         )
 
-        arkivmeldingService.generateArkivmelding(
+        val arkivmelding = arkivmeldingService.generateArkivmelding(
             journalpostId = "123456",
             avsenderMottakerDistribusjonId = UUID.randomUUID()
         )
@@ -103,7 +104,7 @@ class ArkivmeldingServiceTest {
 //        val sw = StringWriter()
 //        marshaller.marshal(jaxbElement, sw)
 //
-//        println(sw.toString())
+        println(arkivmelding)
     }
 
 }

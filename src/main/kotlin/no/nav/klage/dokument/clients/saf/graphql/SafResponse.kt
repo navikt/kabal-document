@@ -30,6 +30,7 @@ data class Journalpost(
     val kanalnavn: String,
     val utsendingsinfo: Utsendingsinfo?,
     val journalforendeEnhet: String?,
+    val tittel: String,
 )
 
 data class Bruker(
