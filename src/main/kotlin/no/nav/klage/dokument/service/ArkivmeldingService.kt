@@ -25,12 +25,6 @@ import javax.xml.datatype.DatatypeConfigurationException
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.emptyList
-import kotlin.collections.firstOrNull
-import kotlin.collections.mapNotNull
-import kotlin.collections.minByOrNull
 
 @Service
 class ArkivmeldingService(
@@ -142,12 +136,12 @@ class ArkivmeldingService(
         }
         )
 
-        val jaxbElement: JAXBElement<Arkivmelding> = no.nav.klage.trygderetten.xsd.arkivmelding.ObjectFactory().createArkivmelding(arkivmelding)
         val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
 
         val marshaller: Marshaller = jaxbContext.createMarshaller()
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
         val sw = StringWriter()
-        marshaller.marshal(jaxbElement, sw)
+        marshaller.marshal(arkivmelding, sw)
 
         return sw.toString()
     }
