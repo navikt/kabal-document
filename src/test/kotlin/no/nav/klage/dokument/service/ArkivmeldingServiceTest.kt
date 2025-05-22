@@ -26,7 +26,7 @@ class ArkivmeldingServiceTest {
 
         // Mock the necessary methods in safGraphQlClient and pdlClient if needed
         every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns Journalpost(
-            journalpostId = "vero",
+            journalpostId = "123456789",
             journalposttype = Journalposttype.I,
             journalstatus = Journalstatus.MOTTATT,
             tema = Tema.AAP,
@@ -44,15 +44,42 @@ class ArkivmeldingServiceTest {
             datoOpprettet = LocalDateTime.now(),
             dokumenter = listOf(
                 DokumentInfo(
-                    dokumentInfoId = "discere",
+                    dokumentInfoId = "54321",
+                    tittel = "Eksepedisjonsbrev til Trygderetten",
+                    brevkode = "at",
+                    skjerming = null,
+                    logiskeVedlegg = listOf(),
+                    dokumentvarianter = listOf(
+                        Dokumentvariant(
+                            variantformat = Variantformat.ARKIV,
+                            filtype = "PDF",
+                            saksbehandlerHarTilgang = false,
+                            skjerming = SkjermingType.POL
+
+                        )
+                    ),
+                    datoFerdigstilt = LocalDateTime.now().minusMonths(2),
+                    originalJournalpostId = "123456789",
+                    dokumentstatus = "FERDIGSTILT",
+                ),
+                DokumentInfo(
+                    dokumentInfoId = "987654321",
                     tittel = "id",
                     brevkode = "at",
                     skjerming = "viderer",
                     logiskeVedlegg = listOf(),
-                    dokumentvarianter = listOf(),
-                    datoFerdigstilt = LocalDateTime.now().minusMonths(2),
-                    originalJournalpostId = "vulputate",
-                    dokumentstatus = "MOTTATT",
+                    dokumentvarianter = listOf(
+                        Dokumentvariant(
+                            variantformat = Variantformat.SLADDET,
+                            filtype = "pdf",
+                            saksbehandlerHarTilgang = false,
+                            skjerming = SkjermingType.POL
+
+                        )
+                    ),
+                    datoFerdigstilt = LocalDateTime.now().minusMonths(3),
+                    originalJournalpostId = "654987",
+                    dokumentstatus = "FERDIGSTILT",
                 )
             ),
             relevanteDatoer = listOf(
@@ -66,7 +93,7 @@ class ArkivmeldingServiceTest {
             utsendingsinfo = null,
             journalforendeEnhet = "iuvaret",
             tittel = "journalpost-tittel",
-            journalfortAvNavn = "journalfortAvNavn",
+            journalfortAvNavn = "Saksbehandler som journalførte",
         )
 
         every { pdlClient.getPersonInfo(any()) } returns HentPersonResponse(
