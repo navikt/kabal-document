@@ -3,6 +3,8 @@ package no.nav.klage.dokument.service
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.JAXBElement
 import jakarta.xml.bind.Marshaller
+import no.arkivverket.standarder.noark5.arkivmelding.v2.*
+import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
@@ -12,8 +14,6 @@ import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.clients.saf.graphql.Variantformat
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.Tema
-import no.nav.klage.trygderetten.xsd.arkivmelding.*
-import no.nav.klage.trygderetten.xsd.navmetadata.NavMappe
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.StringWriter
@@ -209,7 +209,7 @@ class ArkivmeldingService(
             saksnummer = fagsakId
         }
 
-        val jaxbElement: JAXBElement<NavMappe> = no.nav.klage.trygderetten.xsd.navmetadata.ObjectFactory().createNavMappe(navMappe)
+        val jaxbElement: JAXBElement<NavMappe> = no.nav.avtaltmelding.trygderetten.v1.ObjectFactory().createNavMappe(navMappe)
 
         return JAXBElement(
             QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),

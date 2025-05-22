@@ -32,14 +32,14 @@ class ArkivmeldingServiceTest {
             tema = Tema.AAP,
             sak = Sak(
                 datoOpprettet = null,
-                fagsakId = "in",
+                fagsakId = "140322503",
                 fagsaksystem = "aperiri"
             ),
             bruker = Bruker(
                 id = "neglegentur", type = "dui"
             ),
             avsenderMottaker = null,
-            opprettetAvNavn = "nobis",
+            opprettetAvNavn = "F_Z994864 E_Z994864",
             skjerming = "inciderint",
             datoOpprettet = LocalDateTime.now(),
             dokumenter = listOf(
@@ -55,10 +55,12 @@ class ArkivmeldingServiceTest {
                     dokumentstatus = "MOTTATT",
                 )
             ),
-            relevanteDatoer = listOf(RelevantDato(
-                dato = LocalDateTime.now(), datotype = Datotype.DATO_JOURNALFOERT
+            relevanteDatoer = listOf(
+                RelevantDato(
+                    dato = LocalDateTime.now(), datotype = Datotype.DATO_JOURNALFOERT
 
-            )),
+                )
+            ),
             kanal = "possit",
             kanalnavn = "posidonium",
             utsendingsinfo = null,
@@ -95,23 +97,6 @@ class ArkivmeldingServiceTest {
             journalpostId = "123456",
             avsenderMottakerDistribusjonId = UUID.randomUUID()
         )
-
-//        val arkivmelding = Arkivmelding()
-//        arkivmelding.system = "system"
-//        arkivmelding.meldingId = "meldingId"
-//        arkivmelding.tidspunkt = null
-//        arkivmelding.antallFiler = 1
-//
-//        arkivmelding.mappe.add(
-//            Mappe()
-//        )
-//
-//        val jaxbElement: JAXBElement<Arkivmelding> = ObjectFactory().createArkivmelding(arkivmelding)
-//        val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java)
-//
-//        val marshaller: Marshaller = jaxbContext.createMarshaller()
-//        val sw = StringWriter()
-//        marshaller.marshal(jaxbElement, sw)
 //
         println(arkivmelding)
     }
