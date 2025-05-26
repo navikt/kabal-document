@@ -6,6 +6,7 @@ import no.nav.klage.dokument.domain.dokument.Adresse
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -13,6 +14,7 @@ import java.util.*
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
     private val arkivmeldingService: ArkivmeldingService,
+    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
 ) {
 
     companion object {
@@ -36,6 +38,10 @@ class DokumentDistribusjonService(
             )
         } else {
             null
+        }
+
+        if (activeSpringProfile == "dev-gcp") {
+            logger.debug("Arkivmelding for journalpost $journalpostId: $arkivmelding")
         }
 
         return dokDistFordelingClient.distribuerJournalpost(

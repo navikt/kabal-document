@@ -6,6 +6,14 @@ import java.time.LocalDateTime
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Error(val message: String, val extensions: Extensions)
 
+data class DokumentoversiktBrukerResponse(val data: DokumentoversiktBrukerDataWrapper?, val errors: List<Error>?)
+
+data class DokumentoversiktBrukerDataWrapper(val dokumentoversiktBruker: DokumentoversiktBruker)
+
+data class DokumentoversiktBruker(val journalposter: List<Journalpost>, val sideInfo: SideInfo)
+
+data class SideInfo(val sluttpeker: String?, val finnesNesteSide: Boolean, val antall: Int, val totaltAntall: Int)
+
 data class Extensions(val classification: String)
 
 data class JournalpostResponse(val data: JournalpostDataWrapper?, val errors: List<Error>?)
@@ -27,9 +35,6 @@ data class Journalpost(
     val datoOpprettet: LocalDateTime,
     val dokumenter: List<DokumentInfo>?,
     val relevanteDatoer: List<RelevantDato>?,
-    val kanal: String,
-    val kanalnavn: String,
-    val utsendingsinfo: Utsendingsinfo?,
     val journalforendeEnhet: String?,
     val tittel: String,
 ) {
@@ -91,37 +96,23 @@ data class RelevantDato(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentInfo(
     val dokumentInfoId: String,
-    val dokumentstatus: String,
+    val dokumentstatus: Dokumentstatus,
     val tittel: String,
     val brevkode: String?,
     val skjerming: String?,
-    val logiskeVedlegg: List<LogiskVedlegg>?,
     val dokumentvarianter: List<Dokumentvariant>,
     val datoFerdigstilt: LocalDateTime?,
-    val originalJournalpostId: String,
+    val originalJournalpostId: String?,
 ) {
     fun isFerdigstilt(): Boolean {
-        return dokumentstatus == "FERDIGSTILT" || dokumentstatus.isBlank()
+        return dokumentstatus == Dokumentstatus.FERDIGSTILT
     }
 }
 
-
-data class LogiskVedlegg(
-    val tittel: String,
-    val logiskVedleggId: String,
-)
-
 data class Dokumentvariant(
     val variantformat: Variantformat,
-    val filtype: String?,
-    val saksbehandlerHarTilgang: Boolean,
-    val skjerming: SkjermingType?,
+    val filtype: Filtype?,
 )
-
-enum class SkjermingType {
-    POL, //Indikerer at det er fattet et vedtak etter personopplysningsloven (GDPR - brukers rett til å bli glemt).
-    FEIL //Indikerer at det har blitt gjort en feil under mottak, journalføring eller brevproduksjon, slik at journalposten eller dokumentene er markert for sletting.
-}
 
 enum class Variantformat {
     //Den "offisielle" versjonen av et dokument, som er beregnet på visning og langtidsbevaring. I de fleste tilfeller er arkivvarianten lik dokumentet brukeren sendte inn eller mottok (digitalt eller på papir). Arkivvarianten er alltid i menneskelesbart format, som PDF, PDF/A eller PNG.
@@ -144,7 +135,7 @@ enum class Variantformat {
     ORIGINAL
 }
 
-data class Sak(val datoOpprettet: LocalDateTime?, val fagsakId: String?, val fagsaksystem: String?)
+data class Sak(val datoOpprettet: LocalDateTime?, val fagsakId: String?)
 
 enum class Tema {
     AAP, //Arbeidsavklaringspenger
@@ -279,4 +270,24 @@ enum class Datotype {
     DATO_AVS_RETUR,
     DATO_DOKUMENT,
     DATO_LEST,
+}
+
+enum class Dokumentstatus {
+    UNDER_REDIGERING,
+    FERDIGSTILT,
+    AVBRUTT,
+    KASSERT,
+}
+
+enum class Filtype {
+    PDF,
+    JPEG,
+    PNG,
+    TIFF,
+    XLSX,
+    JSON,
+    XML,
+    AXML,
+    DXML,
+    RTF,
 }

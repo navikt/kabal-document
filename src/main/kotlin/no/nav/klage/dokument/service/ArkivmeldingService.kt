@@ -1,31 +1,18 @@
 package no.nav.klage.dokument.service
 
-import jakarta.xml.bind.JAXBContext
-import jakarta.xml.bind.JAXBElement
-import jakarta.xml.bind.Marshaller
 import no.arkivverket.standarder.noark5.arkivmelding.v2.*
-import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
-import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
-import no.nav.klage.dokument.clients.saf.graphql.Dokumentvariant
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
-import no.nav.klage.dokument.clients.saf.graphql.Journalposttype
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
 import no.nav.klage.dokument.clients.saf.graphql.Variantformat
-import no.nav.klage.dokument.util.getLogger
+import no.nav.klage.dokument.util.*
 import no.nav.klage.kodeverk.Tema
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.io.StringWriter
 import java.math.BigInteger
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.util.*
-import javax.xml.datatype.DatatypeConfigurationException
-import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
-import javax.xml.namespace.QName
 
 @Service
 class ArkivmeldingService(
@@ -46,17 +33,12 @@ class ArkivmeldingService(
         const val UNDER_BEHANDLING = "Under behandling"
         const val MOTTAKER = "Mottaker"
         const val AVSENDER = "Avsender"
-        const val ARKIVMELDING_NAMESPACE = "http://www.arkivverket.no/standarder/noark5/arkivmelding"
         const val UTGAAENDE_DOKUMENT = "Utgående dokument"
         const val EKSPEDERT = "Ekspedert"
         const val DOKUMENTASJON = "Dokumentasjon"
         const val DOKUMENTET_ER_FERDIGSTILT = "Dokumentet er ferdigstilt"
-        const val UKJENT_NAVN = "UKJENT NAVN"
         const val HOVEDDOKUMENT = "Hoveddokument"
         const val VEDLEGG = "Vedlegg"
-        const val DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET = "Dokument hvor deler av innholdet er skjermet"
-        const val ARKIVFORMAT = "Arkivformat"
-        const val PRODUKSJONSFORMAT = "Produksjonsformat"
 
     }
 
@@ -64,11 +46,6 @@ class ArkivmeldingService(
         val journalpost = getJournalpost(journalpostId = journalpostId)
 
         val personInfo = pdlClient.getPersonInfo(ident = journalpost.bruker.id)
-
-        val sakOpprettetDato = convertLocalDateTimeToXmlGregorianCalendar(
-            journalpost.sak?.datoOpprettet ?: getOldestDateFromDokumenter(journalpost.dokumenter ?: emptyList())
-        )
-
         val datoArkivmeldingOpprettet = getNow()
 
         val arkivmelding = Arkivmelding()
@@ -76,6 +53,22 @@ class ArkivmeldingService(
         arkivmelding.meldingId = avsenderMottakerDistribusjonId.toString()
         arkivmelding.tidspunkt = datoArkivmeldingOpprettet
         arkivmelding.antallFiler = journalpost.dokumenter?.size ?: throw RuntimeException("No files in journalpost")
+
+        val fnr = personInfo.data?.hentPerson?.folkeregisteridentifikator?.identifikasjonsnummer
+            ?: throw RuntimeException("Foedselsnummer not found")
+
+        val dokumentBeskrivelser = getDokumentbeskrivelser(
+            dokumenter = journalpost.dokumenter,
+            datoArkivmeldingOpprettet = datoArkivmeldingOpprettet,
+            newJournalpost = journalpost,
+            fnr = fnr,
+        )
+
+        val sakOpprettetDato = if (journalpost.sak?.datoOpprettet != null) {
+            convertLocalDateTimeToXmlGregorianCalendar(journalpost.sak.datoOpprettet)
+        } else {
+            getOldestDateFromDokumentbeskrivelser(dokumentBeskrivelser)
+        }
 
         arkivmelding.mappe.add(Saksmappe().apply {
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
@@ -90,11 +83,10 @@ class ArkivmeldingService(
             }
             )
             part.add(Part().apply {
-                partNavn = getSammensattNavn(personInfo.data?.hentPerson?.navn?.firstOrNull())
+                partNavn = getSammensattNavn(personInfo.data.hentPerson.navn.firstOrNull())
                 partRolle = SAKSPART_ROLLE_DAP
                 foedselsnummer = FoedselsnummerType().apply {
-                    foedselsnummer = personInfo.data?.hentPerson?.folkeregisteridentifikator?.identifikasjonsnummer
-                        ?: throw RuntimeException("Foedselsnummer not found")
+                    foedselsnummer = fnr
                 }
             }
             )
@@ -126,47 +118,36 @@ class ArkivmeldingService(
                     }
                 }
                 )
-                journalposttype = EKSPEDERT
-                journalstatus = UNDER_BEHANDLING
+                journalposttype = UTGAAENDE_DOKUMENT
+                journalstatus = EKSPEDERT
                 journaldato = convertLocalDateTimeToXmlGregorianCalendar(
                     journalpost.getDatoJournalfoert() ?: throw RuntimeException("No journalfoeringData in journalpost")
                 )
 
-                dokumentbeskrivelse.addAll(
-                    getDokumentbeskrivelser(
-                        journalpost.dokumenter,
-                        datoArkivmeldingOpprettet,
-                        journalpost
-                    )
-                )
+                dokumentbeskrivelse.addAll(dokumentBeskrivelser)
             }
-
             )
         }
         )
 
-        val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
-
-        val marshaller: Marshaller = jaxbContext.createMarshaller()
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-        val sw = StringWriter()
-        marshaller.marshal(arkivmelding, sw)
-
-        return sw.toString()
+        return marshalArkivmelding(arkivmelding)
     }
 
     private fun getDokumentbeskrivelser(
         dokumenter: List<DokumentInfo>,
         datoArkivmeldingOpprettet: XMLGregorianCalendar?,
-        newJournalpost: Journalpost
+        newJournalpost: Journalpost,
+        fnr: String
     ): Collection<Dokumentbeskrivelse> {
         var index = 1
+        val existingJournalpostList = getJournalpostListForFnr(fnr = fnr)
+
         val output = dokumenter.mapNotNull { dokument ->
             if (dokument.isFerdigstilt()) {
-                val dokumentIsFromOldJournalpost = dokument.originalJournalpostId != newJournalpost.journalpostId
+                val dokumentIsFromOldJournalpost = dokument.originalJournalpostId != null
 
                 val originalJournalpost = if (dokumentIsFromOldJournalpost) {
-                    getJournalpost(journalpostId = dokument.originalJournalpostId)
+                    existingJournalpostList.find { it.journalpostId == dokument.originalJournalpostId }
                 } else null
 
                 val dokumentbeskrivelse = Dokumentbeskrivelse().apply {
@@ -186,7 +167,7 @@ class ArkivmeldingService(
                         originalJournalpost = originalJournalpost,
                         newJournalpost = newJournalpost,
                     )
-                    tilknyttetRegistreringSom = if (originalJournalpost == null) {
+                    tilknyttetRegistreringSom = if (index == 1) {
                         HOVEDDOKUMENT
                     } else {
                         VEDLEGG
@@ -203,8 +184,7 @@ class ArkivmeldingService(
 
                         versjonsnummer = BigInteger.valueOf(1.toLong())
                         variantformat = getDokumentbeskrivelseVariantFormat(gjeldendeDokumentVariant)
-                        format = gjeldendeDokumentVariant.filtype
-                            ?: throw RuntimeException("No filtype found for dokument ${dokument.dokumentInfoId}")
+                        format = gjeldendeDokumentVariant.filtype.toString().lowercase()
                         opprettetDato = getDokumentbeskrivelseOpprettetDato(
                             originalJournalpost = originalJournalpost,
                             newJournalpost = newJournalpost,
@@ -230,139 +210,15 @@ class ArkivmeldingService(
         return output
     }
 
-    private fun getDokumentbeskrivelseReferanseDokumentFil(
-        dokument: DokumentInfo,
-        newJournalpost: Journalpost,
-        gjeldendeDokumentVariant: Dokumentvariant
-    ): String {
-        return ("${newJournalpost.journalpostId}-${dokument.dokumentInfoId}-${
-            getDokumentbeskrivelseVariantFormat(
-                gjeldendeDokumentVariant
-            )
-        }.${gjeldendeDokumentVariant.filtype}")
-    }
-
-    private fun getDokumentbeskrivelseVariantFormat(dokumentVariant: Dokumentvariant): String {
-        return if (dokumentVariant.variantformat == Variantformat.SLADDET) {
-            DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET
-        } else if (dokumentVariant.filtype in listOf(
-                "JPEG",
-                "PNG"
-            )
-        ) {
-            ARKIVFORMAT
-        } else PRODUKSJONSFORMAT
-    }
-
-    private fun getNavMappe(fagsakId: String?): JAXBElement<*> {
-        val navMappe = NavMappe().apply {
-            saksnummer = fagsakId
-        }
-
-        val jaxbElement: JAXBElement<NavMappe> =
-            no.nav.avtaltmelding.trygderetten.v1.ObjectFactory().createNavMappe(navMappe)
-
-        return JAXBElement(
-            QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),
-            JAXBElement::class.java,
-            jaxbElement
-        )
-    }
-
-    private fun getDokumentbeskrivelseTittel(
-        dokumentInfo: DokumentInfo,
-        originalJournalpost: Journalpost?,
-        dokumentIsFromOldJournalpost: Boolean
-    ): String {
-        return if (dokumentIsFromOldJournalpost) {
-            when (originalJournalpost!!.journalposttype) {
-                Journalposttype.I -> {
-                    val avsenderMottakerNavn = originalJournalpost.avsenderMottaker?.navn ?: UKJENT_NAVN
-                    "${dokumentInfo.tittel}, Fra $avsenderMottakerNavn"
-                }
-
-                Journalposttype.U -> {
-                    val avsenderMottakerNavn = originalJournalpost.avsenderMottaker?.navn ?: UKJENT_NAVN
-                    "${dokumentInfo.tittel}, Til $avsenderMottakerNavn"
-                }
-
-                else -> dokumentInfo.tittel
-            }
-        } else {
-            return dokumentInfo.tittel
-        }
-    }
-
-    private fun getDokumentbeskrivelseOpprettetDato(
-        originalJournalpost: Journalpost?,
-        newJournalpost: Journalpost,
-        dokumentIsFromOldJournalpost: Boolean
-    ): XMLGregorianCalendar? {
-        return if (dokumentIsFromOldJournalpost && originalJournalpost?.getDatoJournalfoert() != null) {
-            convertLocalDateTimeToXmlGregorianCalendar(originalJournalpost.getDatoJournalfoert()!!)
-        } else {
-            convertLocalDateTimeToXmlGregorianCalendar(
-                newJournalpost.getDatoJournalfoert() ?: throw RuntimeException("No journalfoeringData in journalpost")
-            )
-        }
-    }
-
-    private fun getDokumentbeskrivelseOpprettetAv(
-        originalJournalpost: Journalpost?,
-        newJournalpost: Journalpost
-    ): String {
-        return originalJournalpost?.journalfortAvNavn ?: newJournalpost.journalfortAvNavn
-
-    }
-
-    private fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
-        val mellomnavn = navn?.mellomnavn?.let { " ${it.trim()}" } ?: ""
-        return navn?.let { "${it.fornavn}${mellomnavn} ${it.etternavn}" }
-    }
-
-    private fun getOldestDateFromDokumenter(dokumenter: List<DokumentInfo>): LocalDateTime {
-        val now = LocalDateTime.now()
-        return dokumenter.minByOrNull { it.datoFerdigstilt ?: now }?.datoFerdigstilt
-            ?: throw RuntimeException("No dokumenter in journalpost")
-    }
-
     fun getJournalpost(
         journalpostId: String,
     ): Journalpost {
-        return runWithTimingAndLogging({
-            safGraphQlClient.getJournalpostAsSystembruker(journalpostId = journalpostId)
-        }, this::getJournalpost.name)
+        return safGraphQlClient.getJournalpostAsSystembruker(journalpostId = journalpostId)
     }
 
-    fun <T> runWithTimingAndLogging(block: () -> T, method: String): T {
-        val start = System.currentTimeMillis()
-        try {
-            return block.invoke()
-        } finally {
-            val end = System.currentTimeMillis()
-            logger.debug("Time it took to call saf using $method: ${end - start} millis")
-        }
-    }
-
-    fun getNow(): XMLGregorianCalendar? {
-        val now: XMLGregorianCalendar?
-        try {
-            now = DatatypeFactory.newInstance().newXMLGregorianCalendar(GregorianCalendar())
-        } catch (e: DatatypeConfigurationException) {
-            throw RuntimeException("Kunne ikke hente dagens dato", e)
-        }
-        return now
-    }
-
-    fun convertLocalDateTimeToXmlGregorianCalendar(localDateTime: LocalDateTime): XMLGregorianCalendar? {
-        try {
-            return DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(localDateTime.format(ISO_LOCAL_DATE_TIME))
-        } catch (e: DatatypeConfigurationException) {
-            throw RuntimeException(
-                "Kunne ikke konvertere fra localDateTime til XmlGregorianCalendar. Forsøkte å konvertere localDateTime=$localDateTime",
-                e
-            )
-        }
+    fun getJournalpostListForFnr(
+        fnr: String,
+    ): List<Journalpost> {
+        return safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(fnr = fnr)
     }
 }
