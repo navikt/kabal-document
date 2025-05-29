@@ -58,6 +58,7 @@ fun DokumentType.toDistribusjonstidspunkt(): Distribusjonstidspunkt =
         BREV, SVARBREV, FORLENGET_BEHANDLINGSTIDSBREV -> Distribusjonstidspunkt.KJERNETID
         VEDTAK -> Distribusjonstidspunkt.KJERNETID
         BESLUTNING -> Distribusjonstidspunkt.KJERNETID
+        EKSPEDISJONSBREV_TIL_TRYGDERETTEN -> Distribusjonstidspunkt.UMIDDELBART
         //Disse blir ikke distribuert, tas med for fullstendighet.
         NOTAT, KJENNELSE_FRA_TRYGDERETTEN, ANNEN_INNGAAENDE_POST -> Distribusjonstidspunkt.KJERNETID
         EKSPEDISJONSBREV_TIL_TRYGDERETTEN -> Distribusjonstidspunkt.UMIDDELBART
