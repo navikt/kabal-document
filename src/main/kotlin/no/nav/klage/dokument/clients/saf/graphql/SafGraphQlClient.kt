@@ -3,7 +3,7 @@ package no.nav.klage.dokument.clients.saf.graphql
 
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
+import no.nav.klage.dokument.util.getTeamLogger
 import no.nav.klage.dokument.util.logErrorResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatusCode
@@ -22,7 +22,7 @@ class SafGraphQlClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
+        private val teamLogger = getTeamLogger()
     }
 
     @Retryable
@@ -58,7 +58,11 @@ class SafGraphQlClient(
             .bodyValue(hentJournalpostQuery(journalpostId))
             .retrieve()
             .onStatus(HttpStatusCode::isError) { response ->
-                logErrorResponse(response, "getJournalpost", secureLogger)
+                logErrorResponse(
+                    response = response,
+                    functionName = ::getJournalpostWithToken.name,
+                    classLogger = logger,
+                )
             }
             .bodyToMono<JournalpostResponse>()
             .block()?.data?.journalpost
@@ -82,7 +86,11 @@ class SafGraphQlClient(
             .bodyValue(hentDokumentoversiktBrukerQuery(fnr, tema, pageSize, previousPageRef))
             .retrieve()
             .onStatus(HttpStatusCode::isError) { response ->
-                logErrorResponse(response, ::getDokumentoversiktBruker.name, secureLogger)
+                logErrorResponse(
+                    response = response,
+                    functionName = ::getDokumentoversiktBruker.name,
+                    classLogger = logger,
+                )
             }
             .bodyToMono<DokumentoversiktBrukerResponse>()
             .block()
@@ -116,8 +124,8 @@ class SafGraphQlClient(
         previousPageRef: String?
     ) {
         if (response.errors != null) {
-            logger.error("Error from SAF, see securelogs")
-            secureLogger.error("Error from SAF when making call with following parameters: fnr=$fnr, pagesize=$pageSize, previousPageRef=$previousPageRef. Error is ${response.errors}")
+            logger.error("Error from SAF, see more details in team-logs")
+            teamLogger.error("Error from SAF when making call with following parameters: fnr=$fnr, pagesize=$pageSize, previousPageRef=$previousPageRef. Error is ${response.errors}")
         }
     }
 

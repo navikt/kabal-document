@@ -2,7 +2,6 @@ package no.nav.klage.dokument.clients.pdl.graphql
 
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.dokument.util.logErrorResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatusCode
@@ -21,7 +20,6 @@ class PdlClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     @Retryable
@@ -33,7 +31,11 @@ class PdlClient(
                 .bodyValue(hentPersonQuery(ident))
                 .retrieve()
                 .onStatus(HttpStatusCode::isError) { response ->
-                    logErrorResponse(response, ::getPersonInfo.name, secureLogger)
+                    logErrorResponse(
+                        response = response,
+                        functionName = ::getPersonInfo.name,
+                        classLogger = logger,
+                    )
                 }
                 .bodyToMono<HentPersonResponse>()
                 .block() ?: throw RuntimeException("Person not found")
