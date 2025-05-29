@@ -7,7 +7,6 @@ import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.stereotype.Service
@@ -28,7 +27,6 @@ class DokumentEnhetService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun ferdigstillDokumentEnhet(

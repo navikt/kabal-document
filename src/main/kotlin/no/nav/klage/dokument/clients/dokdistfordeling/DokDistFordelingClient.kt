@@ -2,7 +2,6 @@ package no.nav.klage.dokument.clients.dokdistfordeling
 
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -17,7 +16,6 @@ class DokDistFordelingClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     @Value("\${spring.application.name}")

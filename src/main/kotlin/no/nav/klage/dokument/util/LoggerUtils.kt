@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono
 
 fun getLogger(forClass: Class<*>): Logger = LoggerFactory.getLogger(forClass)
 
-fun getSecureLogger(): Logger = LoggerFactory.getLogger("secure")
+fun fun getTeamLogger(): Logger = LoggerFactory.getLogger("team-logs")
 
 fun logErrorResponse(response: ClientResponse, functionName: String, logger: Logger): Mono<RuntimeException> {
     return response.bodyToMono(String::class.java).map {

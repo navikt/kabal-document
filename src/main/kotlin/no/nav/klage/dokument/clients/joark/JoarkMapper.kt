@@ -4,7 +4,6 @@ import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
 import no.nav.klage.dokument.domain.dokument.JournalfoeringData
 import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.PartIdType
 import org.springframework.stereotype.Service
 
@@ -14,7 +13,6 @@ class JoarkMapper {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val securelogger = getSecureLogger()
     }
 
     fun createPartialJournalpostWithoutDocuments(

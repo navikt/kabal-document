@@ -7,7 +7,6 @@ import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
@@ -20,7 +19,6 @@ class DokumentEnhetInputMapper {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun mapAvsenderMottakerInputList(avsenderMottakerInput: List<DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput>): Set<AvsenderMottaker> =

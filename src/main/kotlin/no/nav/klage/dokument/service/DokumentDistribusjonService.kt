@@ -4,7 +4,6 @@ import no.nav.klage.dokument.clients.dokdistfordeling.Adressetype
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.Adresse
 import no.nav.klage.dokument.util.getLogger
-import no.nav.klage.dokument.util.getSecureLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -20,7 +19,6 @@ class DokumentDistribusjonService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        private val secureLogger = getSecureLogger()
     }
 
     fun distribuerJournalpostTilMottaker(
