@@ -5,12 +5,15 @@ import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.Adresse
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
+    private val arkivmeldingService: ArkivmeldingService,
+    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
 ) {
 
     companion object {
@@ -23,12 +26,28 @@ class DokumentDistribusjonService(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
+        arkivmeldingTilTrygderetten: String?,
+        avsenderMottakerDistribusjonId: UUID,
     ): UUID {
+        val arkivmelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+            arkivmeldingService.generateArkivmelding(
+                journalpostId = journalpostId,
+                avsenderMottakerDistribusjonId = avsenderMottakerDistribusjonId,
+            )
+        } else {
+            null
+        }
+
+        if (activeSpringProfile == "dev-gcp" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+            logger.debug("Arkivmelding for journalpost $journalpostId: $arkivmelding")
+        }
+
         return dokDistFordelingClient.distribuerJournalpost(
             journalpostId = journalpostId,
             dokumentType = dokumentType,
             tvingSentralPrint = tvingSentralPrint,
-            adresse = adresse?.toDokDistAdresse()
+            adresse = adresse?.toDokDistAdresse(),
+            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
         ).bestillingsId
     }
 
