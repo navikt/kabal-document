@@ -30,7 +30,7 @@ data class Journalpost(
     val bruker: Bruker,
     val avsenderMottaker: AvsenderMottaker?,
     val opprettetAvNavn: String?,
-    val journalfortAvNavn: String,
+    val journalfortAvNavn: String?,
     val skjerming: String?,
     val datoOpprettet: LocalDateTime,
     val dokumenter: List<DokumentInfo>?,

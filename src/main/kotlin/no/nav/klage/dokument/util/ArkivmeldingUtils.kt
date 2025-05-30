@@ -28,7 +28,7 @@ const val ARKIVMELDING_NAMESPACE = "http://www.arkivverket.no/standarder/noark5/
 const val DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET = "Dokument hvor deler av innholdet er skjermet"
 const val ARKIVFORMAT = "Arkivformat"
 const val PRODUKSJONSFORMAT = "Produksjonsformat"
-
+const val UKJENT = "UKJENT"
 
 
 fun getOldestDateFromDokumentbeskrivelser(
@@ -92,7 +92,7 @@ fun getDokumentbeskrivelseOpprettetAv(
     originalJournalpost: Journalpost?,
     newJournalpost: Journalpost
 ): String {
-    return originalJournalpost?.journalfortAvNavn ?: newJournalpost.journalfortAvNavn
+    return originalJournalpost?.journalfortAvNavn ?: newJournalpost.journalfortAvNavn ?: UKJENT
 }
 
 fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
