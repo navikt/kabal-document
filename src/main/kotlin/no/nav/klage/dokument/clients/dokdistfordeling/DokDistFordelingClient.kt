@@ -16,7 +16,10 @@ class DokDistFordelingClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        const val EKSPEDISJONSBREV_ENABLED = false
     }
+
+
 
     @Value("\${spring.application.name}")
     lateinit var applicationName: String
@@ -68,7 +71,7 @@ class DokDistFordelingClient(
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+            tvingKanal = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && EKSPEDISJONSBREV_ENABLED) {
                 DistribuerJournalpostRequest.Kanal.TRYGDERETTEN
             } else if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
