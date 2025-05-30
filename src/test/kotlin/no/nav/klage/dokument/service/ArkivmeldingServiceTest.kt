@@ -69,8 +69,10 @@ class ArkivmeldingServiceTest {
     val hentPersonResponse = HentPersonResponse(
         data = PdlPersonDataWrapper(
             hentPerson = PdlPerson(
-                folkeregisteridentifikator = PdlPerson.Folkeregisteridentifikator(
-                    identifikasjonsnummer = "20026900000"
+                folkeregisteridentifikator = listOf(
+                    PdlPerson.Folkeregisteridentifikator(
+                        identifikasjonsnummer = "20026900000"
+                    )
                 ),
                 adressebeskyttelse = listOf(),
                 navn = listOf(
@@ -256,6 +258,7 @@ class ArkivmeldingServiceTest {
             journalfortAvNavn = JOURNALFOERT_AV_NAVN
         )
     }
+
     private fun getDokumenter(): List<DokumentInfo> {
         return listOf(
             DokumentInfo(
@@ -287,7 +290,7 @@ class ArkivmeldingServiceTest {
                         variantformat = Variantformat.ARKIV,
                         filtype = Filtype.JPEG,
 
-                    ),
+                        ),
                     Dokumentvariant(
                         variantformat = Variantformat.PRODUKSJON,
                         filtype = Filtype.PDF,
