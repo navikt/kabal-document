@@ -54,7 +54,7 @@ class ArkivmeldingService(
         arkivmelding.tidspunkt = datoArkivmeldingOpprettet
         arkivmelding.antallFiler = journalpost.dokumenter?.size ?: throw RuntimeException("No files in journalpost")
 
-        val fnr = personInfo.data?.hentPerson?.folkeregisteridentifikator?.identifikasjonsnummer
+        val fnr = personInfo.data?.hentPerson?.folkeregisteridentifikator?.firstOrNull()?.identifikasjonsnummer
             ?: throw RuntimeException("Foedselsnummer not found")
 
         val dokumentBeskrivelser = getDokumentbeskrivelser(

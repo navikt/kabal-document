@@ -10,7 +10,7 @@ data class HentPersonResponse(val data: PdlPersonDataWrapper?, val errors: List<
 data class PdlPersonDataWrapper(val hentPerson: PdlPerson?)
 
 data class PdlPerson(
-    val folkeregisteridentifikator: Folkeregisteridentifikator,
+    val folkeregisteridentifikator: List<Folkeregisteridentifikator>,
     val adressebeskyttelse: List<Adressebeskyttelse>,
     val navn: List<Navn>,
     val kjoenn: List<Kjoenn>,
