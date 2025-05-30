@@ -38,7 +38,7 @@ class DokumentDistribusjonService(
             null
         }
 
-        if (activeSpringProfile == "dev-gcp") {
+        if (activeSpringProfile == "dev-gcp" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
             logger.debug("Arkivmelding for journalpost $journalpostId: $arkivmelding")
         }
 
