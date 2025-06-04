@@ -45,8 +45,14 @@ data class Journalpost(
 
 data class Bruker(
     val id: String,
-    val type: String,
+    val type: BrukerType,
 )
+
+enum class BrukerType {
+    AKTOERID,
+    FNR,
+    ORGNR
+}
 
 data class AvsenderMottaker(
     val id: String?,
@@ -104,8 +110,8 @@ data class DokumentInfo(
     val datoFerdigstilt: LocalDateTime?,
     val originalJournalpostId: String?,
 ) {
-    fun isFerdigstilt(): Boolean {
-        return dokumentstatus == Dokumentstatus.FERDIGSTILT
+    fun isFerdigstiltForArkivmelding(): Boolean {
+        return dokumentstatus == Dokumentstatus.FERDIGSTILT || dokumentstatus == null
     }
 }
 

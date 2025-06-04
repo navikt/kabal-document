@@ -5,6 +5,8 @@ import jakarta.xml.bind.JAXBElement
 import jakarta.xml.bind.Marshaller
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Arkivmelding
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Dokumentbeskrivelse
+import no.arkivverket.standarder.noark5.arkivmelding.v2.EnhetsidentifikatorType
+import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
@@ -29,7 +31,22 @@ const val DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET = "Dokument hvor deler av
 const val ARKIVFORMAT = "Arkivformat"
 const val PRODUKSJONSFORMAT = "Produksjonsformat"
 const val UKJENT = "UKJENT"
-
+const val NAV_KLAGEINSTANS_NAVN = "NAV Klageinstans"
+const val TRYGDERETTEN_NAVN = "TRYGDERETTEN"
+const val SAKSPART_ROLLE_DAP = "DAP"
+const val SAKSPART_ROLLE_AMP = "AMP"
+const val TRYGDERETTEN_ORGNR = "974761084"
+const val NAV_KLAGEINSTANS_ORGNR = "991078045"
+const val UNDER_BEHANDLING = "Under behandling"
+const val MOTTAKER = "Mottaker"
+const val AVSENDER = "Avsender"
+const val UTGAAENDE_DOKUMENT = "Utgående dokument"
+const val EKSPEDERT = "Ekspedert"
+const val DOKUMENTASJON = "Dokumentasjon"
+const val DOKUMENTET_ER_FERDIGSTILT = "Dokumentet er ferdigstilt"
+const val HOVEDDOKUMENT = "Hoveddokument"
+const val VEDLEGG = "Vedlegg"
+const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s-%s.%s"
 
 fun getOldestDateFromDokumentbeskrivelser(
     dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
@@ -90,9 +107,14 @@ fun getDokumentbeskrivelseTittel(
 
 fun getDokumentbeskrivelseOpprettetAv(
     originalJournalpost: Journalpost?,
-    newJournalpost: Journalpost
+    newJournalpost: Journalpost,
+    isHoveddokument: Boolean
 ): String {
-    return originalJournalpost?.journalfortAvNavn ?: newJournalpost.journalfortAvNavn ?: UKJENT
+    return if (!isHoveddokument && originalJournalpost != null) {
+        originalJournalpost.opprettetAvNavn ?: UKJENT
+    } else {
+        newJournalpost.journalfortAvNavn!!
+    }
 }
 
 fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
@@ -120,11 +142,17 @@ fun getDokumentbeskrivelseReferanseDokumentFil(
     newJournalpost: Journalpost,
     gjeldendeDokumentVariant: Dokumentvariant
 ): String {
-    return ("${newJournalpost.journalpostId}-${dokument.dokumentInfoId}-${
+    return String.format(
+        REFERANSE_DOKUMENTFIL_FORMAT,
+        newJournalpost.journalpostId,
+        dokument.dokumentInfoId,
         getDokumentbeskrivelseVariantFormat(
             gjeldendeDokumentVariant
+        ),
+        gjeldendeDokumentVariant.filtype?.name?.lowercase() ?: throw RuntimeException(
+            "Klarte ikke mappe filtype til format."
         )
-    }.${gjeldendeDokumentVariant.filtype}")
+    )
 }
 
 fun getDokumentbeskrivelseVariantFormat(dokumentVariant: Dokumentvariant): String {
@@ -147,6 +175,15 @@ fun getNow(): XMLGregorianCalendar? {
         throw RuntimeException("Kunne ikke hente dagens dato", e)
     }
     return now
+}
+
+fun getAMPPart(opprettetAvNavn: String?): Part {
+    return Part().apply {
+        partNavn = NAV_KLAGEINSTANS_NAVN
+        partRolle = SAKSPART_ROLLE_AMP
+        organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = NAV_KLAGEINSTANS_ORGNR }
+        kontaktperson = opprettetAvNavn
+    }
 }
 
 fun marshalArkivmelding(arkivmelding: Arkivmelding): String {

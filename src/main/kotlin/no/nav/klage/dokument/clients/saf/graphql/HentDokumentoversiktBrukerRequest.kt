@@ -21,7 +21,7 @@ data class BrukerId(val id: String, val type: BrukerIdType = BrukerIdType.FNR)
 enum class BrukerIdType { FNR }
 
 fun hentDokumentoversiktBrukerQuery(
-    fnr: String,
+    brukerId: String,
     tema: List<Tema>?, //Hvis en tom liste er angitt som argument hentes journalposter på alle tema.
     pageSize: Int,
     previousPageRef: String?
@@ -36,7 +36,7 @@ fun hentDokumentoversiktBrukerQuery(
     return HentDokumentoversiktBrukerGraphqlQuery(
         query,
         DokumentoversiktBrukerVariables(
-            BrukerId(fnr),
+            BrukerId(brukerId),
             if (tema.isNullOrEmpty()) null else tema,
             pageSize,
             previousPageRef

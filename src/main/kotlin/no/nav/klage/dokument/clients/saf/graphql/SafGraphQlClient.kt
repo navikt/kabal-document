@@ -36,10 +36,10 @@ class SafGraphQlClient(
 
     @Retryable
     fun getDokumentoversiktBrukerAsSystembruker(
-        fnr: String,
+        brukerId: String,
     ): List<Journalpost> {
         return getDokumentoversiktBruker(
-            fnr = fnr,
+            brukerId = brukerId,
             token = tokenUtil.getAppAccessTokenWithSafScope(),
         ).journalposter
     }
@@ -70,7 +70,7 @@ class SafGraphQlClient(
     }
 
     fun getDokumentoversiktBruker(
-        fnr: String,
+        brukerId: String,
         tema: List<Tema> = emptyList(),
         pageSize: Int = 50000,
         previousPageRef: String? = null,
@@ -83,7 +83,7 @@ class SafGraphQlClient(
                 HttpHeaders.AUTHORIZATION,
                 "Bearer $token"
             )
-            .bodyValue(hentDokumentoversiktBrukerQuery(fnr, tema, pageSize, previousPageRef))
+            .bodyValue(hentDokumentoversiktBrukerQuery(brukerId, tema, pageSize, previousPageRef))
             .retrieve()
             .onStatus(HttpStatusCode::isError) { response ->
                 logErrorResponse(
@@ -94,7 +94,7 @@ class SafGraphQlClient(
             }
             .bodyToMono<DokumentoversiktBrukerResponse>()
             .block()
-            ?.let { logErrorsFromSaf(it, fnr, pageSize, previousPageRef); it }
+            ?.let { logErrorsFromSaf(it, brukerId, pageSize, previousPageRef); it }
             ?.let { failOnErrors(it); it }
             ?.data!!.dokumentoversiktBruker.also {
                 logger.debug(

@@ -30,9 +30,9 @@ class DokumentDistribusjonService(
         avsenderMottakerDistribusjonId: UUID,
     ): UUID {
         val arkivmelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
-            arkivmeldingService.generateArkivmelding(
+            arkivmeldingService.generateMarshalledArkivmelding(
                 journalpostId = journalpostId,
-                avsenderMottakerDistribusjonId = avsenderMottakerDistribusjonId,
+                bestillingsId = avsenderMottakerDistribusjonId.toString(),
             )
         } else {
             null
