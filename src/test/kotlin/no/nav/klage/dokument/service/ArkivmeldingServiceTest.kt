@@ -13,14 +13,20 @@ import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.*
-import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.util.*
 import no.nav.klage.oppgave.clients.ereg.NoekkelInfoOmOrganisasjon
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.core.io.ClassPathResource
+import org.xmlunit.builder.Input
+import org.xmlunit.validation.Languages
+import org.xmlunit.validation.ValidationResult
+import org.xmlunit.validation.Validator
 import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.Month
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as ArkivJournalpost
 import no.nav.klage.kodeverk.Tema as KodeverkTema
 
@@ -35,7 +41,6 @@ class ArkivmeldingServiceTest {
     val JOURNALPOST_ID_1 = "987654321"
     val JOURNALPOST_ID_2 = "587654321"
     val JOURNALPOST_ID_3 = "597654321"
-    val JOURNALPOST_ID_4 = "197654321"
     val ARKIV_SAKNUMMER_1 = "111111"
     val ARKIV_SAKNUMMER_2 = "222222"
     val FIXED_LOCAL_DATE_TIME = LocalDateTime.of(2025, Month.MAY, 26, 7, 32)
@@ -51,14 +56,11 @@ class ArkivmeldingServiceTest {
     val BRUKER_TYPE_FNR = BrukerType.FNR
     val BRUKER_ID_ORGNR = "999999999"
     val BRUKER_TYPE_ORGNR = BrukerType.ORGNR
-    val BRUKER_ID_AKTOER_ID = "aktoerId"
-    val BRUKER_TYPE_AKTOER_ID = "AKTOERID"
     val TITTEL_JOURNALPOST_1 = "Eksepdisjonsbrev til Trygderetten journalpost"
     val TITTEL_JOURNALPOST_2 = "Eksepdisjonsbrev til Trygderetten journalpost 2"
     val JOURNALFOERT_AV_NAVN_1 = "Sak Sakbehandlersen journalfører"
     val JOURNALFOERT_AV_NAVN_2 = "Sak Sakbehandlersen journalfører 2"
     val TEMA = Tema.DAG
-    val TEMA_NAVN = TEMA.name
     val JOURNALFOERENDE_ENHET_1 = "1234"
     val JOURNALFOERENDE_ENHET_2 = "4321"
 
@@ -71,16 +73,11 @@ class ArkivmeldingServiceTest {
     val TITTEL_VEDLEGG_UTGAAENDE = "Dokumentasjon til klage, Til $AVSENDER_MOTTAKER_NAVN_ORIG_JP"
     val TITTEL_VEDLEGG_INNGAAENDE = "Dokumentasjon til klage, Fra $AVSENDER_MOTTAKER_NAVN_ORIG_JP"
 
-    val ORIGINAL_JPID_VEDLEGG = "1111111111"
-
     val DOKUMENT_INFO_ID_VEDLEGG_2 = "9876543"
     val EREG_NAVN = "Bedrift AS"
     val PDL_FORNAVN = "Bjarne"
     val PDL_ETTERNAVN = "Betjent"
     val PDL_SAMMENSATT_NAVN = "Bjarne Betjent"
-
-    val JOURNALFOERT_AV_NAVN_ORIG_JP = "ajournalfoertAvNavnOrigJp"
-    val DATO_JOURNALFOERT_ORIG_JP: LocalDateTime? = FIXED_LOCAL_DATE_TIME.minusDays(5)
 
     val arkivmeldingService = ArkivmeldingService(
         safGraphQlClient = safGraphQlClient,
@@ -88,6 +85,35 @@ class ArkivmeldingServiceTest {
         pdlClient = pdlClient,
         eregClient = eregClient,
     )
+
+    @Test
+    fun `Validate xml against schema`() {
+        val journalpost1 = getJournalpost(
+            brukerOrgNummer = null, originalJournalpostIdForVedlegg = null
+        )
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = any()) } returns listOf(
+            journalpost1,
+            getJournalpost2(journalposttype = Journalposttype.I),
+        )
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+
+        val arkivmeldingXml = arkivmeldingService.generateMarshalledArkivmelding(
+            journalpostId = JOURNALPOST_ID_1,
+            bestillingsId = BESTILLINGS_ID
+        )!!
+
+        val v: Validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
+        v.setSchemaSources(
+            Input.fromStream(javaClass.getResourceAsStream("/schema/metadatakatalog.xsd")).build(),
+            Input.fromStream(javaClass.getResourceAsStream("/schema/arkivmelding.xsd")).build()
+        )
+
+        val validationResult: ValidationResult? = v.validateInstance(Input.fromString(arkivmeldingXml).build())
+        assertThat(validationResult?.isValid).isTrue
+    }
+
+
 
     @Test
     fun `test Arkivmelding generation with no original journalpost`() {
