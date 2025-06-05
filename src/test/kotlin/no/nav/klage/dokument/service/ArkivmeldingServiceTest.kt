@@ -13,11 +13,11 @@ import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.*
+import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.util.*
 import no.nav.klage.oppgave.clients.ereg.NoekkelInfoOmOrganisasjon
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.core.io.ClassPathResource
 import org.xmlunit.builder.Input
 import org.xmlunit.validation.Languages
 import org.xmlunit.validation.ValidationResult
@@ -25,11 +25,8 @@ import org.xmlunit.validation.Validator
 import java.math.BigInteger
 import java.time.LocalDateTime
 import java.time.Month
-import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.SchemaFactory
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as ArkivJournalpost
 import no.nav.klage.kodeverk.Tema as KodeverkTema
-
 
 class ArkivmeldingServiceTest {
 
@@ -65,7 +62,7 @@ class ArkivmeldingServiceTest {
     val JOURNALFOERENDE_ENHET_2 = "4321"
 
     val DOKUMENT_INFO_ID_HOVEDDOK = "1234567"
-    val TITTEL_HOVEDDOK = "Eksepedisjonsbrev til Trygderetten"
+    val TITTEL_HOVEDDOK = "Ekspedisjonsbrev til Trygderetten"
 
     val AVSENDER_MOTTAKER_NAVN_ORIG_JP = "avsenderMottakerNavnOrigJp"
     val DOKUMENT_INFO_ID_VEDLEGG = "7654321"
@@ -87,7 +84,7 @@ class ArkivmeldingServiceTest {
     )
 
     @Test
-    fun `Validate xml against schema`() {
+    fun `xml is valid against schema`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null
         )
@@ -101,7 +98,7 @@ class ArkivmeldingServiceTest {
         val arkivmeldingXml = arkivmeldingService.generateMarshalledArkivmelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
-        )!!
+        )
 
         val v: Validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
         v.setSchemaSources(
@@ -113,10 +110,8 @@ class ArkivmeldingServiceTest {
         assertThat(validationResult?.isValid).isTrue
     }
 
-
-
     @Test
-    fun `test Arkivmelding generation with no original journalpost`() {
+    fun `input with no external journalpost reference generates expected arkivmelding`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null
         )
@@ -132,7 +127,7 @@ class ArkivmeldingServiceTest {
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(arkivmelding = arkivmelding, brukerIsOrganisasjon = false)
+        assertArkivmelding(arkivmelding = arkivmelding)
         verify(exactly = 1) {
             safGraphQlClient.getJournalpostAsSystembruker(JOURNALPOST_ID_1)
         }
@@ -148,7 +143,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `test Arkivmelding generation with no original journalpost, bruker is organisasjon`() {
+    fun `input where bruker is organization, with no external journalpost reference, generates expected arkivmelding`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = BRUKER_ID_ORGNR, originalJournalpostIdForVedlegg = null
         )
@@ -181,7 +176,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `test Arkivmelding generation with inngående vedlegg with original journalpost, values should be adjusted accordingly`() {
+    fun `input with external inngaaende journalpost reference generates expected dokumentbeskrivelseVedlegg and gets dokumentoversiktbruker`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = JOURNALPOST_ID_2
         )
@@ -198,15 +193,28 @@ class ArkivmeldingServiceTest {
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(
-            arkivmelding = arkivmelding,
-            brukerIsOrganisasjon = false,
-            vedleggJournalpostType = Journalposttype.I
+        assertDokumentbeskrivelseVedlegg(
+            dokumentbeskrivelseVedlegg = arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
+            vedleggJournalpostType = Journalposttype.I,
+            vedleggIsFromDifferentJournalpost = true
         )
+
+        verify(exactly = 1) {
+            safGraphQlClient.getJournalpostAsSystembruker(JOURNALPOST_ID_1)
+        }
+        verify(exactly = 1) {
+            safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(any())
+        }
+        verify(exactly = 1) {
+            pdlClient.getPersonInfo(BRUKER_ID_FNR)
+        }
+        verify(exactly = 0) {
+            eregClient.hentNoekkelInformasjonOmOrganisasjon(any())
+        }
     }
 
     @Test
-    fun `test Arkivmelding generation with utgående vedlegg with original journalpost, values should be adjusted accordingly`() {
+    fun `input with external utgaaende journalpost reference generates expected dokumentbeskrivelseVedlegg`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = JOURNALPOST_ID_2
         )
@@ -223,15 +231,15 @@ class ArkivmeldingServiceTest {
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(
-            arkivmelding = arkivmelding,
-            brukerIsOrganisasjon = false,
-            vedleggJournalpostType = Journalposttype.U
+        assertDokumentbeskrivelseVedlegg(
+            dokumentbeskrivelseVedlegg = arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
+            vedleggJournalpostType = Journalposttype.U,
+            vedleggIsFromDifferentJournalpost = true
         )
     }
 
     @Test
-    fun `Case when dokument does not have variantformat SLADDET (variantformat is ARKIV) and filtype is not PNG or JPEG, should set variantformat to Produksjonsformat`() {
+    fun `input with no variantformat SLADDET and filtype not PNG or JPEG results in PRODUKSJONSFORMAT in output`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null,
             dokumentVarianter = listOf(
@@ -266,7 +274,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `Case when dokument does not have variantformat SLADDET (variantformat is ARKIV) and filtype is PNG, Should set variantformat to Arkivformat`() {
+    fun `input with no variantformat SLADDET and filtype PNG results in ARKIVFORMAT in output`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null,
             dokumentVarianter = listOf(
@@ -301,7 +309,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `Case when dokument does not have variantformat SLADDET (variantformat is ARKIV) and filtype is JPEG, Should set variantformat to Arkivformat`() {
+    fun `input with no variantformat SLADDET and filtype JPEG results in ARKIVFORMAT in output`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null,
             dokumentVarianter = listOf(
@@ -336,9 +344,46 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `test Arkivmelding generation where vedlegg has no dokumentstatus`() {
+    fun `input with variantformat SLADDET results in DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET in output`() {
         val journalpost1 = getJournalpost(
-            brukerOrgNummer = null, originalJournalpostIdForVedlegg = JOURNALPOST_ID_2, vedleggStatus = null
+            brukerOrgNummer = null, originalJournalpostIdForVedlegg = null,
+            dokumentVarianter = listOf(
+                Dokumentvariant(
+                    variantformat = Variantformat.SLADDET,
+                    filtype = Filtype.JPEG,
+                ),
+                Dokumentvariant(
+                    variantformat = Variantformat.PRODUKSJON,
+                    filtype = Filtype.PDF,
+                )
+            ),
+        )
+
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = any()) } returns listOf(
+            journalpost1,
+            getJournalpost2(journalposttype = Journalposttype.U),
+        )
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
+
+        val arkivmelding = arkivmeldingService.generateArkivmelding(
+            journalpostId = JOURNALPOST_ID_1,
+            bestillingsId = BESTILLINGS_ID
+        )
+
+        val dokumentobjektHoveddokument =
+            arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
+        assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET)
+        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(
+            DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET
+        )
+    }
+
+    @Test
+    fun `input where vedlegg has no dokumentstatus is handled as if it was ferdigstilt`() {
+        val journalpost1 = getJournalpost(
+            brukerOrgNummer = null, originalJournalpostIdForVedlegg = null, vedleggStatus = null
         )
         every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
         every { safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = any()) } returns listOf(
@@ -354,13 +399,11 @@ class ArkivmeldingServiceTest {
 
         assertArkivmelding(
             arkivmelding = arkivmelding,
-            brukerIsOrganisasjon = false,
-            vedleggJournalpostType = Journalposttype.I
         )
     }
 
     @Test
-    fun `Case when vedlegg does not have dokumentstatus FERDIGSTILT, that vedlegg should not be mapped`() {
+    fun `input where vedlegg has different dokumentstatus than FERDIGSTILT is not mapped`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null,
             originalJournalpostIdForVedlegg = null,
@@ -379,11 +422,11 @@ class ArkivmeldingServiceTest {
         )
 
         assertThat(arkivmelding.antallFiler).isEqualTo(1)
-        assertThat(arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.size).isEqualTo(1)
+        assertThat(arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse).hasSize(1)
     }
 
     @Test
-    fun `Case for satt originalJournalPostId men ukjent journalfører`() {
+    fun `input with external journalpost reference without opprettetAv results in UKJENT opprettetAv`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = JOURNALPOST_ID_2
         )
@@ -405,11 +448,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `Når sak mangler opprettetDato, sett opprettetDato fra eldste vedlegg sortert etter journalpostens dokumentbeskrivelse opprettetDato`() {
-        //Trenger følgende:
-        // Journalpost med 2 vedlegg.
-        // Selve journalposten har sak uten opprettetDato.
-
+    fun `input with sak wihtout opprettetDato results in oldest opprettetDato from vedlegg`() {
         val journalpost1 = getJournalpostForDateTest()
         val treDagerSiden = FIXED_LOCAL_DATE_TIME.minusDays(3)
         val femDagerSiden = FIXED_LOCAL_DATE_TIME.minusDays(5)
@@ -440,27 +479,28 @@ class ArkivmeldingServiceTest {
             bestillingsId = BESTILLINGS_ID,
         )
 
-        assertThat(arkivmelding.mappe.first().opprettetDato).isEqualTo(convertLocalDateTimeToXmlGregorianCalendar(femDagerSiden))
+        assertThat(arkivmelding.mappe.first().opprettetDato).isEqualTo(
+            convertLocalDateTimeToXmlGregorianCalendar(
+                femDagerSiden
+            )
+        )
     }
 
     private fun assertArkivmelding(
-        arkivmelding: Arkivmelding, brukerIsOrganisasjon: Boolean,
-        vedleggJournalpostType: Journalposttype? = null
+        arkivmelding: Arkivmelding, brukerIsOrganisasjon: Boolean = false,
     ) {
         assertThat(arkivmelding.meldingId).isEqualTo(BESTILLINGS_ID)
         assertThat(arkivmelding.tidspunkt).isNotNull
         assertThat(arkivmelding.antallFiler).isEqualTo(2)
-        assertThat(arkivmelding.mappe.size).isEqualTo(1)
+        assertThat(arkivmelding.mappe).hasSize(1)
         assertSaksmappe(
             saksmappe = arkivmelding.mappe.first() as Saksmappe,
             brukerIsOrganisasjon = brukerIsOrganisasjon,
-            vedleggJournalpostType = vedleggJournalpostType
         )
     }
 
     private fun assertSaksmappe(
         saksmappe: Saksmappe, brukerIsOrganisasjon: Boolean,
-        vedleggJournalpostType: Journalposttype? = null
     ) {
         assertThat(saksmappe.tittel).isEqualTo(KodeverkTema.valueOf(TEMA.name).beskrivelse)
         assertThat(saksmappe.opprettetDato).isEqualTo(convertLocalDateTimeToXmlGregorianCalendar(DATO_OPPRETTET_SAK_1))
@@ -473,15 +513,14 @@ class ArkivmeldingServiceTest {
         assertThat(saksmappe.saksansvarlig).isEqualTo(OPPRETTET_AV_NAVN_1)
         assertThat(saksmappe.journalenhet).isEqualTo(JOURNALFOERENDE_ENHET_1)
         assertThat(saksmappe.saksstatus).isEqualTo(UNDER_BEHANDLING)
-        assertThat(saksmappe.registrering.size).isEqualTo(1)
+        assertThat(saksmappe.registrering).hasSize(1)
         assertJournalpost(
             journalpost = saksmappe.registrering.first() as ArkivJournalpost,
-            vedleggJournalpostType = vedleggJournalpostType
         )
     }
 
     private fun assertSakspart(partList: MutableList<Part>, brukerIsOrganisasjon: Boolean) {
-        assertThat(partList.size).isEqualTo(2)
+        assertThat(partList).hasSize(2)
         val sakspartAMP: Part = partList.first()
         assertThat(sakspartAMP.partID).isNull()
         assertThat(sakspartAMP.partNavn).isEqualTo(NAV_KLAGEINSTANS_NAVN)
@@ -505,7 +544,6 @@ class ArkivmeldingServiceTest {
 
     private fun assertJournalpost(
         journalpost: ArkivJournalpost,
-        vedleggJournalpostType: Journalposttype? = null
     ) {
         assertThat(journalpost.opprettetDato).isEqualTo(
             convertLocalDateTimeToXmlGregorianCalendar(
@@ -520,20 +558,17 @@ class ArkivmeldingServiceTest {
         assertThat(journalpost.journaldato).isEqualTo(convertLocalDateTimeToXmlGregorianCalendar(DATO_JOURNALFOERT_1))
         assertDokumentbeskrivelse(
             dokumentbeskrivelse = journalpost.dokumentbeskrivelse,
-            vedleggJournalpostType = vedleggJournalpostType
         )
     }
 
-
     private fun assertDokumentbeskrivelse(
         dokumentbeskrivelse: MutableList<Dokumentbeskrivelse>,
-        vedleggJournalpostType: Journalposttype? = null
     ) {
-        assertThat(dokumentbeskrivelse.size).isEqualTo(2)
+        assertThat(dokumentbeskrivelse).hasSize(2)
         val dokumentbeskrivelseHoveddokument = dokumentbeskrivelse.first()
         val dokumentbeskrivelseVedlegg = dokumentbeskrivelse.last()
         assertDokumentbeskrivelseHoveddokument(dokumentbeskrivelseHoveddokument)
-        assertDokumentbeskrivelseVedlegg(dokumentbeskrivelseVedlegg, vedleggJournalpostType = vedleggJournalpostType)
+        assertDokumentbeskrivelseVedlegg(dokumentbeskrivelseVedlegg)
     }
 
     private fun assertDokumentbeskrivelseHoveddokument(dokumentbeskrivelseHoveddokument: Dokumentbeskrivelse) {
@@ -545,7 +580,7 @@ class ArkivmeldingServiceTest {
                 DATO_JOURNALFOERT_1
             )
         )
-        assertThat(dokumentbeskrivelseHoveddokument.dokumentobjekt.size).isEqualTo(1)
+        assertThat(dokumentbeskrivelseHoveddokument.dokumentobjekt).hasSize(1)
         assertDokumentobjektHoveddokument(dokumentbeskrivelseHoveddokument.dokumentobjekt.first())
         assertThat(dokumentbeskrivelseHoveddokument.dokumenttype).isEqualTo(DOKUMENTASJON)
         assertThat(dokumentbeskrivelseHoveddokument.dokumentstatus).isEqualTo(DOKUMENTET_ER_FERDIGSTILT)
@@ -556,25 +591,35 @@ class ArkivmeldingServiceTest {
 
     private fun assertDokumentbeskrivelseVedlegg(
         dokumentbeskrivelseVedlegg: Dokumentbeskrivelse,
-        vedleggJournalpostType: Journalposttype? = null
+        vedleggJournalpostType: Journalposttype? = null,
+        vedleggIsFromDifferentJournalpost: Boolean = false,
     ) {
+        val correctTittel = if (vedleggIsFromDifferentJournalpost) {
+            when (vedleggJournalpostType) {
+                Journalposttype.U -> TITTEL_VEDLEGG_UTGAAENDE
+                Journalposttype.I -> TITTEL_VEDLEGG_INNGAAENDE
+                else -> TITTEL_VEDLEGG_UTGAAENDE
+            }
+        } else {
+            TITTEL_VEDLEGG
+        }
         assertThat(dokumentbeskrivelseVedlegg.tilknyttetRegistreringSom).isEqualTo(VEDLEGG)
         assertThat(dokumentbeskrivelseVedlegg.dokumentnummer).isEqualTo(BigInteger.TWO)
-        assertThat(dokumentbeskrivelseVedlegg.tittel).isEqualTo(if (vedleggJournalpostType == Journalposttype.U) TITTEL_VEDLEGG_UTGAAENDE else if (vedleggJournalpostType == Journalposttype.I) TITTEL_VEDLEGG_INNGAAENDE else TITTEL_VEDLEGG)
+        assertThat(dokumentbeskrivelseVedlegg.tittel).isEqualTo(correctTittel)
         assertThat(dokumentbeskrivelseVedlegg.opprettetDato).isEqualTo(
             convertLocalDateTimeToXmlGregorianCalendar(
-                if (vedleggJournalpostType != null) DATO_JOURNALFOERT_2 else DATO_JOURNALFOERT_1
+                if (vedleggIsFromDifferentJournalpost) DATO_JOURNALFOERT_2 else DATO_JOURNALFOERT_1
             )
         )
-        assertThat(dokumentbeskrivelseVedlegg.dokumentobjekt.size).isEqualTo(1)
+        assertThat(dokumentbeskrivelseVedlegg.dokumentobjekt).hasSize(1)
         assertDokumentobjektVedlegg(
             dokumentobjektVedlegg = dokumentbeskrivelseVedlegg.dokumentobjekt.first(),
-            vedleggIsFromDifferentJournalpost = vedleggJournalpostType != null
+            vedleggIsFromDifferentJournalpost = vedleggIsFromDifferentJournalpost
         )
         assertThat(dokumentbeskrivelseVedlegg.dokumenttype).isEqualTo(DOKUMENTASJON)
         assertThat(dokumentbeskrivelseVedlegg.dokumentstatus).isEqualTo(DOKUMENTET_ER_FERDIGSTILT)
         assertThat(dokumentbeskrivelseVedlegg.tilknyttetDato).isNotNull()
-        assertThat(dokumentbeskrivelseVedlegg.opprettetAv).isEqualTo(if (vedleggJournalpostType != null) OPPRETTET_AV_NAVN_2 else JOURNALFOERT_AV_NAVN_1)
+        assertThat(dokumentbeskrivelseVedlegg.opprettetAv).isEqualTo(if (vedleggIsFromDifferentJournalpost) OPPRETTET_AV_NAVN_2 else JOURNALFOERT_AV_NAVN_1)
         assertThat(dokumentbeskrivelseVedlegg.tilknyttetAv).isEqualTo(JOURNALFOERT_AV_NAVN_1)
     }
 
@@ -625,7 +670,7 @@ class ArkivmeldingServiceTest {
     }
 
     private fun assertKorrespondansepart(korrespondansepartList: List<Korrespondansepart>) {
-        assertThat(korrespondansepartList.size).isEqualTo(2)
+        assertThat(korrespondansepartList).hasSize(2)
         val mottaker = korrespondansepartList.first()
         assertThat(mottaker.korrespondanseparttype).isEqualTo(MOTTAKER)
         assertThat(mottaker.korrespondansepartNavn).isEqualTo(TRYGDERETTEN_NAVN)
@@ -676,7 +721,6 @@ class ArkivmeldingServiceTest {
         opphoersdato = null,
         adresse = null
     )
-
 
     fun getJournalpost(
         brukerOrgNummer: String?,
