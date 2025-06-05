@@ -163,6 +163,7 @@ class DokumentEnhetService(
                                     dokumentType = dokumentEnhet.dokumentType,
                                     tvingSentralPrint = avsenderMottakerDistribusjon.avsenderMottaker.tvingSentralPrint,
                                     adresse = avsenderMottakerDistribusjon.avsenderMottaker.adresse,
+                                    avsenderMottakerDistribusjonId = avsenderMottakerDistribusjon.id,
                                 )
                             avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                             avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)

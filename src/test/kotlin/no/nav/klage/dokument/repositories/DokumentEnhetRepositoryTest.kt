@@ -128,6 +128,6 @@ class DokumentEnhetRepositoryTest {
         avsenderMottakerDistribusjoner = setOf(),
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
-        modified = LocalDateTime.now()
+        modified = LocalDateTime.now(),
     )
 }
