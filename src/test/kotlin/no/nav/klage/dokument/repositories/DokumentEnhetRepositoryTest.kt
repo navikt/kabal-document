@@ -129,6 +129,5 @@ class DokumentEnhetRepositoryTest {
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
         modified = LocalDateTime.now(),
-        arkivmeldingTilTrygderetten = null,
     )
 }

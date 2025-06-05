@@ -75,7 +75,6 @@ internal class JournalfoeringServiceTest {
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
         dokumentType = DokumentType.VEDTAK,
-        arkivmeldingTilTrygderetten = null,
     )
 
     @Test

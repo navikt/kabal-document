@@ -19,8 +19,6 @@ class DokDistFordelingClient(
         const val EKSPEDISJONSBREV_ENABLED = false
     }
 
-
-
     @Value("\${spring.application.name}")
     lateinit var applicationName: String
 
@@ -76,7 +74,6 @@ class DokDistFordelingClient(
             } else if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null
-
         )
     }
 }

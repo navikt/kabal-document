@@ -35,7 +35,7 @@ class ArkivmeldingService(
     fun generateMarshalledArkivmelding(
         journalpostId: String,
         bestillingsId: String
-    ): String? {
+    ): String {
         return try {
             marshalArkivmelding(
                 generateArkivmelding(
@@ -45,7 +45,7 @@ class ArkivmeldingService(
             )
         } catch (e: Exception) {
             logger.error("Failed to generate arkivmelding for journalpost $journalpostId", e)
-            null
+            throw e
         }
     }
 
