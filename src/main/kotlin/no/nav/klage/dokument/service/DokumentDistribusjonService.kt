@@ -26,7 +26,6 @@ class DokumentDistribusjonService(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
-        arkivmeldingTilTrygderetten: String?,
         avsenderMottakerDistribusjonId: UUID,
     ): UUID {
         val arkivmelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
@@ -47,7 +46,7 @@ class DokumentDistribusjonService(
             dokumentType = dokumentType,
             tvingSentralPrint = tvingSentralPrint,
             adresse = adresse?.toDokDistAdresse(),
-            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
+            arkivmeldingTilTrygderetten = arkivmelding,
         ).bestillingsId
     }
 

@@ -140,7 +140,6 @@ internal class DokumentEnhetServiceTest {
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
         dokumentType = DokumentType.VEDTAK,
-        arkivmeldingTilTrygderetten = null,
     )
 
     val dokumentEnhetWithLocalPrint = DokumentEnhet(
@@ -176,7 +175,6 @@ internal class DokumentEnhetServiceTest {
         avsluttet = null,
         journalfoerendeSaksbehandlerIdent = "S123456",
         dokumentType = DokumentType.VEDTAK,
-        arkivmeldingTilTrygderetten = null,
     )
 
     private val dokumentEnhetService = DokumentEnhetService(
@@ -232,7 +230,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         } returns UUID.randomUUID()
@@ -284,7 +281,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -294,7 +290,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -332,7 +327,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -384,7 +378,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -420,7 +413,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -430,7 +422,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }
@@ -455,7 +446,6 @@ internal class DokumentEnhetServiceTest {
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
-                arkivmeldingTilTrygderetten = any(),
                 avsenderMottakerDistribusjonId = any(),
             )
         }

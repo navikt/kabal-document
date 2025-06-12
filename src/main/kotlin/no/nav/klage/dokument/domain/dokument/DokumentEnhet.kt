@@ -53,8 +53,6 @@ class DokumentEnhet(
     val journalfoerendeSaksbehandlerIdent: String,
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
-    @Column(name = "arkivmelding_til_trygderetten")
-    val arkivmeldingTilTrygderetten: String?,
 ) {
     fun shouldBeDistributed(): Boolean {
         return journalfoeringData.journalpostType == JournalpostType.UTGAAENDE
