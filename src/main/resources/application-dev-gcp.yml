@@ -1,11 +1,17 @@
 TENANT_ID: 966ac572-f5b7-4bbe-aa88-c76419c0f851
 
 SAF_SCOPE: dev-fss.teamdokumenthandtering.saf
+SAF_BASE_URL: https://saf-q2.dev-fss-pub.nais.io/
 
 DOKARKIV_SCOPE: dev-fss.teamdokumenthandtering.dokarkiv/
 
 JOARK_SERVICE_URL: https://dokarkiv-q2.dev-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
 DOKDIST_SERVICE_URL: https://dokdistfordeling.dev-fss-pub.nais.io/rest/v1/distribuerjournalpost
+
+PDL_BASE_URL: https://pdl-api.dev-fss-pub.nais.io/graphql
+PDL_SCOPE: dev-fss.pdl.pdl-api
+
+EREG_URL: https://ereg-services-q2.dev-fss-pub.nais.io/api/v2
 
 spring:
   datasource:

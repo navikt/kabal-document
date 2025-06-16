@@ -16,6 +16,7 @@ class DokDistFordelingClient(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+        const val EKSPEDISJONSBREV_ENABLED = false
     }
 
     @Value("\${spring.application.name}")
@@ -26,13 +27,15 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         adresse: Adresse?,
         tvingSentralPrint: Boolean,
+        arkivmeldingTilTrygderetten: String?,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = mapToDistribuerJournalpostRequest(
             journalpostId = journalpostId,
             dokumentType = dokumentType,
             adresse = adresse,
-            tvingSentralPrint = tvingSentralPrint
+            tvingSentralPrint = tvingSentralPrint,
+            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
@@ -57,6 +60,7 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
+        arkivmeldingTilTrygderetten: String?,
     ): DistribuerJournalpostRequest {
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
@@ -65,7 +69,11 @@ class DokDistFordelingClient(
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = if (tvingSentralPrint) DistribuerJournalpostRequest.Kanal.PRINT else null,
+            tvingKanal = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && EKSPEDISJONSBREV_ENABLED) {
+                DistribuerJournalpostRequest.Kanal.TRYGDERETTEN
+            } else if (tvingSentralPrint) {
+                DistribuerJournalpostRequest.Kanal.PRINT
+            } else null
         )
     }
 }

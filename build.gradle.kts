@@ -47,6 +47,9 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
     implementation("net.javacrumbs.shedlock:shedlock-spring:$shedlockVersion")
