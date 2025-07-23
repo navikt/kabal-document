@@ -64,7 +64,7 @@ class DokDistFordelingClient(
     ): DistribuerJournalpostRequest {
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
-            bestillendeFagSystem = applicationName,
+            bestillendeFagsystem = applicationName,
             dokumentProdApp = applicationName,
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),

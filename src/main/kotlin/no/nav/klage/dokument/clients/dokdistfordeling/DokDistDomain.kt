@@ -6,7 +6,7 @@ import java.util.*
 
 data class DistribuerJournalpostRequest(
     val batchId: String? = null,
-    val bestillendeFagSystem: String? = null,
+    val bestillendeFagsystem: String? = null,
     val dokumentProdApp: String? = null,
     val journalpostId: String,
     val distribusjonstype: Distribusjonstype,
