@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.14.5"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "5.0.30"
+val tokenValidationVersion = "5.0.33"
 val logstashVersion = "8.1"
 val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.12"
@@ -25,7 +25,7 @@ repositories {
 
 plugins {
     val kotlinVersion = "2.2.0"
-    id("org.springframework.boot") version "3.5.3"
+    id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
