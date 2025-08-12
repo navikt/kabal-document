@@ -39,7 +39,7 @@ class DokDistFordelingClient(
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithSafScope()}")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokdistScope()}")
             .bodyValue(payload)
             .retrieve()
             .bodyToMono(DistribuerJournalpostResponse::class.java)
