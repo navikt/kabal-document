@@ -4,8 +4,9 @@ SAF_BASE_URL: https://saf.prod-fss-pub.nais.io/
 SAF_SCOPE: prod-fss.teamdokumenthandtering.saf
 
 DOKARKIV_SCOPE: prod-fss.teamdokumenthandtering.dokarkiv/
-
 JOARK_SERVICE_URL: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1/journalpost
+
+DOKDIST_SCOPE: prod-fss.teamdokumenthandtering.dokdistfordeling
 DOKDIST_SERVICE_URL: https://dokdistfordeling.prod-fss-pub.nais.io/rest/v1/distribuerjournalpost
 
 PDL_BASE_URL: https://pdl-api.prod-fss-pub.nais.io/graphql

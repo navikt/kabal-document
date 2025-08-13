@@ -44,4 +44,11 @@ class TokenUtil(
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.access_token!!
     }
+
+    fun getAppAccessTokenWithDokdistScope(): String {
+        val clientProperties = clientConfigurationProperties.registration["dokdist-maskintilmaskin"]!!
+        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
+        return response.access_token!!
+    }
+
 }
