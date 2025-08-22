@@ -9,6 +9,7 @@ data class TilknyttVedleggPayload(
 ) {
     data class VedleggReference(
         val kildeJournalpostId: String,
-        val dokumentInfoId: String
+        val dokumentInfoId: String,
+        val rekkefoelde: Int,
     )
 }

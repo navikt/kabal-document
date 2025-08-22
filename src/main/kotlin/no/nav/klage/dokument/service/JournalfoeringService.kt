@@ -51,13 +51,16 @@ class JournalfoeringService(
         val mellomlagretHovedDokument = MellomlagretDokument(
             title = hoveddokument.name,
             file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
-            contentType = MediaType.APPLICATION_PDF
+            contentType = MediaType.APPLICATION_PDF,
+            rekkefoelge = null,
         )
         val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
+            logger.debug("Adding vedlegg to original journalpost with name ${it.name} with rekkefoelde ${it.index}")
             MellomlagretDokument(
                 title = it.name,
                 file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
-                contentType = MediaType.APPLICATION_PDF
+                contentType = MediaType.APPLICATION_PDF,
+                rekkefoelge = it.index,
             )
         }
 
@@ -102,7 +105,7 @@ class JournalfoeringService(
 
             val base64FileInputStream = FileInputStream(base64File)
 
-            journalpostRequestAsFileOutputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"brevkode\":\"$brevkode\",\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+            journalpostRequestAsFileOutputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"brevkode\":\"$brevkode\",\"rekkefoelge\":\"${dokument.rekkefoelge}\",\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
 
             base64FileInputStream.use { input ->
                 val buffer = ByteArray(1024) // Use a buffer size of 1K for example
@@ -157,9 +160,11 @@ class JournalfoeringService(
             journalpostId = journalpostId,
             input = TilknyttVedleggPayload(
                 dokument = journalfoerteVedlegg.map {
+                    logger.debug("Adding vedlegg with dokumentInfoId ${it.dokumentInfoId} to journalpost $journalpostId with rekkefoelde ${it.index}")
                     TilknyttVedleggPayload.VedleggReference(
                         kildeJournalpostId = it.kildeJournalpostId,
-                        dokumentInfoId = it.dokumentInfoId
+                        dokumentInfoId = it.dokumentInfoId,
+                        rekkefoelde = it.index,
                     )
                 }
             )
@@ -191,6 +196,7 @@ class JournalfoeringService(
         val title: String,
         val file: File,
         val contentType: MediaType,
+        val rekkefoelge: Int?,
     )
 
 }
