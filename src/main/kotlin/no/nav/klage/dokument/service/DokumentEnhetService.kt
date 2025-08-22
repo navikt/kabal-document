@@ -251,7 +251,7 @@ class DokumentEnhetService(
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
 
-        var vedleggIndex = 0
+        var vedleggIndex = 1
 
         val vedlegg = input.dokumentreferanser.vedlegg?.map { document ->
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(document, vedleggIndex++)
