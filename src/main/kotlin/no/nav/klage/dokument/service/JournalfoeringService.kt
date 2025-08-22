@@ -55,7 +55,6 @@ class JournalfoeringService(
             rekkefoelge = null,
         )
         val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
-            logger.debug("Adding vedlegg to original journalpost with name ${it.name} with rekkefoelge ${it.index}")
             MellomlagretDokument(
                 title = it.name,
                 file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
