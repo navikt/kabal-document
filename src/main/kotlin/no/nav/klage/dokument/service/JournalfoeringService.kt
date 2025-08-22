@@ -159,7 +159,7 @@ class JournalfoeringService(
             journalpostId = journalpostId,
             input = TilknyttVedleggPayload(
                 dokument = journalfoerteVedlegg.map {
-                    logger.debug("Adding vedlegg with dokumentInfoId ${it.dokumentInfoId} to journalpost $journalpostId with rekkefoelde ${it.index}")
+                    logger.debug("Adding vedlegg with dokumentInfoId ${it.dokumentInfoId} to journalpost $journalpostId with rekkefoelge ${it.index}")
                     TilknyttVedleggPayload.VedleggReference(
                         kildeJournalpostId = it.kildeJournalpostId,
                         dokumentInfoId = it.dokumentInfoId,
