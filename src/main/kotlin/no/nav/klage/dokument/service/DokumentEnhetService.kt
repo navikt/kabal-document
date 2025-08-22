@@ -257,7 +257,7 @@ class DokumentEnhetService(
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(document, vedleggIndex++)
         }?.toSet() ?: emptySet()
         val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map { document ->
-            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, vedleggIndex)
+            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, vedleggIndex++)
         }?.toSet() ?: emptySet()
         val avsenderMottakerDistribusjoner = createAvsenderMottakerDistribusjoner(avsenderMottakere, hovedokument.id)
         return dokumentEnhetRepository.save(
