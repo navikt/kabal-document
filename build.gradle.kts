@@ -3,17 +3,17 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val mockkVersion = "1.14.5"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "5.0.34"
+val tokenValidationVersion = "5.0.36"
 val logstashVersion = "8.1"
 val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "4.0.2"
-val springDocVersion = "2.8.11"
+val springDocVersion = "2.8.13"
 val testContainersVersion = "1.21.3"
 val shedlockVersion = "6.10.0"
 val archunitVersion = "1.4.1"
-val ehcacheVersion = "3.11.0"
-val kodeverkVersion = "1.11.0"
+val ehcacheVersion = "3.11.1"
+val kodeverkVersion = "1.11.6"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -24,7 +24,7 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.2.10"
+    val kotlinVersion = "2.2.20"
     id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
@@ -48,7 +48,7 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
