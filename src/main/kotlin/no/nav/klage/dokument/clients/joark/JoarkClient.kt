@@ -7,6 +7,7 @@ import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
@@ -22,6 +23,7 @@ class JoarkClient(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
+    @Retryable
     fun createJournalpostInJoarkAsSystemUser(
         journalpostRequestAsFile: File,
         journalfoerendeSaksbehandlerIdent: String,
@@ -51,6 +53,7 @@ class JoarkClient(
         return journalpostResponse
     }
 
+    @Retryable
     fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
         joarkWebClient.patch()
             .uri("/${journalpostId}/ferdigstill")
@@ -65,6 +68,7 @@ class JoarkClient(
         logger.debug("Journalpost with id $journalpostId was succesfully finalized.")
     }
 
+    @Retryable
     fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
         val response = joarkWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
@@ -81,6 +85,7 @@ class JoarkClient(
         return response
     }
 
+    @Retryable
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
         try {
             joarkWebClient.put()
