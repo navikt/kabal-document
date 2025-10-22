@@ -1,4 +1,4 @@
-package no.nav.klage.oppgave.clients.ereg
+package no.nav.klage.dokument.clients.ereg
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
@@ -25,8 +25,4 @@ data class NoekkelInfoOmOrganisasjon(
         val postnummer: String?,
         val poststed: String?,
     )
-
-
-    fun isActive() = opphoersdato == null || opphoersdato.isAfter(LocalDate.now())
-    fun isDeltAnsvar() = enhetstype == "DA"
 }

@@ -3,7 +3,6 @@ package no.nav.klage.dokument.clients.ereg
 
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.logErrorResponse
-import no.nav.klage.oppgave.clients.ereg.NoekkelInfoOmOrganisasjon
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.MediaType

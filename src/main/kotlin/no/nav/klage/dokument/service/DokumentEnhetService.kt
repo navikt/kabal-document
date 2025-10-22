@@ -19,7 +19,6 @@ class DokumentEnhetService(
     private val dokumentEnhetInputMapper: DokumentEnhetInputMapper,
     private val journalfoeringService: JournalfoeringService,
     private val dokumentDistribusjonService: DokumentDistribusjonService,
-    private val mellomlagerService: MellomlagerService,
     private val avsenderMottakerDistribusjonRepository: AvsenderMottakerDistribusjonRepository
 
 ) {
