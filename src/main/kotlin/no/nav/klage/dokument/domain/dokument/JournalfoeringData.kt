@@ -4,7 +4,9 @@ import jakarta.persistence.*
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.kodeverk.Fagsystem
+import no.nav.klage.kodeverk.FagsystemConverter
 import no.nav.klage.kodeverk.Tema
+import no.nav.klage.kodeverk.TemaConverter
 import java.time.LocalDate
 import java.util.*
 
