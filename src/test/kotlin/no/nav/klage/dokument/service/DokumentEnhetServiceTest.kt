@@ -182,7 +182,6 @@ internal class DokumentEnhetServiceTest {
         dokumentEnhetInputMapper = dokumentEnhetInputMapper,
         journalfoeringService = journalfoeringService,
         dokumentDistribusjonService = dokumentDistribusjonService,
-        mellomlagerService = mellomlagerService,
         avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository
     )
 

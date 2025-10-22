@@ -138,6 +138,7 @@ enum class FagsaksSystem {
     TILTAKSADMINISTRASJON,
     FIA,
     HELT,
+    UNG_SAK,
 }
 
 enum class ArkivsaksSystem {

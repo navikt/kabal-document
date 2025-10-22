@@ -8,11 +8,3 @@ fun DokumentType.isInngaaende(): Boolean {
         DokumentType.ANNEN_INNGAAENDE_POST
     )
 }
-
-fun DokumentType.isUtgaaende(): Boolean {
-    return this in listOf(
-        DokumentType.BESLUTNING,
-        DokumentType.BREV,
-        DokumentType.VEDTAK,
-    )
-}

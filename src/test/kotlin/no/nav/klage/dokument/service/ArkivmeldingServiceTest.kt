@@ -15,7 +15,7 @@ import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.*
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.util.*
-import no.nav.klage.oppgave.clients.ereg.NoekkelInfoOmOrganisasjon
+import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.xmlunit.builder.Input

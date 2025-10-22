@@ -68,32 +68,6 @@ data class AvsenderMottaker(
     }
 }
 
-data class Utsendingsinfo(
-    val epostVarselSendt: EpostVarselSendt?,
-    val smsVarselSendt: SmsVarselSendt?,
-    val fysiskpostSendt: FysiskpostSendt?,
-    val digitalpostSendt: DigitalpostSendt?,
-) {
-    data class EpostVarselSendt(
-        val tittel: String,
-        val adresse: String,
-        val varslingstekst: String,
-    )
-
-    data class SmsVarselSendt(
-        val adresse: String,
-        val varslingstekst: String,
-    )
-
-    data class FysiskpostSendt(
-        val adressetekstKonvolutt: String,
-    )
-
-    data class DigitalpostSendt(
-        val adresse: String,
-    )
-}
-
 data class RelevantDato(
     val dato: LocalDateTime,
     val datotype: Datotype,
@@ -202,6 +176,7 @@ enum class Tema {
     TSR, //Tilleggsstønad arbeidssøkere
     UFM, //Unntak fra medlemskap
     UFO, //Uføretrygd
+    UNG, //Ungdomsprogramytelsen
     UKJ, //Ukjent
     VEN, //Ventelønn
     YRA, //Yrkesrettet attføring
