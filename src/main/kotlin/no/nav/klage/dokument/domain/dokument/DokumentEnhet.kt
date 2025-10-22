@@ -3,6 +3,7 @@ package no.nav.klage.dokument.domain.dokument
 import jakarta.persistence.*
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.kodeverk.DokumentType
+import no.nav.klage.kodeverk.DokumentTypeConverter
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.Fetch
