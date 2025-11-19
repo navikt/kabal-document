@@ -16,7 +16,7 @@ class WebClientConfig {
 
     @Bean
     fun reactorNettyHttpClient(): HttpClient {
-        val timeoutInSeconds = 1000L
+        val timeoutInSeconds = 200L
         return HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5_000)
             .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
