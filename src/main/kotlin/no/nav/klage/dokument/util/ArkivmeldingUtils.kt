@@ -46,7 +46,7 @@ const val DOKUMENTASJON = "Dokumentasjon"
 const val DOKUMENTET_ER_FERDIGSTILT = "Dokumentet er ferdigstilt"
 const val HOVEDDOKUMENT = "Hoveddokument"
 const val VEDLEGG = "Vedlegg"
-const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s-%s.%s"
+const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s.%s"
 
 fun getOldestDateFromDokumentbeskrivelser(
     dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
@@ -146,9 +146,9 @@ fun getDokumentbeskrivelseReferanseDokumentFil(
         REFERANSE_DOKUMENTFIL_FORMAT,
         newJournalpost.journalpostId,
         dokument.dokumentInfoId,
-        getDokumentbeskrivelseVariantFormat(
-            gjeldendeDokumentVariant
-        ),
+//        getDokumentbeskrivelseVariantFormat(
+//            gjeldendeDokumentVariant
+//        ),
         gjeldendeDokumentVariant.filtype?.name?.lowercase() ?: throw RuntimeException(
             "Klarte ikke mappe filtype til format."
         )
