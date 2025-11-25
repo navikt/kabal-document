@@ -38,7 +38,6 @@ class DokDistFordelingClient(
             tvingSentralPrint = tvingSentralPrint,
             arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
         )
-        logger.debug("payload: {}", payload)
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokdistScope()}")
@@ -75,7 +74,7 @@ class DokDistFordelingClient(
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null,
             forsendelseMetadata = arkivmeldingTilTrygderetten,
-            forsendelseMetadataType = if (arkivmeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_ARKIVMELDING else null,
+            forsendelseMetadataType = if (arkivmeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
 
         )
     }
