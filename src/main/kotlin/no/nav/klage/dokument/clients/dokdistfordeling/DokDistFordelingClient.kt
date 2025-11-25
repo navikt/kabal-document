@@ -70,9 +70,7 @@ class DokDistFordelingClient(
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
-                DistribuerJournalpostRequest.Kanal.TRYGDERETTEN
-            } else if (tvingSentralPrint) {
+            tvingKanal = if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null,
             forsendelseMetadata = arkivmeldingTilTrygderetten,
