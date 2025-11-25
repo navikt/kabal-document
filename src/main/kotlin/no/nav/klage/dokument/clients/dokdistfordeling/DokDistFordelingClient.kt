@@ -38,6 +38,7 @@ class DokDistFordelingClient(
             tvingSentralPrint = tvingSentralPrint,
             arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
         )
+        logger.debug("payload: {}", payload)
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokdistScope()}")
