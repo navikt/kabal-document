@@ -146,9 +146,6 @@ fun getDokumentbeskrivelseReferanseDokumentFil(
         REFERANSE_DOKUMENTFIL_FORMAT,
         newJournalpost.journalpostId,
         dokument.dokumentInfoId,
-//        getDokumentbeskrivelseVariantFormat(
-//            gjeldendeDokumentVariant
-//        ),
         gjeldendeDokumentVariant.filtype?.name?.lowercase() ?: throw RuntimeException(
             "Klarte ikke mappe filtype til format."
         )

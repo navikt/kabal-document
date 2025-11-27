@@ -270,7 +270,6 @@ class AvtalemeldingServiceTest {
         val dokumentobjektHoveddokument =
             avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(PRODUKSJONSFORMAT)
-//        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(PRODUKSJONSFORMAT)
     }
 
     @Test
@@ -305,7 +304,6 @@ class AvtalemeldingServiceTest {
         val dokumentobjektHoveddokument =
             avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(ARKIVFORMAT)
-//        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(ARKIVFORMAT)
     }
 
     @Test
@@ -340,7 +338,6 @@ class AvtalemeldingServiceTest {
         val dokumentobjektHoveddokument =
             avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(ARKIVFORMAT)
-//        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(ARKIVFORMAT)
     }
 
     @Test
@@ -375,9 +372,6 @@ class AvtalemeldingServiceTest {
         val dokumentobjektHoveddokument =
             avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET)
-//        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(
-//            DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET
-//        )
     }
 
     @Test
@@ -638,7 +632,6 @@ class AvtalemeldingServiceTest {
                 REFERANSE_DOKUMENTFIL_FORMAT,
                 JOURNALPOST_ID_1,
                 DOKUMENT_INFO_ID_HOVEDDOK,
-//                DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET,
                 Filtype.PDF.name.lowercase()
             )
         )
@@ -663,7 +656,6 @@ class AvtalemeldingServiceTest {
                 REFERANSE_DOKUMENTFIL_FORMAT,
                 JOURNALPOST_ID_1,
                 DOKUMENT_INFO_ID_VEDLEGG,
-//                ARKIVFORMAT,
                 Filtype.JPEG.name.lowercase()
             )
         )
