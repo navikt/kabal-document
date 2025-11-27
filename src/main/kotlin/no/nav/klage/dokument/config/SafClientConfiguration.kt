@@ -24,7 +24,7 @@ class SafClientConfiguration(private val webClientBuilder: WebClient.Builder) {
                     .codecs(Consumer { codecs: ClientCodecConfigurer? ->
                         codecs!!
                             .defaultCodecs()
-                            .maxInMemorySize(512 * 1024 * 1024)
+                            .maxInMemorySize(16 * 1024 * 1024)
                     })
                     .build()
             )
