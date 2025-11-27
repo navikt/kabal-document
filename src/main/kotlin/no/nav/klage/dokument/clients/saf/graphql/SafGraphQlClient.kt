@@ -94,6 +94,7 @@ class SafGraphQlClient(
             }
             .bodyToMono<DokumentoversiktBrukerResponse>()
             .block()
+            .also { logger.debug("DokumentoversiktBruker response size: ${it?.toString()?.toByteArray()?.size}") }
             ?.let { logErrorsFromSaf(it, brukerId, pageSize, previousPageRef); it }
             ?.let { failOnErrors(it); it }
             ?.data!!.dokumentoversiktBruker.also {
