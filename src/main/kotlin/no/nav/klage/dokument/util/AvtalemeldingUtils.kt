@@ -186,12 +186,12 @@ fun getAMPPart(opprettetAvNavn: String?): Part {
     }
 }
 
-fun marshalArkivmelding(arkivmelding: Arkivmelding): String {
+fun marshalAvtalemelding(avtalemelding: Arkivmelding): String {
     val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     val sw = StringWriter()
-    marshaller.marshal(arkivmelding, sw)
+    marshaller.marshal(avtalemelding, sw)
 
     return sw.toString()
 }

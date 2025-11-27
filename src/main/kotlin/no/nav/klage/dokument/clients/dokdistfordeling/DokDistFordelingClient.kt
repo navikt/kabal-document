@@ -28,7 +28,7 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         adresse: Adresse?,
         tvingSentralPrint: Boolean,
-        arkivmeldingTilTrygderetten: String?,
+        avtalemeldingTilTrygderetten: String?,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = mapToDistribuerJournalpostRequest(
@@ -36,7 +36,7 @@ class DokDistFordelingClient(
             dokumentType = dokumentType,
             adresse = adresse,
             tvingSentralPrint = tvingSentralPrint,
-            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
+            avtalemeldingTilTrygderetten = avtalemeldingTilTrygderetten,
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
@@ -61,7 +61,7 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
-        arkivmeldingTilTrygderetten: String?,
+        avtalemeldingTilTrygderetten: String?,
     ): DistribuerJournalpostRequest {
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
@@ -73,8 +73,8 @@ class DokDistFordelingClient(
             tvingKanal = if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null,
-            forsendelseMetadata = arkivmeldingTilTrygderetten,
-            forsendelseMetadataType = if (arkivmeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
+            forsendelseMetadata = avtalemeldingTilTrygderetten,
+            forsendelseMetadataType = if (avtalemeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
 
         )
     }

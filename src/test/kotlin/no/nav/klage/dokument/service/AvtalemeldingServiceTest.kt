@@ -28,7 +28,7 @@ import java.time.Month
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as ArkivJournalpost
 import no.nav.klage.kodeverk.Tema as KodeverkTema
 
-class ArkivmeldingServiceTest {
+class AvtalemeldingServiceTest {
 
     val safGraphQlClient = mockk<SafGraphQlClient>()
     val pdlClient = mockk<PdlClient>()
@@ -76,7 +76,7 @@ class ArkivmeldingServiceTest {
     val PDL_ETTERNAVN = "Betjent"
     val PDL_SAMMENSATT_NAVN = "Bjarne Betjent"
 
-    val arkivmeldingService = ArkivmeldingService(
+    val avtalemeldingService = AvtalemeldingService(
         safGraphQlClient = safGraphQlClient,
         applicationName = "test",
         pdlClient = pdlClient,
@@ -95,7 +95,7 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmeldingXml = arkivmeldingService.generateMarshalledArkivmelding(
+        val avtalemeldingXml = avtalemeldingService.generateMarshalledAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -106,12 +106,12 @@ class ArkivmeldingServiceTest {
             Input.fromStream(javaClass.getResourceAsStream("/schema/arkivmelding.xsd")).build()
         )
 
-        val validationResult: ValidationResult? = v.validateInstance(Input.fromString(arkivmeldingXml).build())
+        val validationResult: ValidationResult? = v.validateInstance(Input.fromString(avtalemeldingXml).build())
         assertThat(validationResult?.isValid).isTrue
     }
 
     @Test
-    fun `input with no external journalpost reference generates expected arkivmelding`() {
+    fun `input with no external journalpost reference generates expected avtalemelding`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = null, originalJournalpostIdForVedlegg = null
         )
@@ -122,12 +122,12 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(arkivmelding = arkivmelding)
+        assertAvtalemelding(avtalemelding = avtalemelding)
         verify(exactly = 1) {
             safGraphQlClient.getJournalpostAsSystembruker(JOURNALPOST_ID_1)
         }
@@ -143,7 +143,7 @@ class ArkivmeldingServiceTest {
     }
 
     @Test
-    fun `input where bruker is organization, with no external journalpost reference, generates expected arkivmelding`() {
+    fun `input where bruker is organization, with no external journalpost reference, generates expected avtalemelding`() {
         val journalpost1 = getJournalpost(
             brukerOrgNummer = BRUKER_ID_ORGNR, originalJournalpostIdForVedlegg = null
         )
@@ -155,12 +155,12 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(arkivmelding = arkivmelding, brukerIsOrganisasjon = true)
+        assertAvtalemelding(avtalemelding = avtalemelding, brukerIsOrganisasjon = true)
         verify(exactly = 1) {
             safGraphQlClient.getJournalpostAsSystembruker(JOURNALPOST_ID_1)
         }
@@ -188,13 +188,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         assertDokumentbeskrivelseVedlegg(
-            dokumentbeskrivelseVedlegg = arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
+            dokumentbeskrivelseVedlegg = avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
             vedleggJournalpostType = Journalposttype.I,
             vedleggIsFromDifferentJournalpost = true
         )
@@ -226,13 +226,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         assertDokumentbeskrivelseVedlegg(
-            dokumentbeskrivelseVedlegg = arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
+            dokumentbeskrivelseVedlegg = avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.last(),
             vedleggJournalpostType = Journalposttype.U,
             vedleggIsFromDifferentJournalpost = true
         )
@@ -262,13 +262,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         val dokumentobjektHoveddokument =
-            arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
+            avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(PRODUKSJONSFORMAT)
 //        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(PRODUKSJONSFORMAT)
     }
@@ -297,13 +297,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         val dokumentobjektHoveddokument =
-            arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
+            avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(ARKIVFORMAT)
 //        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(ARKIVFORMAT)
     }
@@ -332,13 +332,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         val dokumentobjektHoveddokument =
-            arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
+            avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(ARKIVFORMAT)
 //        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(ARKIVFORMAT)
     }
@@ -367,13 +367,13 @@ class ArkivmeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
         val dokumentobjektHoveddokument =
-            arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
+            avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.first().dokumentobjekt.first()
         assertThat(dokumentobjektHoveddokument.variantformat).isEqualTo(DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET)
 //        assertThat(dokumentobjektHoveddokument.referanseDokumentfil).contains(
 //            DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET
@@ -392,13 +392,13 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertArkivmelding(
-            arkivmelding = arkivmelding,
+        assertAvtalemelding(
+            avtalemelding = avtalemelding,
         )
     }
 
@@ -416,13 +416,13 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
 
-        assertThat(arkivmelding.antallFiler).isEqualTo(1)
-        assertThat(arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse).hasSize(1)
+        assertThat(avtalemelding.antallFiler).isEqualTo(1)
+        assertThat(avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse).hasSize(1)
     }
 
     @Test
@@ -437,12 +437,12 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
         )
 
-        assertThat(arkivmelding.mappe.first().registrering.first().dokumentbeskrivelse.last().opprettetAv).isEqualTo(
+        assertThat(avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.last().opprettetAv).isEqualTo(
             UKJENT
         )
     }
@@ -474,27 +474,27 @@ class ArkivmeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val arkivmelding = arkivmeldingService.generateArkivmelding(
+        val avtalemelding = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
         )
 
-        assertThat(arkivmelding.mappe.first().opprettetDato).isEqualTo(
+        assertThat(avtalemelding.mappe.first().opprettetDato).isEqualTo(
             convertLocalDateTimeToXmlGregorianCalendar(
                 femDagerSiden
             )
         )
     }
 
-    private fun assertArkivmelding(
-        arkivmelding: Arkivmelding, brukerIsOrganisasjon: Boolean = false,
+    private fun assertAvtalemelding(
+        avtalemelding: Arkivmelding, brukerIsOrganisasjon: Boolean = false,
     ) {
-        assertThat(arkivmelding.meldingId).isEqualTo(BESTILLINGS_ID)
-        assertThat(arkivmelding.tidspunkt).isNotNull
-        assertThat(arkivmelding.antallFiler).isEqualTo(2)
-        assertThat(arkivmelding.mappe).hasSize(1)
+        assertThat(avtalemelding.meldingId).isEqualTo(BESTILLINGS_ID)
+        assertThat(avtalemelding.tidspunkt).isNotNull
+        assertThat(avtalemelding.antallFiler).isEqualTo(2)
+        assertThat(avtalemelding.mappe).hasSize(1)
         assertSaksmappe(
-            saksmappe = arkivmelding.mappe.first() as Saksmappe,
+            saksmappe = avtalemelding.mappe.first() as Saksmappe,
             brukerIsOrganisasjon = brukerIsOrganisasjon,
         )
     }
