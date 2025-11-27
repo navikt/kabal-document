@@ -182,7 +182,8 @@ internal class DokumentEnhetServiceTest {
         dokumentEnhetInputMapper = dokumentEnhetInputMapper,
         journalfoeringService = journalfoeringService,
         dokumentDistribusjonService = dokumentDistribusjonService,
-        avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository
+        avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository,
+        organisasjonsnummerTrygderetten = "123456789",
     )
 
     @BeforeEach
@@ -230,6 +231,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         } returns UUID.randomUUID()
     }
@@ -281,6 +283,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
         verify(exactly = 1) {
@@ -290,6 +293,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
     }
@@ -327,6 +331,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
     }
@@ -378,6 +383,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
     }
@@ -413,6 +419,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
         verify(exactly = 1) {
@@ -422,6 +429,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
     }
@@ -446,6 +454,7 @@ internal class DokumentEnhetServiceTest {
                 tvingSentralPrint = any(),
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
             )
         }
     }

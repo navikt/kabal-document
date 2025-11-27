@@ -27,8 +27,9 @@ class DokumentDistribusjonService(
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
         avsenderMottakerDistribusjonId: UUID,
+        mottakerIsTrygderetten: Boolean,
     ): UUID {
-        val avtalemelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+        val avtalemelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten) {
             avtalemeldingService.generateMarshalledAvtalemelding(
                 journalpostId = journalpostId,
                 bestillingsId = avsenderMottakerDistribusjonId.toString(),
@@ -47,6 +48,7 @@ class DokumentDistribusjonService(
             tvingSentralPrint = tvingSentralPrint,
             adresse = adresse?.toDokDistAdresse(),
             avtalemeldingTilTrygderetten = avtalemelding,
+            mottakerIsTrygderetten = mottakerIsTrygderetten,
         ).bestillingsId
     }
 

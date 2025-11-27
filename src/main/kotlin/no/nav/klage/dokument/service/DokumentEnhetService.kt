@@ -9,6 +9,7 @@ import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
@@ -19,9 +20,9 @@ class DokumentEnhetService(
     private val dokumentEnhetInputMapper: DokumentEnhetInputMapper,
     private val journalfoeringService: JournalfoeringService,
     private val dokumentDistribusjonService: DokumentDistribusjonService,
-    private val avsenderMottakerDistribusjonRepository: AvsenderMottakerDistribusjonRepository
-
-) {
+    private val avsenderMottakerDistribusjonRepository: AvsenderMottakerDistribusjonRepository,
+    @Value("\${ORGANISASJONSNUMMER_TRYGDERETTEN}") private val organisasjonsnummerTrygderetten: String,
+    ) {
 
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -163,6 +164,7 @@ class DokumentEnhetService(
                                     tvingSentralPrint = avsenderMottakerDistribusjon.avsenderMottaker.tvingSentralPrint,
                                     adresse = avsenderMottakerDistribusjon.avsenderMottaker.adresse,
                                     avsenderMottakerDistribusjonId = avsenderMottakerDistribusjon.id,
+                                    mottakerIsTrygderetten = avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten
                                 )
                             avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                             avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
