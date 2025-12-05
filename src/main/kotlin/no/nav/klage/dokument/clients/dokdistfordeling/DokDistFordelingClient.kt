@@ -12,7 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class DokDistFordelingClient(
     private val dokDistWebClient: WebClient,
-    private val tokenUtil: TokenUtil
+    private val tokenUtil: TokenUtil,
+    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -66,6 +67,8 @@ class DokDistFordelingClient(
         avtalemeldingTilTrygderetten: String?,
         mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostRequest {
+        //TODO: Remvoe when in use in prod
+        val avtaleMeldingIsEnabled = activeSpringProfile == "dev-gcp"
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
             bestillendeFagsystem = applicationName,
@@ -76,9 +79,8 @@ class DokDistFordelingClient(
             tvingKanal = if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null,
-            forsendelseMetadata = avtalemeldingTilTrygderetten,
-            forsendelseMetadataType = if (avtalemeldingTilTrygderetten != null && mottakerIsTrygderetten) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
-
+            forsendelseMetadata = if (avtaleMeldingIsEnabled) avtalemeldingTilTrygderetten else null,
+            forsendelseMetadataType = if (avtaleMeldingIsEnabled && avtalemeldingTilTrygderetten != null && mottakerIsTrygderetten) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
         )
     }
 }
