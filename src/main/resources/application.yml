@@ -24,7 +24,7 @@ spring:
       max-request-size: 1MB
       max-file-size: 1MB
   codec:
-    max-in-memory-size: 300MB
+    max-in-memory-size: 512MB
   sql:
     init:
       platform: postgresql
@@ -115,3 +115,5 @@ no.nav.security.jwt:
 
 KABAL_FILE_API_BASE_URL: http://kabal-file-api
 KABAL_FILE_API_APP_NAME: kabal-file-api
+
+ORGANISASJONSNUMMER_TRYGDERETTEN: 974761084

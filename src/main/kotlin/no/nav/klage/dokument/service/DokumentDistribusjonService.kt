@@ -12,7 +12,7 @@ import java.util.*
 @Service
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
-    private val arkivmeldingService: ArkivmeldingService,
+    private val avtalemeldingService: AvtalemeldingService,
     @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
 ) {
 
@@ -27,9 +27,10 @@ class DokumentDistribusjonService(
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
         avsenderMottakerDistribusjonId: UUID,
+        mottakerIsTrygderetten: Boolean,
     ): UUID {
-        val arkivmelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
-            arkivmeldingService.generateMarshalledArkivmelding(
+        val avtalemelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten) {
+            avtalemeldingService.generateMarshalledAvtalemelding(
                 journalpostId = journalpostId,
                 bestillingsId = avsenderMottakerDistribusjonId.toString(),
             )
@@ -38,7 +39,7 @@ class DokumentDistribusjonService(
         }
 
         if (activeSpringProfile == "dev-gcp" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
-            logger.debug("Arkivmelding for journalpost $journalpostId: $arkivmelding")
+            logger.debug("Avtalemelding for journalpost $journalpostId: $avtalemelding")
         }
 
         return dokDistFordelingClient.distribuerJournalpost(
@@ -46,7 +47,8 @@ class DokumentDistribusjonService(
             dokumentType = dokumentType,
             tvingSentralPrint = tvingSentralPrint,
             adresse = adresse?.toDokDistAdresse(),
-            arkivmeldingTilTrygderetten = arkivmelding,
+            avtalemeldingTilTrygderetten = avtalemelding,
+            mottakerIsTrygderetten = mottakerIsTrygderetten,
         ).bestillingsId
     }
 

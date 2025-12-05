@@ -84,7 +84,7 @@ data class DokumentInfo(
     val datoFerdigstilt: LocalDateTime?,
     val originalJournalpostId: String?,
 ) {
-    fun isFerdigstiltForArkivmelding(): Boolean {
+    fun isFerdigstiltForAvtalemelding(): Boolean {
         return dokumentstatus == Dokumentstatus.FERDIGSTILT || dokumentstatus == null
     }
 }

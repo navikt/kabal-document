@@ -12,12 +12,12 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class DokDistFordelingClient(
     private val dokDistWebClient: WebClient,
-    private val tokenUtil: TokenUtil
+    private val tokenUtil: TokenUtil,
+    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        const val EKSPEDISJONSBREV_ENABLED = false
     }
 
     @Value("\${spring.application.name}")
@@ -29,7 +29,8 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         adresse: Adresse?,
         tvingSentralPrint: Boolean,
-        arkivmeldingTilTrygderetten: String?,
+        avtalemeldingTilTrygderetten: String?,
+        mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = mapToDistribuerJournalpostRequest(
@@ -37,7 +38,8 @@ class DokDistFordelingClient(
             dokumentType = dokumentType,
             adresse = adresse,
             tvingSentralPrint = tvingSentralPrint,
-            arkivmeldingTilTrygderetten = arkivmeldingTilTrygderetten,
+            avtalemeldingTilTrygderetten = avtalemeldingTilTrygderetten,
+            mottakerIsTrygderetten = mottakerIsTrygderetten,
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
@@ -62,8 +64,11 @@ class DokDistFordelingClient(
         dokumentType: DokumentType,
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
-        arkivmeldingTilTrygderetten: String?,
+        avtalemeldingTilTrygderetten: String?,
+        mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostRequest {
+        //TODO: Remvoe when in use in prod
+        val avtaleMeldingIsEnabled = activeSpringProfile == "dev-gcp"
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
             bestillendeFagsystem = applicationName,
@@ -71,11 +76,11 @@ class DokDistFordelingClient(
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && EKSPEDISJONSBREV_ENABLED) {
-                DistribuerJournalpostRequest.Kanal.TRYGDERETTEN
-            } else if (tvingSentralPrint) {
+            tvingKanal = if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
-            } else null
+            } else null,
+            forsendelseMetadata = if (avtaleMeldingIsEnabled) avtalemeldingTilTrygderetten else null,
+            forsendelseMetadataType = if (avtaleMeldingIsEnabled && avtalemeldingTilTrygderetten != null && mottakerIsTrygderetten) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
         )
     }
 }

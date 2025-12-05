@@ -13,10 +13,17 @@ data class DistribuerJournalpostRequest(
     val distribusjonstidspunkt: Distribusjonstidspunkt,
     val adresse: Adresse?,
     val tvingKanal: Kanal?,
+    val forsendelseMetadata: String?,
+    val forsendelseMetadataType: ForsendelseMetadataType?,
 ) {
     enum class Kanal {
         PRINT,
         TRYGDERETTEN
+    }
+
+    enum class ForsendelseMetadataType {
+        DPO_ARKIVMELDING,
+        DPO_AVTALEMELDING
     }
 }
 

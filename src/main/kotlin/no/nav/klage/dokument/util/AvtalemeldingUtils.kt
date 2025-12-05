@@ -46,7 +46,7 @@ const val DOKUMENTASJON = "Dokumentasjon"
 const val DOKUMENTET_ER_FERDIGSTILT = "Dokumentet er ferdigstilt"
 const val HOVEDDOKUMENT = "Hoveddokument"
 const val VEDLEGG = "Vedlegg"
-const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s-%s.%s"
+const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s.%s"
 
 fun getOldestDateFromDokumentbeskrivelser(
     dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
@@ -146,9 +146,6 @@ fun getDokumentbeskrivelseReferanseDokumentFil(
         REFERANSE_DOKUMENTFIL_FORMAT,
         newJournalpost.journalpostId,
         dokument.dokumentInfoId,
-        getDokumentbeskrivelseVariantFormat(
-            gjeldendeDokumentVariant
-        ),
         gjeldendeDokumentVariant.filtype?.name?.lowercase() ?: throw RuntimeException(
             "Klarte ikke mappe filtype til format."
         )
@@ -186,12 +183,12 @@ fun getAMPPart(opprettetAvNavn: String?): Part {
     }
 }
 
-fun marshalArkivmelding(arkivmelding: Arkivmelding): String {
+fun marshalAvtalemelding(avtalemelding: Arkivmelding): String {
     val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     val sw = StringWriter()
-    marshaller.marshal(arkivmelding, sw)
+    marshaller.marshal(avtalemelding, sw)
 
     return sw.toString()
 }

@@ -16,10 +16,10 @@ import kotlin.collections.List
 import kotlin.collections.find
 import kotlin.collections.firstOrNull
 import kotlin.collections.mapNotNull
-import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as ArkivmeldingJournalpost
+import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as AvtalemeldingJournalpost
 
 @Service
-class ArkivmeldingService(
+class AvtalemeldingService(
     private val safGraphQlClient: SafGraphQlClient,
     @Value("\${spring.application.name}")
     private val applicationName: String,
@@ -32,42 +32,43 @@ class ArkivmeldingService(
 
     }
 
-    fun generateMarshalledArkivmelding(
+    fun generateMarshalledAvtalemelding(
         journalpostId: String,
         bestillingsId: String
     ): String {
         return try {
-            marshalArkivmelding(
-                generateArkivmelding(
+            marshalAvtalemelding(
+                generateAvtalemelding(
                     journalpostId = journalpostId,
                     bestillingsId = bestillingsId,
                 )
             )
         } catch (e: Exception) {
-            logger.error("Failed to generate arkivmelding for journalpost $journalpostId", e)
+            logger.error("Failed to generate avtalemelding for journalpost $journalpostId", e)
             throw e
         }
     }
 
-    fun generateArkivmelding(journalpostId: String, bestillingsId: String): Arkivmelding {
+    //Avtalemelding er en utvidet versjon av arkivmelding
+    fun generateAvtalemelding(journalpostId: String, bestillingsId: String): Arkivmelding {
         val journalpost = getJournalpost(journalpostId = journalpostId)
-        val datoArkivmeldingOpprettet = getNow()
+        val datoAvtalemeldingOpprettet = getNow()
 
-        val arkivmelding = Arkivmelding()
-        arkivmelding.system = applicationName
-        arkivmelding.meldingId = bestillingsId
-        arkivmelding.tidspunkt = datoArkivmeldingOpprettet
-        arkivmelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForArkivmelding() }?.size ?: throw RuntimeException("No files in journalpost")
+        val avtalemelding = Arkivmelding()
+        avtalemelding.system = applicationName
+        avtalemelding.meldingId = bestillingsId
+        avtalemelding.tidspunkt = datoAvtalemeldingOpprettet
+        avtalemelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForAvtalemelding() }?.size ?: throw RuntimeException("No files in journalpost")
 
         val dokumentBeskrivelser = getDokumentbeskrivelser(
             dokumenter = journalpost.dokumenter,
-            datoArkivmeldingOpprettet = datoArkivmeldingOpprettet,
+            datoAvtalemeldingOpprettet = datoAvtalemeldingOpprettet,
             newJournalpost = journalpost,
         )
 
-        arkivmelding.mappe.add(getSaksmappe(journalpost = journalpost, dokumentBeskrivelser = dokumentBeskrivelser))
+        avtalemelding.mappe.add(getSaksmappe(journalpost = journalpost, dokumentBeskrivelser = dokumentBeskrivelser))
 
-        return arkivmelding
+        return avtalemelding
     }
 
     private fun getSaksmappe(journalpost: Journalpost, dokumentBeskrivelser: Collection<Dokumentbeskrivelse>): Saksmappe {
@@ -89,7 +90,7 @@ class ArkivmeldingService(
             journalenhet = journalpost.journalforendeEnhet
             saksstatus = UNDER_BEHANDLING
             registrering.add(
-                getArkivmeldingJournalpost(
+                getAvtalemeldingJournalpost(
                     journalpost = journalpost,
                     dokumentBeskrivelser = dokumentBeskrivelser
                 )
@@ -97,11 +98,11 @@ class ArkivmeldingService(
         }
     }
 
-    private fun getArkivmeldingJournalpost(
+    private fun getAvtalemeldingJournalpost(
         journalpost: Journalpost,
         dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
-    ): ArkivmeldingJournalpost {
-        return ArkivmeldingJournalpost().apply {
+    ): AvtalemeldingJournalpost {
+        return AvtalemeldingJournalpost().apply {
             opprettetDato = convertLocalDateTimeToXmlGregorianCalendar(journalpost.datoOpprettet)
             opprettetAv = journalpost.opprettetAvNavn
             tittel = journalpost.tittel
@@ -137,7 +138,7 @@ class ArkivmeldingService(
 
     private fun getDokumentbeskrivelser(
         dokumenter: List<DokumentInfo>,
-        datoArkivmeldingOpprettet: XMLGregorianCalendar?,
+        datoAvtalemeldingOpprettet: XMLGregorianCalendar?,
         newJournalpost: Journalpost,
     ): Collection<Dokumentbeskrivelse> {
         val bruker = newJournalpost.bruker
@@ -156,7 +157,7 @@ class ArkivmeldingService(
         var index = 1
 
         val output = dokumenter.mapNotNull { dokumentInfo ->
-            if (dokumentInfo.isFerdigstiltForArkivmelding()) {
+            if (dokumentInfo.isFerdigstiltForAvtalemelding()) {
                 val dokumentIsFromOldJournalpost = dokumentInfo.originalJournalpostId != null
 
                 val originalJournalpost = if (dokumentIsFromOldJournalpost) {
@@ -187,7 +188,7 @@ class ArkivmeldingService(
                         VEDLEGG
                     }
                     dokumentnummer = BigInteger.valueOf(index.toLong())
-                    tilknyttetDato = datoArkivmeldingOpprettet
+                    tilknyttetDato = datoAvtalemeldingOpprettet
                     tilknyttetAv = newJournalpost.journalfortAvNavn
                     dokumentobjekt.add(
                         getDokumentobjekt(
