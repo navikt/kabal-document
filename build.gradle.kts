@@ -1,19 +1,19 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.14.5"
+val mockkVersion = "1.14.6"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "5.0.36"
-val logstashVersion = "8.1"
+val tokenValidationVersion = "6.0.0"
+val logstashVersion = "9.0"
 val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "4.0.2"
-val springDocVersion = "2.8.13"
+val springDocVersion = "3.0.0"
 val testContainersVersion = "1.21.3"
-val shedlockVersion = "6.10.0"
+val shedlockVersion = "7.2.0"
 val archunitVersion = "1.4.1"
 val ehcacheVersion = "3.11.1"
-val kodeverkVersion = "1.11.18"
+val kodeverkVersion = "1.12.13"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -24,8 +24,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.2.20"
-    id("org.springframework.boot") version "3.5.8"
+    val kotlinVersion = "2.2.21"
+    id("org.springframework.boot") version "4.0.0"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
@@ -49,7 +49,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
-    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.5")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.6")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
