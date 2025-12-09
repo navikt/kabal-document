@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.repositories
 
-import no.nav.klage.dokument.db.TestPostgresqlContainer
+import no.nav.klage.dokument.db.PostgresIntegrationTestBase
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
@@ -9,27 +9,16 @@ import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.transaction.annotation.Transactional
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles("local")
 @DataJpaTest
-@Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class DokumentEnhetRepositoryTest {
-
-    companion object {
-        @Container
-        @JvmField
-        val postgreSQLContainer: TestPostgresqlContainer = TestPostgresqlContainer.instance
-    }
+class DokumentEnhetRepositoryTest: PostgresIntegrationTestBase() {
 
     @Autowired
     lateinit var testEntityManager: TestEntityManager
@@ -50,7 +39,6 @@ class DokumentEnhetRepositoryTest {
     }
 
     @Test
-    @Transactional
     fun `update child property works as expected`() {
         val dokumentEnhet = dokumentEnhet
         dokumentEnhet.avsenderMottakerDistribusjoner = setOf(
