@@ -52,6 +52,7 @@
                 level="warning"/>
 
         <logger name="org.hibernate.SQL_SLOW" level="debug"/>
+        <logger name="org.hibernate.orm.connections.pooling" level="warn"/>
 
     </springProfile>
 

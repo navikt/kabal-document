@@ -6,8 +6,6 @@ spring:
   web:
     resources:
       add-mappings: false
-  mvc:
-    throw-exception-if-no-handler-found: true
   datasource:
     url: jdbc:postgresql://${NAIS_DATABASE_KABAL_DOCUMENT_KABAL_DOCUMENT_HOST}:${NAIS_DATABASE_KABAL_DOCUMENT_KABAL_DOCUMENT_PORT}/${NAIS_DATABASE_KABAL_DOCUMENT_KABAL_DOCUMENT_DATABASE}
     username: ${NAIS_DATABASE_KABAL_DOCUMENT_KABAL_DOCUMENT_USERNAME}
@@ -15,8 +13,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true
-    clean-on-validation-error: false
     schemas: flyway_history_schema,document
+    clean-disabled: true
   lifecycle:
     timeout-per-shutdown-phase: 20s
   servlet:

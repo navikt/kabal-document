@@ -9,7 +9,7 @@ val unleashVersion = "3.3.3"
 val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.0"
-val testContainersVersion = "1.21.3"
+val testContainersVersion = "2.0.2"
 val shedlockVersion = "7.2.1"
 val archunitVersion = "1.4.1"
 val ehcacheVersion = "3.11.1"
@@ -42,9 +42,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
@@ -58,7 +57,6 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
 
-    implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("com.zaxxer:HikariCP")
     implementation("org.postgresql:postgresql")
@@ -81,9 +79,13 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
-    testImplementation("org.testcontainers:postgresql:$testContainersVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test") {
+        exclude(group = "org.junit.vintage")
+        exclude(group = "org.mockito")
+    }
+    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:${testContainersVersion}")
+    testImplementation("org.testcontainers:testcontainers-postgresql:${testContainersVersion}")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
 }
 
