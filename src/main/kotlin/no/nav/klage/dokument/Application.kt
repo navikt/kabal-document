@@ -3,7 +3,7 @@ package no.nav.klage.dokument
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication()
+@SpringBootApplication
 class Application
 
 fun main() {
