@@ -14,6 +14,8 @@ db_tier: db-f1-micro
 db_size: 10
 db_ha: false
 db_type: POSTGRES_15
+replicasMin: 2
+replicasMax: 2
 envs:
   - name: JAVA_OPTS
     value: "-Xms512m -Xmx2048m"
