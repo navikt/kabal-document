@@ -6,7 +6,6 @@ val h2Version = "1.4.200"
 val tokenValidationVersion = "6.0.0"
 val logstashVersion = "9.0"
 val unleashVersion = "3.3.3"
-val springRetryVersion = "2.0.12"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.0"
 val testContainersVersion = "2.0.2"
@@ -25,7 +24,7 @@ repositories {
 
 plugins {
     val kotlinVersion = "2.2.21"
-    id("org.springframework.boot") version "4.0.0"
+    id("org.springframework.boot") version "4.0.1"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
@@ -69,8 +68,6 @@ dependencies {
 
     implementation("no.nav.security:token-validation-spring:$tokenValidationVersion")
     implementation("no.nav.security:token-client-spring:$tokenValidationVersion")
-
-    implementation("org.springframework.retry:spring-retry:$springRetryVersion")
 
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")

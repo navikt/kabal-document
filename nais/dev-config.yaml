@@ -8,7 +8,7 @@ externalHosts:
   - host: dokdistfordeling.dev-fss-pub.nais.io
   - host: dokarkiv-q2.dev-fss-pub.nais.io
   - host: saf-q2.dev-fss-pub.nais.io
-springProfile: dev-gcp
+springProfile: dev
 tenant: trygdeetaten.no
 db_tier: db-f1-micro
 db_size: 10

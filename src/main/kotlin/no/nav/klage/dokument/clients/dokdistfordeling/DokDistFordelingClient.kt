@@ -5,7 +5,7 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
-import org.springframework.retry.annotation.Retryable
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 

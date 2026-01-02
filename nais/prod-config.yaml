@@ -8,7 +8,7 @@ externalHosts:
   - host: dokdistfordeling.prod-fss-pub.nais.io
   - host: dokarkiv.prod-fss-pub.nais.io
   - host: saf.prod-fss-pub.nais.io
-springProfile: prod-gcp
+springProfile: prod
 tenant: nav.no
 db_tier: db-custom-1-3840
 db_size: 10
