@@ -38,7 +38,7 @@ class DokumentDistribusjonService(
             null
         }
 
-        if (activeSpringProfile == "dev-gcp" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
+        if (activeSpringProfile == "dev" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
             logger.debug("Avtalemelding for journalpost $journalpostId: $avtalemelding")
         }
 

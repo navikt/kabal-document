@@ -68,7 +68,7 @@ class DokDistFordelingClient(
         mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostRequest {
         //TODO: Remvoe when in use in prod
-        val avtaleMeldingIsEnabled = activeSpringProfile == "dev-gcp"
+        val avtaleMeldingIsEnabled = activeSpringProfile == "dev"
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
             bestillendeFagsystem = applicationName,
