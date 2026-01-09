@@ -14,3 +14,8 @@ PDL_SCOPE: prod-fss.pdl.pdl-api
 
 EREG_URL: https://ereg-services.prod-fss-pub.nais.io/api/v2
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
