@@ -14,6 +14,7 @@ val archunitVersion = "1.4.1"
 val ehcacheVersion = "3.11.1"
 val kodeverkVersion = "1.12.18"
 val syslog4jVersion = "1.0.0"
+val unleashedVersion = "11.2.1"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -45,6 +46,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
+
+    implementation("io.getunleash:unleash-client-java:${unleashedVersion}")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     implementation("org.glassfish.jaxb:jaxb-runtime:4.0.6")
@@ -95,7 +98,7 @@ idea {
 tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
-        freeCompilerArgs = listOf("-Xjsr305=strict")
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
 }
 
