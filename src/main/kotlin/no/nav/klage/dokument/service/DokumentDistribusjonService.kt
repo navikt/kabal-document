@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.service
 
+import io.getunleash.Unleash
 import no.nav.klage.dokument.clients.dokdistfordeling.Adressetype
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.domain.dokument.Adresse
@@ -13,7 +14,8 @@ import java.util.*
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
     private val avtalemeldingService: AvtalemeldingService,
-    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
+    @Value($$"${spring.profiles.active:}") private val activeSpringProfile: String,
+    private val unleash: Unleash,
 ) {
 
     companion object {
@@ -29,18 +31,17 @@ class DokumentDistribusjonService(
         avsenderMottakerDistribusjonId: UUID,
         mottakerIsTrygderetten: Boolean,
     ): UUID {
-        val avtalemelding = if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten) {
-            avtalemeldingService.generateMarshalledAvtalemelding(
-                journalpostId = journalpostId,
-                bestillingsId = avsenderMottakerDistribusjonId.toString(),
-            )
-        } else {
-            null
-        }
-
-        if (activeSpringProfile == "dev" && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN) {
-            logger.debug("Avtalemelding for journalpost $journalpostId: $avtalemelding")
-        }
+        val avtalemelding =
+            if (unleash.isEnabled("createEkspedisjonsbrevToTR") && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten) {
+                val avtalemelding = avtalemeldingService.generateMarshalledAvtalemelding(
+                    journalpostId = journalpostId,
+                    bestillingsId = avsenderMottakerDistribusjonId.toString(),
+                )
+                if (activeSpringProfile == "dev") {
+                    logger.debug("Avtalemelding for journalpost $journalpostId: $avtalemelding")
+                }
+                avtalemelding
+            } else null
 
         return dokDistFordelingClient.distribuerJournalpost(
             journalpostId = journalpostId,
@@ -48,7 +49,6 @@ class DokumentDistribusjonService(
             tvingSentralPrint = tvingSentralPrint,
             adresse = adresse?.toDokDistAdresse(),
             avtalemeldingTilTrygderetten = avtalemelding,
-            mottakerIsTrygderetten = mottakerIsTrygderetten,
         ).bestillingsId
     }
 

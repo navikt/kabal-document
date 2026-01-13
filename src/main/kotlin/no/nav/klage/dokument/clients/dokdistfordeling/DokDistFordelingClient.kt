@@ -13,15 +13,13 @@ import org.springframework.web.reactive.function.client.WebClient
 class DokDistFordelingClient(
     private val dokDistWebClient: WebClient,
     private val tokenUtil: TokenUtil,
-    @Value("\${spring.profiles.active:}") private val activeSpringProfile: String,
+    @Value($$"${spring.application.name}")
+    private val applicationName: String,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
-
-    @Value("\${spring.application.name}")
-    lateinit var applicationName: String
 
     @Retryable
     fun distribuerJournalpost(
@@ -30,7 +28,6 @@ class DokDistFordelingClient(
         adresse: Adresse?,
         tvingSentralPrint: Boolean,
         avtalemeldingTilTrygderetten: String?,
-        mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
         val payload = mapToDistribuerJournalpostRequest(
@@ -39,7 +36,6 @@ class DokDistFordelingClient(
             adresse = adresse,
             tvingSentralPrint = tvingSentralPrint,
             avtalemeldingTilTrygderetten = avtalemeldingTilTrygderetten,
-            mottakerIsTrygderetten = mottakerIsTrygderetten,
         )
         val distribuerJournalpostResponse = dokDistWebClient.post()
             .header("Nav-Consumer-Id", applicationName)
@@ -65,10 +61,7 @@ class DokDistFordelingClient(
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
         avtalemeldingTilTrygderetten: String?,
-        mottakerIsTrygderetten: Boolean,
     ): DistribuerJournalpostRequest {
-        //TODO: Remvoe when in use in prod
-        val avtaleMeldingIsEnabled = activeSpringProfile == "dev"
         return DistribuerJournalpostRequest(
             journalpostId = journalpostId,
             bestillendeFagsystem = applicationName,
@@ -79,8 +72,8 @@ class DokDistFordelingClient(
             tvingKanal = if (tvingSentralPrint) {
                 DistribuerJournalpostRequest.Kanal.PRINT
             } else null,
-            forsendelseMetadata = if (avtaleMeldingIsEnabled) avtalemeldingTilTrygderetten else null,
-            forsendelseMetadataType = if (avtaleMeldingIsEnabled && avtalemeldingTilTrygderetten != null && mottakerIsTrygderetten) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
+            forsendelseMetadata = avtalemeldingTilTrygderetten,
+            forsendelseMetadataType = if (avtalemeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
         )
     }
 }
