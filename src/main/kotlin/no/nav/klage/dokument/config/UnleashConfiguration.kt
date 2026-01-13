@@ -26,7 +26,7 @@ class UnleashConfiguration(
         val config = UnleashConfig.builder()
             .appName(naisAppName)
             .instanceId(naisPodName)
-            .unleashAPI(unleashApiUrl)
+            .unleashAPI("$unleashApiUrl/api")
             .apiKey(unleashApiKey)
             .environment(unleashApiEnv)
             .build()
