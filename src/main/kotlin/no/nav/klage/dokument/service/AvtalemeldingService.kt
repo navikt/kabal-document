@@ -105,7 +105,7 @@ class AvtalemeldingService(
         return AvtalemeldingJournalpost().apply {
             opprettetDato = convertLocalDateTimeToXmlGregorianCalendar(journalpost.datoOpprettet)
             opprettetAv = journalpost.opprettetAvNavn
-            tittel = journalpost.tittel
+            tittel = journalpost.tittel ?: throw RuntimeException("No tittel in journalpost")
             korrespondansepart.addAll(getKorrespondansepartList())
             journalposttype = UTGAAENDE_DOKUMENT
             journalstatus = EKSPEDERT
