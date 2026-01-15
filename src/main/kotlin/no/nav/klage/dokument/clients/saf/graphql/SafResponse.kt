@@ -36,7 +36,7 @@ data class Journalpost(
     val dokumenter: List<DokumentInfo>?,
     val relevanteDatoer: List<RelevantDato>?,
     val journalforendeEnhet: String?,
-    val tittel: String,
+    val tittel: String?,
 ) {
     fun getDatoJournalfoert(): LocalDateTime? {
         return relevanteDatoer?.firstOrNull { it.datotype == Datotype.DATO_JOURNALFOERT }?.dato
