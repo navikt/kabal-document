@@ -32,7 +32,7 @@ class DokumentDistribusjonService(
         mottakerIsTrygderetten: Boolean,
     ): UUID {
         val avtalemelding =
-            if (unleash.isEnabled("createEkspedisjonsbrevToTR") && dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten) {
+            if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && unleash.isEnabled("createEkspedisjonsbrevToTR")) {
                 val avtalemelding = avtalemeldingService.generateMarshalledAvtalemelding(
                     journalpostId = journalpostId,
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),
