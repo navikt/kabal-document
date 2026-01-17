@@ -17,7 +17,7 @@ class WebClientConfig {
     companion object {
         // Timeouts for different service types
         const val LARGE_FILE_UPLOAD_TIMEOUT_SECONDS = 220L  // dokarkiv - large file uploads (supports 200s+ uploads)
-        const val SMALL_FILE_UPLOAD_TIMEOUT_SECONDS = 15L   // dokarkiv - small file uploads (faster failure detection)
+        const val SMALL_FILE_UPLOAD_TIMEOUT_SECONDS = 25L   // dokarkiv - small file uploads (faster failure detection)
         const val FILE_API_TIMEOUT_SECONDS = 60L            // file-api - file operations
         const val STANDARD_TIMEOUT_SECONDS = 30L            // saf, dokdist
         const val FAST_LOOKUP_TIMEOUT_SECONDS = 10L         // pdl, ereg - quick lookups
@@ -34,7 +34,7 @@ class WebClientConfig {
     }
 
     /**
-     * HttpClient for dokarkiv - small file uploads with 15 second timeout.
+     * HttpClient for dokarkiv - small file uploads with 25 second timeout.
      * Used for faster failure detection when files are small.
      */
     @Bean

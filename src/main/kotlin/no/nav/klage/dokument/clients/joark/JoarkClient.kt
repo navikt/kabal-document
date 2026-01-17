@@ -25,7 +25,7 @@ class JoarkClient(
         private val logger = getLogger(javaClass.enclosingClass)
 
         // Based on observation: 10MB takes ~4 seconds. The original file was 7.5MB, but base 64 encoding increases the size.
-        // Files larger than 5MB use the long timeout (220s), smaller files use short timeout (15s)
+        // Files larger than 5MB use the long timeout (220s), smaller files use short timeout (25s)
         const val LARGE_FILE_THRESHOLD_BYTES = 5 * 1024 * 1024L
     }
 
@@ -70,7 +70,7 @@ class JoarkClient(
             durationMs,
             durationMs / 1000.0,
             fileSize,
-            fileSize / (1024.0 * 1024.0)
+            String.format("%.2f", fileSize / (1024.0 * 1024.0))
         )
 
         logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
