@@ -2,6 +2,7 @@ package no.nav.klage.dokument.clients.joark
 
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
@@ -15,12 +16,17 @@ import java.io.File
 
 @Component
 class JoarkClient(
-    private val joarkWebClient: WebClient,
+    @Qualifier("joarkLargeFileWebClient") private val joarkLargeFileWebClient: WebClient,
+    @Qualifier("joarkSmallFileWebClient") private val joarkSmallFileWebClient: WebClient,
     private val tokenUtil: TokenUtil,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+
+        // Based on observation: 10MB takes ~4 seconds. The original file was 7.5MB, but base 64 encoding increases the size.
+        // Files larger than 5MB use the long timeout (220s), smaller files use short timeout (15s)
+        const val LARGE_FILE_THRESHOLD_BYTES = 5 * 1024 * 1024L
     }
 
     @Retryable
@@ -31,7 +37,17 @@ class JoarkClient(
         val dataBufferFactory = DefaultDataBufferFactory()
         val dataBuffer = DataBufferUtils.read(journalpostRequestAsFile.toPath(), dataBufferFactory, 256 * 256)
 
-        val post = joarkWebClient.post()
+        // Choose WebClient based on file size
+        val fileSize = journalpostRequestAsFile.length()
+        val webClient = if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
+            logger.debug("Using large file WebClient (220s timeout) for file of size {} bytes", fileSize)
+            joarkLargeFileWebClient
+        } else {
+            logger.debug("Using small file WebClient (15s timeout) for file of size {} bytes", fileSize)
+            joarkSmallFileWebClient
+        }
+
+        val post = webClient.post()
             .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
 
@@ -55,7 +71,7 @@ class JoarkClient(
 
     @Retryable
     fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
-        joarkWebClient.patch()
+        joarkSmallFileWebClient.patch()
             .uri("/${journalpostId}/ferdigstill")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +86,7 @@ class JoarkClient(
 
     @Retryable
     fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
-        val response = joarkWebClient.put()
+        val response = joarkSmallFileWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +104,7 @@ class JoarkClient(
     @Retryable
     fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
         try {
-            joarkWebClient.put()
+            joarkSmallFileWebClient.put()
                 .uri("/${journalpostId}")
                 .header(
                     HttpHeaders.AUTHORIZATION,

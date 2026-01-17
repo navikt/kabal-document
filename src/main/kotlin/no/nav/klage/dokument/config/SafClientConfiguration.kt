@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.config
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,14 +10,16 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.util.function.Consumer
 
 @Configuration
-class SafClientConfiguration(private val webClientBuilder: WebClient.Builder) {
+class SafClientConfiguration(
+    @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder
+) {
 
     @Value("\${SAF_BASE_URL}")
     private lateinit var safUrl: String
 
     @Bean
     fun safWebClient(): WebClient {
-        return webClientBuilder
+        return standardWebClientBuilder
             .baseUrl(safUrl)
             .exchangeStrategies(
                 ExchangeStrategies
