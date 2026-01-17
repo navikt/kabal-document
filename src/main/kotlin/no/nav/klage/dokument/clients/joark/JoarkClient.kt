@@ -55,12 +55,23 @@ class JoarkClient(
             post.header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
         }
 
+        val startTime = System.currentTimeMillis()
+
         val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
             .body(dataBuffer, DataBuffer::class.java)
             .retrieve()
             .bodyToMono(JournalpostResponse::class.java)
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
+
+        val durationMs = System.currentTimeMillis() - startTime
+        logger.debug(
+            "POST journalpost call completed in {} ms ({} seconds). File size: {} bytes ({} MB)",
+            durationMs,
+            durationMs / 1000.0,
+            fileSize,
+            fileSize / (1024.0 * 1024.0)
+        )
 
         logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
 
