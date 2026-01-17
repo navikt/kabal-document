@@ -10,7 +10,8 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class JoarkClientConfiguration(
-    @Qualifier("dokarkivWebClientBuilder") private val dokarkivWebClientBuilder: WebClient.Builder
+    @Qualifier("dokarkivLargeFileWebClientBuilder") private val dokarkivLargeFileWebClientBuilder: WebClient.Builder,
+    @Qualifier("dokarkivSmallFileWebClientBuilder") private val dokarkivSmallFileWebClientBuilder: WebClient.Builder,
 ) {
 
     companion object {
@@ -21,9 +22,24 @@ class JoarkClientConfiguration(
     @Value("\${JOARK_SERVICE_URL}")
     private lateinit var joarkServiceURL: String
 
+    /**
+     * WebClient for large file uploads (220s timeout).
+     * Use when file size exceeds LARGE_FILE_THRESHOLD_BYTES.
+     */
     @Bean
-    fun joarkWebClient(): WebClient {
-        return dokarkivWebClientBuilder
+    fun joarkLargeFileWebClient(): WebClient {
+        return dokarkivLargeFileWebClientBuilder
+            .baseUrl(joarkServiceURL)
+            .build()
+    }
+
+    /**
+     * WebClient for small file uploads (30s timeout).
+     * Provides faster failure detection for normal-sized files.
+     */
+    @Bean
+    fun joarkSmallFileWebClient(): WebClient {
+        return dokarkivSmallFileWebClientBuilder
             .baseUrl(joarkServiceURL)
             .build()
     }
