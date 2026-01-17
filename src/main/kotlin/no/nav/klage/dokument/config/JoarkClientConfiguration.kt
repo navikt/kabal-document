@@ -34,7 +34,7 @@ class JoarkClientConfiguration(
     }
 
     /**
-     * WebClient for small file uploads (30s timeout).
+     * WebClient for small file uploads (15s timeout).
      * Provides faster failure detection for normal-sized files.
      */
     @Bean
