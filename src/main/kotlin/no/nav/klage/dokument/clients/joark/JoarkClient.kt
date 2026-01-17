@@ -24,9 +24,9 @@ class JoarkClient(
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
-        // Based on observation: 5MB takes ~4 seconds. With 15s timeout, we can handle up to ~15MB.
-        // Files larger than 15MB use the long timeout (220s), smaller files use short timeout (15s)
-        const val LARGE_FILE_THRESHOLD_BYTES = 15 * 1024 * 1024L
+        // Based on observation: 10MB takes ~4 seconds. The original file was 7.5MB, but base 64 encoding increases the size.
+        // Files larger than 5MB use the long timeout (220s), smaller files use short timeout (15s)
+        const val LARGE_FILE_THRESHOLD_BYTES = 5 * 1024 * 1024L
     }
 
     @Retryable
