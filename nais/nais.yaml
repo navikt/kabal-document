@@ -7,7 +7,9 @@ metadata:
     team: klage
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "300M"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "240"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "240"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
 spec:
   image: {{image}}
   observability:

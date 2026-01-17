@@ -1,6 +1,7 @@
 package no.nav.klage.dokument.config
 
 import no.nav.klage.dokument.util.getLogger
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class JoarkClientConfiguration(
-    private val webClientBuilder: WebClient.Builder
+    @Qualifier("dokarkivWebClientBuilder") private val dokarkivWebClientBuilder: WebClient.Builder
 ) {
 
     companion object {
@@ -22,7 +23,7 @@ class JoarkClientConfiguration(
 
     @Bean
     fun joarkWebClient(): WebClient {
-        return webClientBuilder
+        return dokarkivWebClientBuilder
             .baseUrl(joarkServiceURL)
             .build()
     }

@@ -14,11 +14,51 @@ import java.util.concurrent.TimeUnit
 @Configuration
 class WebClientConfig {
 
+    companion object {
+        // Timeouts for different service types
+        const val LARGE_FILE_UPLOAD_TIMEOUT_SECONDS = 220L  // dokarkiv - large file uploads (supports 200s+ uploads)
+        const val FILE_API_TIMEOUT_SECONDS = 60L            // file-api - file operations
+        const val STANDARD_TIMEOUT_SECONDS = 30L            // saf, dokdist
+        const val FAST_LOOKUP_TIMEOUT_SECONDS = 10L         // pdl, ereg - quick lookups
+        const val CONNECT_TIMEOUT_MILLIS = 5_000
+    }
+
+    /**
+     * HttpClient for dokarkiv - supports large file uploads up to 200 seconds.
+     * This is needed because document uploads with base64-encoded PDFs can be large.
+     */
     @Bean
-    fun reactorNettyHttpClient(): HttpClient {
-        val timeoutInSeconds = 200L
+    fun dokarkivHttpClient(): HttpClient {
+        return createHttpClient(LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)
+    }
+
+    /**
+     * HttpClient for standard operations (saf, dokdist) - 30 second timeout.
+     */
+    @Bean
+    fun standardHttpClient(): HttpClient {
+        return createHttpClient(STANDARD_TIMEOUT_SECONDS)
+    }
+
+    /**
+     * HttpClient for file-api operations - 60 second timeout.
+     */
+    @Bean
+    fun fileApiHttpClient(): HttpClient {
+        return createHttpClient(FILE_API_TIMEOUT_SECONDS)
+    }
+
+    /**
+     * HttpClient for fast lookups (pdl, ereg) - 10 second timeout.
+     */
+    @Bean
+    fun fastLookupHttpClient(): HttpClient {
+        return createHttpClient(FAST_LOOKUP_TIMEOUT_SECONDS)
+    }
+
+    private fun createHttpClient(timeoutInSeconds: Long): HttpClient {
         return HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5_000)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
             .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
             .doOnConnected { conn ->
                 conn.addHandlerLast(ReadTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS))
@@ -27,10 +67,26 @@ class WebClientConfig {
     }
 
     @Bean
-    fun webClientBuilder(httpClient: HttpClient): WebClient.Builder {
-        val connector = ReactorClientHttpConnector(httpClient)
+    fun dokarkivWebClientBuilder(dokarkivHttpClient: HttpClient): WebClient.Builder {
         return WebClient.builder()
-            .clientConnector(connector)
+            .clientConnector(ReactorClientHttpConnector(dokarkivHttpClient))
     }
 
+    @Bean
+    fun standardWebClientBuilder(standardHttpClient: HttpClient): WebClient.Builder {
+        return WebClient.builder()
+            .clientConnector(ReactorClientHttpConnector(standardHttpClient))
+    }
+
+    @Bean
+    fun fileApiWebClientBuilder(fileApiHttpClient: HttpClient): WebClient.Builder {
+        return WebClient.builder()
+            .clientConnector(ReactorClientHttpConnector(fileApiHttpClient))
+    }
+
+    @Bean
+    fun fastLookupWebClientBuilder(fastLookupHttpClient: HttpClient): WebClient.Builder {
+        return WebClient.builder()
+            .clientConnector(ReactorClientHttpConnector(fastLookupHttpClient))
+    }
 }

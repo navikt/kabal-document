@@ -1,4 +1,4 @@
-package no.nav.klage.dokument.clients.klagefileapi
+package no.nav.klage.dokument.clients.kabalfileapi
 
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
