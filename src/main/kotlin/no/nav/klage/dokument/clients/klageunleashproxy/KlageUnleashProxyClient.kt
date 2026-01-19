@@ -3,7 +3,6 @@ package no.nav.klage.dokument.clients.klageunleashproxy
 import no.nav.klage.dokument.config.KlageUnleashProxyContext
 import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
-import org.springframework.http.HttpHeaders
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -29,7 +28,7 @@ class KlageUnleashProxyClient(
 
         return klageUnleashProxyWebClient.post()
             .uri("/features/${feature}")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKlageUnleashProxyScope()}")
+//            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKlageUnleashProxyScope()}")
             .bodyValue(klageUnleashProxyContext)
             .retrieve()
             .bodyToMono<FeatureToggleResponse>()
