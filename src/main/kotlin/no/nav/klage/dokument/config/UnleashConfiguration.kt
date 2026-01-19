@@ -60,8 +60,8 @@ class UnleashConfiguration(
     }
 }
 
-data class KlageUnleashProxyContext(
-    val navIdent: String?,
-    val appName: String,
-    val podName: String,
+open class KlageUnleashProxyContext(
+    open val navIdent: String?,
+    open val appName: String,
+    open val podName: String,
 )
