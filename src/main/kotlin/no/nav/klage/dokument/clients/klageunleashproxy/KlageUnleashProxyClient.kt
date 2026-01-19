@@ -26,12 +26,24 @@ class KlageUnleashProxyClient(
             return false
         }
 
+        val requestBody = UnleashProxyRequest(
+            navIdent = klageUnleashProxyContext.navIdent!!,
+            appName = klageUnleashProxyContext.appName,
+            podName = klageUnleashProxyContext.podName,
+        )
+
         return klageUnleashProxyWebClient.post()
             .uri("/features/${feature}")
 //            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKlageUnleashProxyScope()}")
-            .bodyValue(klageUnleashProxyContext)
+            .bodyValue(requestBody)
             .retrieve()
             .bodyToMono<FeatureToggleResponse>()
             .block()?.enabled ?: false
     }
 }
+
+data class UnleashProxyRequest(
+    val navIdent: String,
+    val appName: String,
+    val podName: String,
+)
