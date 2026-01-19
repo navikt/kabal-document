@@ -37,6 +37,16 @@ class UnleashConfiguration(
     }
 
     @Bean
+    @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+    fun klageUnleashProxyContextProvider(currentSaksbehandlerHolder: CurrentSaksbehandlerHolder): KlageUnleashProxyContext {
+        return KlageUnleashProxyContext(
+            navIdent = currentSaksbehandlerHolder.navIdent,
+            appName = naisAppName,
+            podName = naisPodName,
+        )
+    }
+
+    @Bean
     fun unleash(unleashContextProvider: UnleashContextProvider): Unleash {
         val config = UnleashConfig.builder()
             .appName(naisAppName)
@@ -49,3 +59,9 @@ class UnleashConfiguration(
         return DefaultUnleash(config)
     }
 }
+
+data class KlageUnleashProxyContext(
+    val navIdent: String?,
+    val appName: String,
+    val podName: String,
+)

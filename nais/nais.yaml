@@ -79,6 +79,7 @@ spec:
     outbound:
       rules:
         - application: kabal-file-api
+        - application: klage-unleash-proxy
         - application: clamav
           namespace: clamav
         - application: logging
