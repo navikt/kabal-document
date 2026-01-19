@@ -11,9 +11,9 @@ import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
 class KlageUnleashProxyClient(
-    private val fileWebClient: WebClient,
     private val tokenUtil: TokenUtil,
     private val klageUnleashProxyContext: KlageUnleashProxyContext,
+    private val klageUnleashProxyWebClient: WebClient,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -27,7 +27,7 @@ class KlageUnleashProxyClient(
             return false
         }
 
-        return fileWebClient.post()
+        return klageUnleashProxyWebClient.post()
             .uri("/features/${feature}")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKlageUnleashProxyScope()}")
             .bodyValue(klageUnleashProxyContext)

@@ -21,7 +21,7 @@ class KlageUnleashProxyClientConfiguration(
     private lateinit var klageUnleashProxyURL: String
 
     @Bean
-    fun fileWebClient(): WebClient {
+    fun klageUnleashProxyWebClient(): WebClient {
         return fastLookupWebClientBuilder
             .baseUrl(klageUnleashProxyURL)
             .build()
