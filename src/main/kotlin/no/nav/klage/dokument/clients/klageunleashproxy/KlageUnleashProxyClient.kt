@@ -1,7 +1,6 @@
 package no.nav.klage.dokument.clients.klageunleashproxy
 
 import no.nav.klage.dokument.config.KlageUnleashProxyContext
-import no.nav.klage.dokument.util.TokenUtil
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
@@ -10,7 +9,6 @@ import org.springframework.web.reactive.function.client.bodyToMono
 
 @Component
 class KlageUnleashProxyClient(
-    private val tokenUtil: TokenUtil,
     private val klageUnleashProxyContext: KlageUnleashProxyContext,
     private val klageUnleashProxyWebClient: WebClient,
 ) {
@@ -40,9 +38,3 @@ class KlageUnleashProxyClient(
             .block()?.enabled ?: false
     }
 }
-
-data class UnleashProxyRequest(
-    val navIdent: String,
-    val appName: String,
-    val podName: String,
-)
