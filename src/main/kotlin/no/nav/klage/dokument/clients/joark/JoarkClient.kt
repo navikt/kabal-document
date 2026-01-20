@@ -13,6 +13,7 @@ import org.springframework.http.MediaType
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.body
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.io.File
 
@@ -60,9 +61,9 @@ class JoarkClient(
         val startTime = System.currentTimeMillis()
 
         val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
-            .body(dataBuffer, DataBuffer::class.java)
+            .body<DataBuffer>(dataBuffer)
             .retrieve()
-            .bodyToMono(JournalpostResponse::class.java)
+            .bodyToMono<JournalpostResponse>()
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
