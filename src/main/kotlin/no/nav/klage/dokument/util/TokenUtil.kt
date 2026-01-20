@@ -21,12 +21,6 @@ class TokenUtil(
         return response.access_token!!
     }
 
-    fun getAppAccessTokenWithKlageUnleashProxyScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["klage-unleash-proxy-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
-
     fun getAppAccessTokenWithSafScope(): String {
         val clientProperties = clientConfigurationProperties.registration["saf-maskintilmaskin"]!!
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)

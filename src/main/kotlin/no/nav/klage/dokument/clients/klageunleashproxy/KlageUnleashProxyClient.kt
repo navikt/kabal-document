@@ -34,7 +34,6 @@ class KlageUnleashProxyClient(
 
         return klageUnleashProxyWebClient.post()
             .uri("/features/${feature}")
-//            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKlageUnleashProxyScope()}")
             .bodyValue(requestBody)
             .retrieve()
             .bodyToMono<FeatureToggleResponse>()
