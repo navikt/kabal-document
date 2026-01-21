@@ -14,7 +14,7 @@ val archunitVersion = "1.4.1"
 val ehcacheVersion = "3.11.1"
 val kodeverkVersion = "1.12.19"
 val syslog4jVersion = "1.0.0"
-val unleashedVersion = "11.2.1"
+val unleashedVersion = "12.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
