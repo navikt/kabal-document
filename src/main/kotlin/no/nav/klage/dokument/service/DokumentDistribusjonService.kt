@@ -1,8 +1,8 @@
 package no.nav.klage.dokument.service
 
-import io.getunleash.Unleash
 import no.nav.klage.dokument.clients.dokdistfordeling.Adressetype
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
+import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
 import no.nav.klage.dokument.domain.dokument.Adresse
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
@@ -15,7 +15,7 @@ class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
     private val avtalemeldingService: AvtalemeldingService,
     @Value($$"${spring.profiles.active:}") private val activeSpringProfile: String,
-    private val unleash: Unleash,
+    private val klageUnleashProxyClient: KlageUnleashProxyClient,
 ) {
 
     companion object {
@@ -32,7 +32,7 @@ class DokumentDistribusjonService(
         mottakerIsTrygderetten: Boolean,
     ): UUID {
         val avtalemelding =
-            if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && unleash.isEnabled("createEkspedisjonsbrevToTR")) {
+            if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")) {
                 val avtalemelding = avtalemeldingService.generateMarshalledAvtalemelding(
                     journalpostId = journalpostId,
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),

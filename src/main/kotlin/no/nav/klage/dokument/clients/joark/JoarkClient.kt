@@ -13,6 +13,7 @@ import org.springframework.http.MediaType
 import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.body
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.io.File
 
@@ -60,20 +61,40 @@ class JoarkClient(
         val startTime = System.currentTimeMillis()
 
         val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
-            .body(dataBuffer, DataBuffer::class.java)
+            .body<DataBuffer>(dataBuffer)
             .retrieve()
-            .bodyToMono(JournalpostResponse::class.java)
+            .bodyToMono<JournalpostResponse>()
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
         val durationMs = System.currentTimeMillis() - startTime
+        val sizeInMB = String.format("%.2f", fileSize / (1024.0 * 1024.0))
         logger.debug(
             "POST journalpost call completed in {} ms ({} seconds). File size: {} bytes ({} MB)",
             durationMs,
             durationMs / 1000.0,
             fileSize,
-            String.format("%.2f", fileSize / (1024.0 * 1024.0))
+            sizeInMB
         )
+
+        // Log warning if request takes longer than expected based on file size
+        val expectedMaxMs = when {
+            fileSize < 500_000 -> 400L                      // 1 byte - 500KB: max 400ms
+            fileSize < 1_000_000 -> 1_000L                  // 500KB - 1MB: max 1s
+            fileSize < 2_000_000 -> 2_000L                  // 1MB - 2MB: max 2s
+            fileSize < 5_000_000 -> 4_000L                  // 2MB - 5MB: max 4s
+            fileSize < 15_000_000 -> 10_000L                // 5MB - 15MB: max 10s
+            else -> 25_000L                                 // 15MB+: max 25s
+        }
+        if (durationMs > expectedMaxMs) {
+            logger.warn(
+                "Slow POST journalpost call: {} ms (expected max {} ms). File size: {} bytes ({} MB)",
+                durationMs,
+                expectedMaxMs,
+                fileSize,
+                sizeInMB
+            )
+        }
 
         logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
 

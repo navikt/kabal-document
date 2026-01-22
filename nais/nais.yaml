@@ -79,12 +79,12 @@ spec:
     outbound:
       rules:
         - application: kabal-file-api
+        - application: klage-unleash-proxy
         - application: clamav
           namespace: clamav
         - application: logging
           namespace: nais-system
       external:
-        - host: klage-unleash-api.nav.cloud.nais.io
         {{#each externalHosts}}
         - host: {{host}}
         {{/each}}
@@ -99,7 +99,6 @@ spec:
     - secret: journalpost-apikey
     - secret: ereg
     - secret: dokdist-apikey
-    - secret: kabal-document-unleash-api-token
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: {{springProfile}}
