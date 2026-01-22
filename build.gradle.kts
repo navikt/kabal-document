@@ -5,7 +5,6 @@ val mockkVersion = "1.14.7"
 val h2Version = "1.4.200"
 val tokenValidationVersion = "6.0.0"
 val logstashVersion = "9.0"
-val unleashVersion = "3.3.3"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.1"
 val testContainersVersion = "2.0.3"
@@ -14,7 +13,6 @@ val archunitVersion = "1.4.1"
 val ehcacheVersion = "3.11.1"
 val kodeverkVersion = "1.12.19"
 val syslog4jVersion = "1.0.0"
-val unleashedVersion = "11.2.1"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -46,8 +44,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-flyway")
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
-
-    implementation("io.getunleash:unleash-client-java:${unleashedVersion}")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.4")
     implementation("org.glassfish.jaxb:jaxb-runtime:4.0.6")
