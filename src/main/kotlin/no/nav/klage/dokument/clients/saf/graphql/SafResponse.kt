@@ -77,7 +77,7 @@ data class RelevantDato(
 data class DokumentInfo(
     val dokumentInfoId: String,
     val dokumentstatus: Dokumentstatus?,
-    val tittel: String,
+    val tittel: String?,
     val brevkode: String?,
     val skjerming: String?,
     val dokumentvarianter: List<Dokumentvariant>,

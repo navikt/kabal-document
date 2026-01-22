@@ -9,16 +9,11 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.EnhetsidentifikatorType
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
-import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
-import no.nav.klage.dokument.clients.saf.graphql.Dokumentvariant
-import no.nav.klage.dokument.clients.saf.graphql.Filtype
-import no.nav.klage.dokument.clients.saf.graphql.Journalpost
-import no.nav.klage.dokument.clients.saf.graphql.Journalposttype
-import no.nav.klage.dokument.clients.saf.graphql.Variantformat
+import no.nav.klage.dokument.clients.saf.graphql.*
 import java.io.StringWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
-import java.util.GregorianCalendar
+import java.util.*
 import javax.xml.datatype.DatatypeConfigurationException
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
@@ -86,6 +81,10 @@ fun getDokumentbeskrivelseTittel(
     originalJournalpost: Journalpost?,
     dokumentIsFromOldJournalpost: Boolean
 ): String {
+    if (dokumentInfo.tittel.isNullOrBlank()) {
+        throw RuntimeException("Dokumenttittel kan ikke være tom for dokumentInfoId=${dokumentInfo.dokumentInfoId}")
+    }
+
     return if (dokumentIsFromOldJournalpost) {
         when (originalJournalpost!!.journalposttype) {
             Journalposttype.I -> {
@@ -101,7 +100,7 @@ fun getDokumentbeskrivelseTittel(
             else -> dokumentInfo.tittel
         }
     } else {
-        return dokumentInfo.tittel
+        dokumentInfo.tittel
     }
 }
 
