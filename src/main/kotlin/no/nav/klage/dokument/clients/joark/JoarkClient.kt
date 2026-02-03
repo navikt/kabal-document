@@ -120,7 +120,7 @@ class JoarkClient(
 
     @Retryable
     fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
-        val response = joarkSmallFileWebClient.put()
+        val response = joarkLargeFileWebClient.put()
             .uri("/${journalpostId}/tilknyttVedlegg")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
