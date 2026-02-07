@@ -14,7 +14,7 @@ class SafClientConfiguration(
     @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder
 ) {
 
-    @Value("\${SAF_BASE_URL}")
+    @Value($$"${SAF_BASE_URL}")
     private lateinit var safUrl: String
 
     @Bean
@@ -27,7 +27,7 @@ class SafClientConfiguration(
                     .codecs(Consumer { codecs: ClientCodecConfigurer? ->
                         codecs!!
                             .defaultCodecs()
-                            .maxInMemorySize(32 * 1024 * 1024) // 32 MB to handle large GraphQL responses
+                            .maxInMemorySize(128 * 1024 * 1024) // 128 MB to handle large GraphQL responses
                     })
                     .build()
             )
