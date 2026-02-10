@@ -38,12 +38,36 @@ class SafGraphQlClient(
     fun getDokumentoversiktBrukerAsSystembruker(
         brukerId: String,
     ): List<Journalpost> {
-        return getDokumentoversiktBruker(
+        return getAllDokumentoversiktBruker(
             brukerId = brukerId,
             token = tokenUtil.getAppAccessTokenWithSafScope(),
-        ).journalposter
+        )
     }
 
+    private fun getAllDokumentoversiktBruker(
+        brukerId: String,
+        token: String,
+    ): List<Journalpost> {
+        val allJournalposter = mutableListOf<Journalpost>()
+        var previousPageRef: String? = null
+        var pageCount = 0
+
+        do {
+            pageCount++
+            val result = getDokumentoversiktBrukerPage(
+                brukerId = brukerId,
+                token = token,
+                pageSize = 500,
+                previousPageRef = previousPageRef,
+            )
+            allJournalposter.addAll(result.journalposter)
+            previousPageRef = result.sideInfo.sluttpeker
+            logger.debug("Fetched page $pageCount with ${result.journalposter.size} journalposter. Total so far: ${allJournalposter.size}")
+        } while (result.sideInfo.finnesNesteSide)
+
+        logger.debug("Finished fetching all pages. Total journalposter: ${allJournalposter.size}")
+        return allJournalposter
+    }
 
     private fun getJournalpostWithToken(
         journalpostId: String,
@@ -69,10 +93,10 @@ class SafGraphQlClient(
             ?: throw RuntimeException("Got null from SAF for journalpost with id $journalpostId")
     }
 
-    fun getDokumentoversiktBruker(
+    private fun getDokumentoversiktBrukerPage(
         brukerId: String,
         tema: List<Tema> = emptyList(),
-        pageSize: Int = 50000,
+        pageSize: Int,
         previousPageRef: String? = null,
         token: String,
     ): DokumentoversiktBruker {
@@ -88,7 +112,7 @@ class SafGraphQlClient(
             .onStatus(HttpStatusCode::isError) { response ->
                 logErrorResponse(
                     response = response,
-                    functionName = ::getDokumentoversiktBruker.name,
+                    functionName = ::getDokumentoversiktBrukerPage.name,
                     classLogger = logger,
                 )
             }
