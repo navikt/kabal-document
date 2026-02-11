@@ -11,11 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 import javax.xml.datatype.XMLGregorianCalendar
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.find
-import kotlin.collections.firstOrNull
-import kotlin.collections.mapNotNull
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as AvtalemeldingJournalpost
 
 @Service
@@ -161,7 +156,11 @@ class AvtalemeldingService(
                 val dokumentIsFromOldJournalpost = dokumentInfo.originalJournalpostId != null
 
                 val originalJournalpost = if (dokumentIsFromOldJournalpost) {
-                    existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
+                    val foundJournalpost = existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
+                    if (foundJournalpost == null) {
+                        logger.warn("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}")
+                    }
+                    foundJournalpost
                 } else null
 
                 val dokumentbeskrivelse = Dokumentbeskrivelse().apply {
