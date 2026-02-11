@@ -37,8 +37,9 @@ class DokumentDistribusjonService(
                     journalpostId = journalpostId,
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),
                 )
-                if (activeSpringProfile == "dev") {
-                    logger.debug("Avtalemelding for journalpost $journalpostId: $avtalemelding")
+                logger.debug("Avtalemelding generert for journalpost $journalpostId, meldingId: $avsenderMottakerDistribusjonId")
+                if (activeSpringProfile == "dev" && avtalemelding.length <= 2000) {
+                    logger.debug("Avtalemelding content: $avtalemelding")
                 }
                 avtalemelding
             } else null
