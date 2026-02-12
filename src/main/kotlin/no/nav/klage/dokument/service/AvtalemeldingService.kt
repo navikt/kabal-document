@@ -56,7 +56,6 @@ class AvtalemeldingService(
         avtalemelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForAvtalemelding() }?.size ?: throw RuntimeException("No files in journalpost")
 
         val dokumentBeskrivelser = getDokumentbeskrivelser(
-            dokumenter = journalpost.dokumenter,
             datoAvtalemeldingOpprettet = datoAvtalemeldingOpprettet,
             newJournalpost = journalpost,
         )
@@ -132,7 +131,6 @@ class AvtalemeldingService(
 
 
     private fun getDokumentbeskrivelser(
-        dokumenter: List<DokumentInfo>,
         datoAvtalemeldingOpprettet: XMLGregorianCalendar?,
         newJournalpost: Journalpost,
     ): Collection<Dokumentbeskrivelse> {
@@ -143,6 +141,7 @@ class AvtalemeldingService(
                 ?: throw RuntimeException("Foedselsnummer not found")
         }
 
+        val dokumenter = newJournalpost.dokumenter!!
         val existingJournalpostList = if (dokumenter.any { it.originalJournalpostId != null }) {
             getJournalpostListForBrukerId(brukerId = brukerId)
         } else {
@@ -158,7 +157,7 @@ class AvtalemeldingService(
                 val originalJournalpost = if (dokumentIsFromOldJournalpost) {
                     val foundJournalpost = existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
                     if (foundJournalpost == null) {
-                        logger.warn("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}")
+                        logger.error("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}")
                     }
                     foundJournalpost
                 } else null
