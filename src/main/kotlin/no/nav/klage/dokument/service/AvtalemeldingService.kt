@@ -11,11 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigInteger
 import javax.xml.datatype.XMLGregorianCalendar
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.find
-import kotlin.collections.firstOrNull
-import kotlin.collections.mapNotNull
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as AvtalemeldingJournalpost
 
 @Service
@@ -61,7 +56,6 @@ class AvtalemeldingService(
         avtalemelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForAvtalemelding() }?.size ?: throw RuntimeException("No files in journalpost")
 
         val dokumentBeskrivelser = getDokumentbeskrivelser(
-            dokumenter = journalpost.dokumenter,
             datoAvtalemeldingOpprettet = datoAvtalemeldingOpprettet,
             newJournalpost = journalpost,
         )
@@ -137,7 +131,6 @@ class AvtalemeldingService(
 
 
     private fun getDokumentbeskrivelser(
-        dokumenter: List<DokumentInfo>,
         datoAvtalemeldingOpprettet: XMLGregorianCalendar?,
         newJournalpost: Journalpost,
     ): Collection<Dokumentbeskrivelse> {
@@ -148,6 +141,7 @@ class AvtalemeldingService(
                 ?: throw RuntimeException("Foedselsnummer not found")
         }
 
+        val dokumenter = newJournalpost.dokumenter ?: throw RuntimeException("No files in journalpost")
         val existingJournalpostList = if (dokumenter.any { it.originalJournalpostId != null }) {
             getJournalpostListForBrukerId(brukerId = brukerId)
         } else {
@@ -161,7 +155,11 @@ class AvtalemeldingService(
                 val dokumentIsFromOldJournalpost = dokumentInfo.originalJournalpostId != null
 
                 val originalJournalpost = if (dokumentIsFromOldJournalpost) {
-                    existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
+                    val foundJournalpost = existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
+                    if (foundJournalpost == null) {
+                        logger.error("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}")
+                    }
+                    foundJournalpost
                 } else null
 
                 val dokumentbeskrivelse = Dokumentbeskrivelse().apply {

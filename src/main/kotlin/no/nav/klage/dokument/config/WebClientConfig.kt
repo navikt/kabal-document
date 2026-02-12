@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
+import reactor.netty.resources.ConnectionProvider
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
@@ -24,13 +25,28 @@ class WebClientConfig {
         const val CONNECT_TIMEOUT_MILLIS = 5_000
     }
 
+    @Bean
+    fun connectionProvider(): ConnectionProvider {
+        return ConnectionProvider.builder("custom")
+            // Max idle time - evict connections that have been idle for too long
+            .maxIdleTime(Duration.ofSeconds(20))
+            // Max life time - evict connections regardless of activity after this time
+            .maxLifeTime(Duration.ofMinutes(4))
+            // Periodically check and evict connections that have been idle
+            .evictInBackground(Duration.ofSeconds(30))
+            .build()
+    }
+
     /**
      * HttpClient for dokarkiv - supports large file uploads up to 200 seconds.
      * This is needed because document uploads with base64-encoded PDFs can be large.
      */
     @Bean
-    fun dokarkivLargeFileHttpClient(): HttpClient {
-        return createHttpClient(LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)
+    fun dokarkivLargeFileHttpClient(connectionProvider: ConnectionProvider): HttpClient {
+        return createHttpClient(
+            connectionProvider = connectionProvider,
+            timeoutInSeconds = LARGE_FILE_UPLOAD_TIMEOUT_SECONDS,
+        )
     }
 
     /**
@@ -38,37 +54,48 @@ class WebClientConfig {
      * Used for faster failure detection when files are small.
      */
     @Bean
-    fun dokarkivSmallFileHttpClient(): HttpClient {
-        return createHttpClient(SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)
+    fun dokarkivSmallFileHttpClient(connectionProvider: ConnectionProvider): HttpClient {
+        return createHttpClient(
+            connectionProvider = connectionProvider,
+            timeoutInSeconds = SMALL_FILE_UPLOAD_TIMEOUT_SECONDS,
+        )
     }
 
     /**
      * HttpClient for standard operations (saf, dokdist) - 30 second timeout.
      */
     @Bean
-    fun standardHttpClient(): HttpClient {
-        return createHttpClient(STANDARD_TIMEOUT_SECONDS)
+    fun standardHttpClient(connectionProvider: ConnectionProvider): HttpClient {
+        return createHttpClient(
+            connectionProvider = connectionProvider,
+            timeoutInSeconds = STANDARD_TIMEOUT_SECONDS,
+        )
     }
 
     /**
      * HttpClient for file-api operations - 60 second timeout.
      */
     @Bean
-    fun fileApiHttpClient(): HttpClient {
-        return createHttpClient(FILE_API_TIMEOUT_SECONDS)
+    fun fileApiHttpClient(connectionProvider: ConnectionProvider): HttpClient {
+        return createHttpClient(
+            connectionProvider = connectionProvider,
+            timeoutInSeconds = FILE_API_TIMEOUT_SECONDS,
+        )
     }
 
     /**
      * HttpClient for fast lookups (pdl, ereg) - 10 second timeout.
      */
     @Bean
-    fun fastLookupHttpClient(): HttpClient {
-        return createHttpClient(FAST_LOOKUP_TIMEOUT_SECONDS)
+    fun fastLookupHttpClient(connectionProvider: ConnectionProvider): HttpClient {
+        return createHttpClient(connectionProvider = connectionProvider, timeoutInSeconds = FAST_LOOKUP_TIMEOUT_SECONDS)
     }
 
-    private fun createHttpClient(timeoutInSeconds: Long): HttpClient {
-        return HttpClient.create()
+    private fun createHttpClient(connectionProvider: ConnectionProvider, timeoutInSeconds: Long): HttpClient {
+        return HttpClient.create(connectionProvider)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
+            // Enable TCP keep-alive to detect dead connections at OS level
+            .option(ChannelOption.SO_KEEPALIVE, true)
             .responseTimeout(Duration.ofSeconds(timeoutInSeconds))
             .doOnConnected { conn ->
                 conn.addHandlerLast(ReadTimeoutHandler(timeoutInSeconds, TimeUnit.SECONDS))
