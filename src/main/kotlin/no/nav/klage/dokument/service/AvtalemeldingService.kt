@@ -141,7 +141,7 @@ class AvtalemeldingService(
                 ?: throw RuntimeException("Foedselsnummer not found")
         }
 
-        val dokumenter = newJournalpost.dokumenter!!
+        val dokumenter = newJournalpost.dokumenter ?: throw RuntimeException("No files in journalpost")
         val existingJournalpostList = if (dokumenter.any { it.originalJournalpostId != null }) {
             getJournalpostListForBrukerId(brukerId = brukerId)
         } else {
