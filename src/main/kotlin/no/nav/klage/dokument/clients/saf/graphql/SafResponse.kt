@@ -155,6 +155,7 @@ enum class Tema {
     OMS, //Omsorgspenger, pleiepenger og opplæringspenger
     OPA, //Oppfølging - Arbeidsgiver
     OPP, //Oppfølging
+    PAI, //Innsyn
     PEN, //Pensjon
     PER, //Permittering og masseoppsigelser
     REH, //Rehabilitering
