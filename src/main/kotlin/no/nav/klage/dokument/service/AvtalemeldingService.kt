@@ -53,7 +53,8 @@ class AvtalemeldingService(
         avtalemelding.system = applicationName
         avtalemelding.meldingId = bestillingsId
         avtalemelding.tidspunkt = datoAvtalemeldingOpprettet
-        avtalemelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForAvtalemelding() }?.size ?: throw RuntimeException("No files in journalpost")
+        avtalemelding.antallFiler = journalpost.dokumenter?.filter { it.isFerdigstiltForAvtalemelding() }?.size
+            ?: throw RuntimeException("No files in journalpost")
 
         val dokumentBeskrivelser = getDokumentbeskrivelser(
             datoAvtalemeldingOpprettet = datoAvtalemeldingOpprettet,
@@ -65,7 +66,10 @@ class AvtalemeldingService(
         return avtalemelding
     }
 
-    private fun getSaksmappe(journalpost: Journalpost, dokumentBeskrivelser: Collection<Dokumentbeskrivelse>): Saksmappe {
+    private fun getSaksmappe(
+        journalpost: Journalpost,
+        dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
+    ): Saksmappe {
         val sakOpprettetDato = if (journalpost.sak?.datoOpprettet != null) {
             convertLocalDateTimeToXmlGregorianCalendar(journalpost.sak.datoOpprettet)
         } else {
@@ -152,14 +156,25 @@ class AvtalemeldingService(
 
         val output = dokumenter.mapNotNull { dokumentInfo ->
             if (dokumentInfo.isFerdigstiltForAvtalemelding()) {
-                val dokumentIsFromOldJournalpost = dokumentInfo.originalJournalpostId != null
+                val originalJournalpost: Journalpost? = if (dokumentInfo.originalJournalpostId != null) {
+                    val foundJournalpost =
+                        existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
+                    if (foundJournalpost != null) {
+                        foundJournalpost
+                    } else {
+                        logger.warn("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}. Trying to fetch it directly.")
 
-                val originalJournalpost = if (dokumentIsFromOldJournalpost) {
-                    val foundJournalpost = existingJournalpostList.find { it.journalpostId == dokumentInfo.originalJournalpostId }
-                    if (foundJournalpost == null) {
-                        logger.error("Could not find original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}")
+                        val foundJournalpostFromSaf = try {
+                            getJournalpost(journalpostId = dokumentInfo.originalJournalpostId)
+                        } catch (e: Exception) {
+                            logger.error(
+                                "Failed to fetch original journalpost with id ${dokumentInfo.originalJournalpostId} for dokumentInfoId ${dokumentInfo.dokumentInfoId}",
+                                e
+                            )
+                            throw e
+                        }
+                        foundJournalpostFromSaf
                     }
-                    foundJournalpost
                 } else null
 
                 val dokumentbeskrivelse = Dokumentbeskrivelse().apply {
@@ -168,12 +183,10 @@ class AvtalemeldingService(
                     tittel = getDokumentbeskrivelseTittel(
                         dokumentInfo = dokumentInfo,
                         originalJournalpost = originalJournalpost,
-                        dokumentIsFromOldJournalpost = dokumentIsFromOldJournalpost
                     )
                     opprettetDato = getDokumentbeskrivelseOpprettetDato(
                         originalJournalpost = originalJournalpost,
                         newJournalpost = newJournalpost,
-                        dokumentIsFromOldJournalpost = dokumentIsFromOldJournalpost
                     )
                     opprettetAv = getDokumentbeskrivelseOpprettetAv(
                         originalJournalpost = originalJournalpost,
@@ -193,7 +206,6 @@ class AvtalemeldingService(
                             dokumentInfo = dokumentInfo,
                             originalJournalpost = originalJournalpost,
                             newJournalpost = newJournalpost,
-                            dokumentIsFromOldJournalpost = dokumentIsFromOldJournalpost,
                             isHoveddokument = index == 1,
                         )
                     )
@@ -210,7 +222,6 @@ class AvtalemeldingService(
         dokumentInfo: DokumentInfo,
         originalJournalpost: Journalpost?,
         newJournalpost: Journalpost,
-        dokumentIsFromOldJournalpost: Boolean,
         isHoveddokument: Boolean,
     ): Dokumentobjekt {
         return Dokumentobjekt().apply {
@@ -226,7 +237,6 @@ class AvtalemeldingService(
             opprettetDato = getDokumentbeskrivelseOpprettetDato(
                 originalJournalpost = originalJournalpost,
                 newJournalpost = newJournalpost,
-                dokumentIsFromOldJournalpost = dokumentIsFromOldJournalpost
             )
             opprettetAv = getDokumentbeskrivelseOpprettetAv(
                 originalJournalpost = originalJournalpost,
