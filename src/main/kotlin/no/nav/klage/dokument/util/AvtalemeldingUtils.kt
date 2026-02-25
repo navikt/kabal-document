@@ -53,9 +53,8 @@ fun getOldestDateFromDokumentbeskrivelser(
 fun getDokumentbeskrivelseOpprettetDato(
     originalJournalpost: Journalpost?,
     newJournalpost: Journalpost,
-    dokumentIsFromOldJournalpost: Boolean
 ): XMLGregorianCalendar {
-    return if (dokumentIsFromOldJournalpost && originalJournalpost?.getDatoJournalfoert() != null) {
+    return if (originalJournalpost?.getDatoJournalfoert() != null) {
         convertLocalDateTimeToXmlGregorianCalendar(originalJournalpost.getDatoJournalfoert()!!)
     } else {
         convertLocalDateTimeToXmlGregorianCalendar(
@@ -79,14 +78,13 @@ fun convertLocalDateTimeToXmlGregorianCalendar(localDateTime: LocalDateTime): XM
 fun getDokumentbeskrivelseTittel(
     dokumentInfo: DokumentInfo,
     originalJournalpost: Journalpost?,
-    dokumentIsFromOldJournalpost: Boolean
 ): String {
     if (dokumentInfo.tittel.isNullOrBlank()) {
         throw RuntimeException("Dokumenttittel kan ikke være tom for dokumentInfoId=${dokumentInfo.dokumentInfoId}")
     }
 
-    return if (dokumentIsFromOldJournalpost) {
-        when (originalJournalpost!!.journalposttype) {
+    return if (originalJournalpost != null) {
+        when (originalJournalpost.journalposttype) {
             Journalposttype.I -> {
                 val avsenderMottakerNavn = originalJournalpost.avsenderMottaker?.navn ?: UKJENT_NAVN
                 "${dokumentInfo.tittel}, Fra $avsenderMottakerNavn"
