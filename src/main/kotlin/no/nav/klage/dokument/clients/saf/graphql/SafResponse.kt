@@ -159,6 +159,7 @@ enum class Tema {
     PAI, //Innsyn
     PEN, //Pensjon
     PER, //Permittering og masseoppsigelser
+    POI, //Innsyn etter personopplysningsloven
     REH, //Rehabilitering
     REK, //Rekruttering og stilling
     RPO, //Retting av personopplysninger
