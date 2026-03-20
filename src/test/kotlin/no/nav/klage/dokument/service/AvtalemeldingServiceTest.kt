@@ -8,6 +8,7 @@ import jakarta.xml.bind.JAXBElement
 import no.arkivverket.standarder.noark5.arkivmelding.v2.*
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.ereg.EregClient
+import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
 import no.nav.klage.dokument.clients.pdl.graphql.HentPersonResponse
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
@@ -15,7 +16,6 @@ import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.*
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.util.*
-import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.xmlunit.builder.Input
@@ -103,7 +103,8 @@ class AvtalemeldingServiceTest {
         val v: Validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
         v.setSchemaSources(
             Input.fromStream(javaClass.getResourceAsStream("/schema/metadatakatalog.xsd")).build(),
-            Input.fromStream(javaClass.getResourceAsStream("/schema/arkivmelding.xsd")).build()
+            Input.fromStream(javaClass.getResourceAsStream("/schema/arkivmelding.xsd")).build(),
+            Input.fromStream(javaClass.getResourceAsStream("/schema/nav_virksomhet_metadata.xsd")).build()
         )
 
         val validationResult: ValidationResult? = v.validateInstance(Input.fromString(avtalemeldingXml).build())
