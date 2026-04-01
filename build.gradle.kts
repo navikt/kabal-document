@@ -21,13 +21,9 @@ repositories {
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
 }
 
-// CVE GHSA-72hv-8253-57qq: jackson-core async parser DoS. Remove when Spring has updated.
-extra["jackson-2-bom.version"] = "2.21.1"
-extra["jackson-bom.version"] = "3.1.0"
-
 plugins {
     val kotlinVersion = "2.3.10"
-    id("org.springframework.boot") version "4.0.3"
+    id("org.springframework.boot") version "4.0.5"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
