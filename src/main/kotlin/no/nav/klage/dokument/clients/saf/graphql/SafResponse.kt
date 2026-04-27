@@ -61,7 +61,7 @@ data class AvsenderMottaker(
     val land: String?,
     val erLikBruker: Boolean,
 
-) {
+    ) {
     enum class AvsenderMottakerIdType {
         //Why is NULL sent as a value?
         FNR, ORGNR, HPRNR, UTL_ORG, UKJENT, NULL
@@ -115,7 +115,7 @@ enum class Variantformat {
     ORIGINAL
 }
 
-data class Sak(val datoOpprettet: LocalDateTime?, val fagsakId: String?)
+data class Sak(val datoOpprettet: LocalDateTime?, val fagsakId: String?, val arkivsaksnummer: String?)
 
 enum class Tema {
     AAP, //Arbeidsavklaringspenger

@@ -119,9 +119,9 @@ fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
     return navn?.let { "${it.fornavn}${mellomnavn} ${it.etternavn}" }
 }
 
-fun getNavMappe(fagsakId: String?): JAXBElement<*> {
+fun getNavMappe(arkivsaknummer: String?): JAXBElement<*> {
     val navMappe = NavMappe().apply {
-        saksnummer = fagsakId
+        saksnummer = arkivsaknummer
     }
 
     val jaxbElement: JAXBElement<NavMappe> =

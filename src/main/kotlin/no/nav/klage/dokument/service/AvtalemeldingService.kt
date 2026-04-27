@@ -79,7 +79,7 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-            virksomhetsspesifikkeMetadata = getNavMappe(journalpost.sak?.fagsakId)
+            virksomhetsspesifikkeMetadata = getNavMappe(arkivsaknummer = journalpost.sak?.arkivsaksnummer)
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
             part.add(getDAPPart(bruker = journalpost.bruker))
             saksdato = sakOpprettetDato

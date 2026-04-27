@@ -39,7 +39,9 @@ class AvtalemeldingServiceTest {
     val JOURNALPOST_ID_2 = "587654321"
     val JOURNALPOST_ID_3 = "597654321"
     val ARKIV_SAKNUMMER_1 = "111111"
+    val ARKIV_ARKIVSAKNUMMER_1 = "111111A"
     val ARKIV_SAKNUMMER_2 = "222222"
+    val ARKIV_ARKIVSAKNUMMER_2 = "222222A"
     val FIXED_LOCAL_DATE_TIME = LocalDateTime.of(2025, Month.MAY, 26, 7, 32)
     val DATO_OPPRETTET_SAK_1 = FIXED_LOCAL_DATE_TIME
     val DATO_OPPRETTET_SAK_2 = FIXED_LOCAL_DATE_TIME.minusMonths(5)
@@ -740,6 +742,7 @@ class AvtalemeldingServiceTest {
             sak = Sak(
                 datoOpprettet = DATO_OPPRETTET_SAK_1,
                 fagsakId = ARKIV_SAKNUMMER_1,
+                arkivsaksnummer = ARKIV_SAKNUMMER_1,
             ),
             bruker = bruker,
             avsenderMottaker = null,
@@ -814,6 +817,7 @@ class AvtalemeldingServiceTest {
             sak = Sak(
                 datoOpprettet = DATO_OPPRETTET_SAK_2,
                 fagsakId = ARKIV_SAKNUMMER_2,
+                arkivsaksnummer = ARKIV_SAKNUMMER_2,
             ),
             bruker = Bruker(
                 id = BRUKER_ID_FNR, type = BRUKER_TYPE_FNR
@@ -872,6 +876,7 @@ class AvtalemeldingServiceTest {
             sak = Sak(
                 datoOpprettet = null,
                 fagsakId = ARKIV_SAKNUMMER_1,
+                arkivsaksnummer = ARKIV_SAKNUMMER_1,
             ),
             bruker = bruker,
             avsenderMottaker = null,
