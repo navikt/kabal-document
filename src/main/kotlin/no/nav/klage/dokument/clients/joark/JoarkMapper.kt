@@ -60,8 +60,8 @@ class JoarkMapper {
     private fun createJournalpostAvsenderMottager(avsenderMottaker: AvsenderMottaker): JournalpostAvsenderMottaker {
         return if (avsenderMottaker.partId != null) {
             JournalpostAvsenderMottaker(
-                id = avsenderMottaker.partId.value,
-                idType = if (avsenderMottaker.partId.type == PartIdType.PERSON) {
+                id = avsenderMottaker.partId!!.value,
+                idType = if (avsenderMottaker.partId!!.type == PartIdType.PERSON) {
                     AvsenderMottakerIdType.FNR
                 } else {
                     AvsenderMottakerIdType.ORGNR
