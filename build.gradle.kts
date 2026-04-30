@@ -7,7 +7,6 @@ val tokenValidationVersion = "6.0.3"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.3"
-val testContainersVersion = "2.0.5"
 val shedlockVersion = "7.7.0"
 val archunitVersion = "1.4.2"
 val ehcacheVersion = "3.12.0"
@@ -79,9 +78,9 @@ dependencies {
         exclude(group = "org.junit.vintage")
         exclude(group = "org.mockito")
     }
-    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
-    testImplementation("org.testcontainers:testcontainers-junit-jupiter:${testContainersVersion}")
-    testImplementation("org.testcontainers:testcontainers-postgresql:${testContainersVersion}")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers-postgresql")
     testImplementation("com.tngtech.archunit:archunit-junit5:$archunitVersion")
 }
 
