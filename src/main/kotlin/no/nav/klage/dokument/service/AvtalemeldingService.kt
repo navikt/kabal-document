@@ -30,14 +30,16 @@ class AvtalemeldingService(
     fun generateMarshalledAvtalemelding(
         journalpostId: String,
         bestillingsId: String
-    ): String {
+    ): Pair<String, String> {
         return try {
-            marshalAvtalemelding(
-                generateAvtalemelding(
-                    journalpostId = journalpostId,
-                    bestillingsId = bestillingsId,
-                )
+            val (arkivsaksnummer, avtalemelding) = generateAvtalemelding(
+                journalpostId = journalpostId,
+                bestillingsId = bestillingsId,
             )
+            val avtalemeldingAsString = marshalAvtalemelding(
+                avtalemelding
+            )
+            arkivsaksnummer to avtalemeldingAsString
         } catch (e: Exception) {
             logger.error("Failed to generate avtalemelding for journalpost $journalpostId", e)
             throw e
@@ -45,7 +47,7 @@ class AvtalemeldingService(
     }
 
     //Avtalemelding er en utvidet versjon av arkivmelding
-    fun generateAvtalemelding(journalpostId: String, bestillingsId: String): Arkivmelding {
+    fun generateAvtalemelding(journalpostId: String, bestillingsId: String): Pair<String, Arkivmelding> {
         val journalpost = getJournalpost(journalpostId = journalpostId)
         val datoAvtalemeldingOpprettet = getNow()
 
@@ -61,14 +63,25 @@ class AvtalemeldingService(
             newJournalpost = journalpost,
         )
 
-        avtalemelding.mappe.add(getSaksmappe(journalpost = journalpost, dokumentBeskrivelser = dokumentBeskrivelser))
+        val arkivsaksnummer = if (journalpost.sak?.arkivsaksnummer != null) {
+            journalpost.sak.arkivsaksnummer
+        } else {
+            throw RuntimeException("No arkivsaksnummer in journalpost ${journalpost.journalpostId}")
+        }
 
-        return avtalemelding
+        avtalemelding.mappe.add(getSaksmappe(
+            journalpost = journalpost,
+            dokumentBeskrivelser = dokumentBeskrivelser,
+            arkivsaksnummer = arkivsaksnummer,
+        ))
+
+        return arkivsaksnummer to avtalemelding
     }
 
     private fun getSaksmappe(
         journalpost: Journalpost,
-        dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
+        dokumentBeskrivelser: Collection<Dokumentbeskrivelse>,
+        arkivsaksnummer: String,
     ): Saksmappe {
         val sakOpprettetDato = if (journalpost.sak?.datoOpprettet != null) {
             convertLocalDateTimeToXmlGregorianCalendar(journalpost.sak.datoOpprettet)
@@ -79,7 +92,7 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-            virksomhetsspesifikkeMetadata = getNavMappe(arkivsaknummer = journalpost.sak?.arkivsaksnummer)
+            virksomhetsspesifikkeMetadata = getNavMappe(arkivsaknummer = arkivsaksnummer)
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
             part.add(getDAPPart(bruker = journalpost.bruker))
             saksdato = sakOpprettetDato
