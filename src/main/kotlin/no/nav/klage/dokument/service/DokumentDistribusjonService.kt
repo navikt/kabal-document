@@ -38,8 +38,8 @@ class DokumentDistribusjonService(
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),
                 )
                 logger.debug("Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId")
-                if (activeSpringProfile == "dev" && avtalemelding.length <= 2000) {
-                    logger.debug("Avtalemelding content: $avtalemelding")
+                if (activeSpringProfile == "dev") {
+                    logger.debug("Avtalemelding content (first 2000 chars): ${avtalemelding.take(2000)}")
                 }
                 avtalemelding
             } else null
