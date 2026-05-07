@@ -97,7 +97,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemeldingXml = avtalemeldingService.generateMarshalledAvtalemelding(
+        val (arkivsaksnummer, avtalemeldingXml) = avtalemeldingService.generateMarshalledAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -125,7 +125,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -158,7 +158,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -191,7 +191,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -229,7 +229,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -265,7 +265,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -299,7 +299,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -333,7 +333,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -367,7 +367,7 @@ class AvtalemeldingServiceTest {
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
         every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -389,7 +389,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -413,7 +413,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID
         )
@@ -434,7 +434,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
         )
@@ -471,7 +471,7 @@ class AvtalemeldingServiceTest {
         )
         every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
 
-        val avtalemelding = avtalemeldingService.generateAvtalemelding(
+        val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
         )

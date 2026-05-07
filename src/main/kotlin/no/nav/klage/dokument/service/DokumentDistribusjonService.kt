@@ -33,11 +33,11 @@ class DokumentDistribusjonService(
     ): UUID {
         val avtalemelding =
             if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")) {
-                val avtalemelding = avtalemeldingService.generateMarshalledAvtalemelding(
+                val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateMarshalledAvtalemelding(
                     journalpostId = journalpostId,
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),
                 )
-                logger.debug("Avtalemelding generert for journalpost $journalpostId, meldingId: $avsenderMottakerDistribusjonId")
+                logger.debug("Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId")
                 if (activeSpringProfile == "dev" && avtalemelding.length <= 2000) {
                     logger.debug("Avtalemelding content: $avtalemelding")
                 }
