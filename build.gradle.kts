@@ -10,7 +10,7 @@ val springDocVersion = "3.0.3"
 val shedlockVersion = "7.7.0"
 val archunitVersion = "1.4.2"
 val ehcacheVersion = "3.12.0"
-val kodeverkVersion = "3.2.11"
+val kodeverkVersion = "3.2.13"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -45,7 +45,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
-    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.7")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.8")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
