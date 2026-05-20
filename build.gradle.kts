@@ -45,7 +45,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
-    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.7")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.8")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 
