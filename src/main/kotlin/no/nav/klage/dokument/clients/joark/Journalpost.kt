@@ -130,7 +130,7 @@ enum class FagsaksSystem {
     KELVIN,
     DAGPENGER,
     KOMPYS,
-    ARGUS,
+    WATSON,
     NEESSI,
     TILLEGGSSTONADER,
     ARBEIDSOPPFOLGING,
@@ -140,6 +140,9 @@ enum class FagsaksSystem {
     HELT,
     SUPERHELT,
     UNG_SAK,
+    REMEDY,
+    EKSPERTBISTAND,
+    ARGUS,
 }
 
 enum class ArkivsaksSystem {
