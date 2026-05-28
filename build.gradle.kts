@@ -44,6 +44,16 @@ dependencies {
     implementation("javax.cache:cache-api")
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
+    //Fix vulnerabilities, while waiting for fix in Spring Boot.
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.22")
+    implementation("io.netty:netty-codec-http:4.2.14.Final")
+    implementation("io.netty:netty-codec-http2:4.2.14.Final")
+    implementation("io.netty:netty-codec-http3:4.2.14.Final")
+    implementation("io.netty:netty-codec-dns:4.2.14.Final")
+    implementation("io.netty:netty-codec-compression:4.2.14.Final")
+    implementation("io.netty:netty-transport-native-epoll:4.2.14.Final")
+    implementation("io.netty:netty-resolver-dns:4.2.14.Final")
+
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
     implementation("org.glassfish.jaxb:jaxb-runtime:4.0.8")
 
