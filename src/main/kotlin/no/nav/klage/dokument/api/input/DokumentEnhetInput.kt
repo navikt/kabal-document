@@ -12,6 +12,7 @@ data class DokumentEnhetWithDokumentreferanserInput(
     val dokumentreferanser: DokumentInput,
     val dokumentTypeId: String,
     val journalfoerendeSaksbehandlerIdent: String,
+    val trygderettenMetadata: TrygderettenMetadataInput? = null,
 ) {
     data class DokumentInput(
         val hoveddokument: Dokument,

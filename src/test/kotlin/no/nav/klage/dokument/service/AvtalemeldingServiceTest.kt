@@ -9,6 +9,7 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.*
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.clients.ereg.EregClient
 import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
+import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
 import no.nav.klage.dokument.clients.pdl.graphql.HentPersonResponse
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
@@ -33,6 +34,9 @@ class AvtalemeldingServiceTest {
     val safGraphQlClient = mockk<SafGraphQlClient>()
     val pdlClient = mockk<PdlClient>()
     val eregClient = mockk<EregClient>()
+    val klageUnleashProxyClient = mockk<KlageUnleashProxyClient>().apply {
+        every { isEnabled(any()) } returns false
+    }
 
     val BESTILLINGS_ID = "bestillingsId"
     val JOURNALPOST_ID_1 = "987654321"
@@ -83,6 +87,7 @@ class AvtalemeldingServiceTest {
         applicationName = "test",
         pdlClient = pdlClient,
         eregClient = eregClient,
+        klageUnleashProxyClient = klageUnleashProxyClient,
     )
 
     @Test
@@ -127,7 +132,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertAvtalemelding(avtalemelding = avtalemelding)
@@ -160,7 +166,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertAvtalemelding(avtalemelding = avtalemelding, brukerIsOrganisasjon = true)
@@ -193,7 +200,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertDokumentbeskrivelseVedlegg(
@@ -231,7 +239,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertDokumentbeskrivelseVedlegg(
@@ -267,7 +276,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         val dokumentobjektHoveddokument =
@@ -301,7 +311,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         val dokumentobjektHoveddokument =
@@ -335,7 +346,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         val dokumentobjektHoveddokument =
@@ -369,7 +381,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         val dokumentobjektHoveddokument =
@@ -391,7 +404,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertAvtalemelding(
@@ -415,7 +429,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertThat(avtalemelding.antallFiler).isEqualTo(1)
@@ -437,6 +452,7 @@ class AvtalemeldingServiceTest {
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertThat(avtalemelding.mappe.first().registrering.first().dokumentbeskrivelse.last().opprettetAv).isEqualTo(
@@ -474,6 +490,7 @@ class AvtalemeldingServiceTest {
         val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
             bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         assertThat(avtalemelding.mappe.first().opprettetDato).isEqualTo(

@@ -2,6 +2,7 @@ package no.nav.klage.dokument.api.mapper
 
 
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
+import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.dokument.domain.dokument.*
@@ -12,6 +13,7 @@ import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class DokumentEnhetInputMapper {
@@ -181,4 +183,32 @@ class DokumentEnhetInputMapper {
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
     }
+
+    fun mapTrygderettenMetadataInput(
+        input: TrygderettenMetadataInput,
+        dokumentEnhetId: UUID,
+    ): TrygderettenMetadata =
+        TrygderettenMetadata(
+            dokumentEnhetId = dokumentEnhetId,
+            kravfremsettelsesdato = input.kravfremsettelsesdato,
+            paaanketVedtaksdato = input.paaanketVedtaksdato,
+            tidligereITROgOpphevetHenvist = input.tidligereITROgOpphevetHenvist,
+            gjenopptak = input.gjenopptak,
+            forsterketRett = input.forsterketRett,
+            ettersendelse = input.ettersendelse,
+            lovhenvisning = input.lovhenvisning,
+        )
+
+    fun mapTrygderettenMetadataToInput(
+        metadata: TrygderettenMetadata,
+    ): TrygderettenMetadataInput =
+        TrygderettenMetadataInput(
+            kravfremsettelsesdato = metadata.kravfremsettelsesdato,
+            paaanketVedtaksdato = metadata.paaanketVedtaksdato,
+            tidligereITROgOpphevetHenvist = metadata.tidligereITROgOpphevetHenvist,
+            gjenopptak = metadata.gjenopptak,
+            forsterketRett = metadata.forsterketRett,
+            ettersendelse = metadata.ettersendelse,
+            lovhenvisning = metadata.lovhenvisning,
+        )
 }

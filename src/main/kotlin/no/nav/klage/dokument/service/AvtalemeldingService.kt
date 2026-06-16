@@ -1,7 +1,9 @@
 package no.nav.klage.dokument.service
 
 import no.arkivverket.standarder.noark5.arkivmelding.v2.*
+import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.ereg.EregClient
+import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
 import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
 import no.nav.klage.dokument.clients.saf.graphql.*
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
@@ -20,21 +22,25 @@ class AvtalemeldingService(
     private val applicationName: String,
     private val pdlClient: PdlClient,
     private val eregClient: EregClient,
+    private val klageUnleashProxyClient: KlageUnleashProxyClient,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
 
+        private const val NAV_TR_V2_TOGGLE = "nav-tr-v2"
     }
 
     fun generateMarshalledAvtalemelding(
         journalpostId: String,
-        bestillingsId: String
+        bestillingsId: String,
+        trygderettenMetadata: TrygderettenMetadataInput? = null,
     ): Pair<String, String> {
         return try {
             val (arkivsaksnummer, avtalemelding) = generateAvtalemelding(
                 journalpostId = journalpostId,
                 bestillingsId = bestillingsId,
+                trygderettenMetadata = trygderettenMetadata,
             )
             val avtalemeldingAsString = marshalAvtalemelding(
                 avtalemelding
@@ -47,7 +53,11 @@ class AvtalemeldingService(
     }
 
     //Avtalemelding er en utvidet versjon av arkivmelding
-    fun generateAvtalemelding(journalpostId: String, bestillingsId: String): Pair<String, Arkivmelding> {
+    fun generateAvtalemelding(
+        journalpostId: String,
+        bestillingsId: String,
+        trygderettenMetadata: TrygderettenMetadataInput?,
+    ): Pair<String, Arkivmelding> {
         val journalpost = getJournalpost(journalpostId = journalpostId)
         val datoAvtalemeldingOpprettet = getNow()
 
@@ -73,6 +83,7 @@ class AvtalemeldingService(
             journalpost = journalpost,
             dokumentBeskrivelser = dokumentBeskrivelser,
             arkivsaksnummer = arkivsaksnummer,
+            trygderettenMetadata = trygderettenMetadata,
         ))
 
         return arkivsaksnummer to avtalemelding
@@ -82,6 +93,7 @@ class AvtalemeldingService(
         journalpost: Journalpost,
         dokumentBeskrivelser: Collection<Dokumentbeskrivelse>,
         arkivsaksnummer: String,
+        trygderettenMetadata: TrygderettenMetadataInput?,
     ): Saksmappe {
         val sakOpprettetDato = if (journalpost.sak?.datoOpprettet != null) {
             convertLocalDateTimeToXmlGregorianCalendar(journalpost.sak.datoOpprettet)
@@ -92,7 +104,11 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-            virksomhetsspesifikkeMetadata = getNavMappe(arkivsaknummer = arkivsaksnummer)
+            virksomhetsspesifikkeMetadata = getNavMappe(
+                arkivsaknummer = arkivsaksnummer,
+                useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE),
+                trygderettenMetadata = trygderettenMetadata,
+            )
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
             part.add(getDAPPart(bruker = journalpost.bruker))
             saksdato = sakOpprettetDato

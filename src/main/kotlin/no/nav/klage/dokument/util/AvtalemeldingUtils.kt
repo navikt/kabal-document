@@ -8,10 +8,14 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.Dokumentbeskrivelse
 import no.arkivverket.standarder.noark5.arkivmelding.v2.EnhetsidentifikatorType
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
+import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.*
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import java.io.StringWriter
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.util.*
 import javax.xml.datatype.DatatypeConfigurationException
@@ -75,6 +79,18 @@ fun convertLocalDateTimeToXmlGregorianCalendar(localDateTime: LocalDateTime): XM
     }
 }
 
+fun convertLocalDateToXmlGregorianCalendar(localDate: LocalDate): XMLGregorianCalendar {
+    try {
+        return DatatypeFactory.newInstance()
+            .newXMLGregorianCalendar(localDate.format(ISO_LOCAL_DATE))
+    } catch (e: DatatypeConfigurationException) {
+        throw RuntimeException(
+            "Kunne ikke konvertere fra localDate til XmlGregorianCalendar. Forsøkte å konvertere localDate=$localDate",
+            e
+        )
+    }
+}
+
 fun getDokumentbeskrivelseTittel(
     dokumentInfo: DokumentInfo,
     originalJournalpost: Journalpost?,
@@ -119,13 +135,35 @@ fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
     return navn?.let { "${it.fornavn}${mellomnavn} ${it.etternavn}" }
 }
 
-fun getNavMappe(arkivsaknummer: String?): JAXBElement<*> {
-    val navMappe = NavMappe().apply {
-        saksnummer = arkivsaknummer
-    }
-
-    val jaxbElement: JAXBElement<NavMappe> =
+fun getNavMappe(
+    arkivsaknummer: String?,
+    useV2: Boolean,
+    trygderettenMetadata: TrygderettenMetadataInput? = null,
+): JAXBElement<*> {
+    val jaxbElement: JAXBElement<*> = if (useV2) {
+        if (trygderettenMetadata == null) {
+            throw DokumentEnhetNotValidException(
+                "trygderettenMetadata mangler. Påkrevd når feature toggle for nav-tr-v2 er aktivert."
+            )
+        }
+        val navMappe = no.nav.avtaltmelding.trygderetten.v2.NavMappe().apply {
+            saksnummer = arkivsaknummer
+            kravfremsettelsesdato =
+                trygderettenMetadata.kravfremsettelsesdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
+            paaanketVedtaksdato = convertLocalDateToXmlGregorianCalendar(trygderettenMetadata.paaanketVedtaksdato)
+            isTidligereITROgOpphevetHenvist = trygderettenMetadata.tidligereITROgOpphevetHenvist
+            isGjenopptak = trygderettenMetadata.gjenopptak
+            isForsterketRett = trygderettenMetadata.forsterketRett
+            isEttersendelse = trygderettenMetadata.ettersendelse
+            lovhenvisning = trygderettenMetadata.lovhenvisning
+        }
+        no.nav.avtaltmelding.trygderetten.v2.ObjectFactory().createNavMappe(navMappe)
+    } else {
+        val navMappe = NavMappe().apply {
+            saksnummer = arkivsaknummer
+        }
         no.nav.avtaltmelding.trygderetten.v1.ObjectFactory().createNavMappe(navMappe)
+    }
 
     return JAXBElement(
         QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),
@@ -181,7 +219,11 @@ fun getAMPPart(opprettetAvNavn: String?): Part {
 }
 
 fun marshalAvtalemelding(avtalemelding: Arkivmelding): String {
-    val jaxbContext = JAXBContext.newInstance(Arkivmelding::class.java, NavMappe::class.java)
+    val jaxbContext = JAXBContext.newInstance(
+        Arkivmelding::class.java,
+        NavMappe::class.java,
+        no.nav.avtaltmelding.trygderetten.v2.NavMappe::class.java,
+    )
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     val sw = StringWriter()
