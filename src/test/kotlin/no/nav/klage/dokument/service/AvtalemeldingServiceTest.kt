@@ -7,6 +7,7 @@ import io.mockk.verify
 import jakarta.xml.bind.JAXBElement
 import no.arkivverket.standarder.noark5.arkivmelding.v2.*
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
+import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.ereg.EregClient
 import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
 import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
@@ -16,7 +17,11 @@ import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.*
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
+import no.nav.klage.dokument.domain.dokument.Adresse
+import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.domain.dokument.Representant
 import no.nav.klage.dokument.util.*
+import no.nav.klage.kodeverk.PartIdType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.xmlunit.builder.Input
@@ -24,6 +29,7 @@ import org.xmlunit.validation.Languages
 import org.xmlunit.validation.ValidationResult
 import org.xmlunit.validation.Validator
 import java.math.BigInteger
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Journalpost as ArkivJournalpost
@@ -90,6 +96,34 @@ class AvtalemeldingServiceTest {
         klageUnleashProxyClient = klageUnleashProxyClient,
     )
 
+    val logger = getLogger(AvtalemeldingServiceTest::class.java)
+
+    val trygderettenMetadataInput = TrygderettenMetadataInput(
+        kravfremsettelsesdato = LocalDate.of(2025, 11, 1),
+        paaanketVedtaksdato = LocalDate.of(2026, 2, 20),
+        tidligereITROgOpphevetHenvist = true,
+        gjenopptak = false,
+        forsterketRett = true,
+        ettersendelse = false,
+        lovhenvisning = "ftrl. § 12-7",
+        representant = Representant(
+            partId = PartId(
+                type = PartIdType.PERSON,
+                value = "01011012345",
+            ),
+            navn = "Representant Representantsen",
+            adresse = Adresse(
+                adressetype = "norskPostadresse",
+                adresselinje1 = "Gateveien 1",
+                adresselinje2 = null,
+                adresselinje3 = null,
+                postnummer = "0001",
+                poststed = "OSLO",
+                land = "NO",
+            ),
+        ),
+    )
+
     @Test
     fun `xml is valid against schema`() {
         val journalpost1 = getJournalpost(
@@ -104,7 +138,8 @@ class AvtalemeldingServiceTest {
 
         val (arkivsaksnummer, avtalemeldingXml) = avtalemeldingService.generateMarshalledAvtalemelding(
             journalpostId = JOURNALPOST_ID_1,
-            bestillingsId = BESTILLINGS_ID
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = null,
         )
 
         val v: Validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
@@ -115,6 +150,39 @@ class AvtalemeldingServiceTest {
         )
 
         val validationResult: ValidationResult? = v.validateInstance(Input.fromString(avtalemeldingXml).build())
+        assertThat(validationResult?.isValid).isTrue
+    }
+
+    @Test
+    fun `v2 xml is valid against v2 schema`() {
+        val journalpost1 = getJournalpost(
+            brukerOrgNummer = null, originalJournalpostIdForVedlegg = null
+        )
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = any()) } returns listOf(
+            journalpost1,
+            getJournalpost2(journalposttype = Journalposttype.I),
+        )
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageUnleashProxyClient.isEnabled("nav-tr-v2") } returns true
+
+        val (arkivsaksnummer, avtalemeldingXml) = avtalemeldingService.generateMarshalledAvtalemelding(
+            journalpostId = JOURNALPOST_ID_1,
+            bestillingsId = BESTILLINGS_ID,
+            trygderettenMetadata = trygderettenMetadataInput,
+        )
+
+        logger.debug("Generated v2 avtalemelding xml for arkivsaksnummer {}:\n{}", arkivsaksnummer, avtalemeldingXml)
+
+        val v = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
+        v.setSchemaSources(
+            Input.fromStream(javaClass.getResourceAsStream("/schema/metadatakatalog.xsd")).build(),
+            Input.fromStream(javaClass.getResourceAsStream("/schema/arkivmelding.xsd")).build(),
+            Input.fromStream(javaClass.getResourceAsStream("/schema/nav_virksomhet_metadata_v2.xsd")).build()
+        )
+
+        val validationResult = v.validateInstance(Input.fromString(avtalemeldingXml).build())
+        validationResult?.problems?.forEach { logger.warn("Validation problem: {}", it) }
         assertThat(validationResult?.isValid).isTrue
     }
 

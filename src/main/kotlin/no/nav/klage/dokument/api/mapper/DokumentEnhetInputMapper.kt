@@ -197,6 +197,7 @@ class DokumentEnhetInputMapper {
             forsterketRett = input.forsterketRett,
             ettersendelse = input.ettersendelse,
             lovhenvisning = input.lovhenvisning,
+            representant = input.representant,
         )
 
     fun mapTrygderettenMetadataToInput(
@@ -210,5 +211,6 @@ class DokumentEnhetInputMapper {
             forsterketRett = metadata.forsterketRett,
             ettersendelse = metadata.ettersendelse,
             lovhenvisning = metadata.lovhenvisning,
+            representant = metadata.representant,
         )
 }

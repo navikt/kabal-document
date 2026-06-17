@@ -3,15 +3,15 @@ package no.nav.klage.dokument.util
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.JAXBElement
 import jakarta.xml.bind.Marshaller
-import no.arkivverket.standarder.noark5.arkivmelding.v2.Arkivmelding
-import no.arkivverket.standarder.noark5.arkivmelding.v2.Dokumentbeskrivelse
-import no.arkivverket.standarder.noark5.arkivmelding.v2.EnhetsidentifikatorType
-import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
+import no.arkivverket.standarder.noark5.arkivmelding.v2.*
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.*
+import no.nav.klage.dokument.clients.saf.graphql.Journalpost
+import no.nav.klage.dokument.domain.dokument.Representant
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
+import no.nav.klage.kodeverk.PartIdType
 import java.io.StringWriter
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,6 +34,7 @@ const val NAV_KLAGEINSTANS_NAVN = "NAV Klageinstans"
 const val TRYGDERETTEN_NAVN = "TRYGDERETTEN"
 const val SAKSPART_ROLLE_DAP = "DAP"
 const val SAKSPART_ROLLE_AMP = "AMP"
+const val SAKSPART_ROLLE_REPRESENTANT = "REP"
 const val TRYGDERETTEN_ORGNR = "974761084"
 const val NAV_KLAGEINSTANS_ORGNR = "991078045"
 const val UNDER_BEHANDLING = "Under behandling"
@@ -215,6 +216,26 @@ fun getAMPPart(opprettetAvNavn: String?): Part {
         partRolle = SAKSPART_ROLLE_AMP
         organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = NAV_KLAGEINSTANS_ORGNR }
         kontaktperson = opprettetAvNavn
+    }
+}
+
+fun getREPPart(representant: Representant): Part {
+    return Part().apply {
+        partNavn = representant.navn
+        partRolle = SAKSPART_ROLLE_REPRESENTANT
+        when (representant.partId.type) {
+            PartIdType.PERSON ->
+                foedselsnummer = FoedselsnummerType().apply { foedselsnummer = representant.partId.value }
+
+            PartIdType.VIRKSOMHET ->
+                organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = representant.partId.value }
+        }
+        representant.adresse?.let { adresse ->
+            postadresse.addAll(listOfNotNull(adresse.adresselinje1, adresse.adresselinje2, adresse.adresselinje3))
+            postnummer = adresse.postnummer
+            poststed = adresse.poststed
+            land = adresse.land
+        }
     }
 }
 

@@ -24,11 +24,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         <element name="saksnummer" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         <element name="kravfremsettelsesdato" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         <element name="paaanketVedtaksdato" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         <element name="lovhenvisning" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         <element name="tidligereITROgOpphevetHenvist" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="gjenopptak" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="forsterketRett" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         <element name="ettersendelse" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="lovhenvisning" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       </sequence>
  *     </restriction>
  *   </complexContent>
@@ -42,11 +42,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "saksnummer",
     "kravfremsettelsesdato",
     "paaanketVedtaksdato",
+    "lovhenvisning",
     "tidligereITROgOpphevetHenvist",
     "gjenopptak",
     "forsterketRett",
-    "ettersendelse",
-    "lovhenvisning"
+    "ettersendelse"
 })
 @XmlRootElement
 public class NavMappe {
@@ -58,12 +58,12 @@ public class NavMappe {
     @XmlElement(required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar paaanketVedtaksdato;
+    @XmlElement(required = true)
+    protected String lovhenvisning;
     protected Boolean tidligereITROgOpphevetHenvist;
     protected Boolean gjenopptak;
     protected boolean forsterketRett;
     protected boolean ettersendelse;
-    @XmlElement(required = true)
-    protected String lovhenvisning;
 
     /**
      * Gets the value of the saksnummer property.

@@ -34,7 +34,7 @@ class AvtalemeldingService(
     fun generateMarshalledAvtalemelding(
         journalpostId: String,
         bestillingsId: String,
-        trygderettenMetadata: TrygderettenMetadataInput? = null,
+        trygderettenMetadata: TrygderettenMetadataInput?,
     ): Pair<String, String> {
         return try {
             val (arkivsaksnummer, avtalemelding) = generateAvtalemelding(
@@ -111,6 +111,7 @@ class AvtalemeldingService(
             )
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
             part.add(getDAPPart(bruker = journalpost.bruker))
+            trygderettenMetadata?.representant?.let { part.add(getREPPart(representant = it)) }
             saksdato = sakOpprettetDato
             administrativEnhet = NAV_KLAGEINSTANS_NAVN
             saksansvarlig = journalpost.opprettetAvNavn
