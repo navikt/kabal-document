@@ -23,8 +23,14 @@ class TrygderettenMetadata(
     val forsterketRett: Boolean,
     @Column(name = "ettersendelse")
     val ettersendelse: Boolean,
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "trygderetten_metadata_lovhenvisning",
+        schema = "document",
+        joinColumns = [JoinColumn(name = "trygderetten_metadata_id")],
+    )
     @Column(name = "lovhenvisning")
-    val lovhenvisning: String,
+    val lovhenvisning: Set<String>,
     @Embedded
     @AttributeOverrides(
         value = [

@@ -8,7 +8,10 @@
 package no.nav.avtaltmelding.trygderetten.v2;
 
 import jakarta.xml.bind.annotation.*;
+
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -24,7 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         <element name="saksnummer" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         <element name="kravfremsettelsesdato" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         <element name="paaanketVedtaksdato" type="{http://www.w3.org/2001/XMLSchema}date"/>
- *         <element name="lovhenvisning" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="lovhenvisning" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
  *         <element name="tidligereITROgOpphevetHenvist" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="gjenopptak" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="forsterketRett" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
@@ -59,7 +62,7 @@ public class NavMappe {
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar paaanketVedtaksdato;
     @XmlElement(required = true)
-    protected String lovhenvisning;
+    protected List<String> lovhenvisning;
     protected Boolean tidligereITROgOpphevetHenvist;
     protected Boolean gjenopptak;
     protected boolean forsterketRett;
@@ -255,30 +258,26 @@ public class NavMappe {
     /**
      * Gets the value of the lovhenvisning property.
      *
+     * <p>This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the object.
+     *
+     * <p>For example, to add a new item, do as follows:
+     * <pre>
+     * getLovhenvisning().add(newItem);
+     * </pre>
+     *
+     * <p>Objects of the following type(s) are allowed in the list
+     * {@link String }
+     *
      * @return
-     *     possible object is
-     *     {@link String }
-     *
+     *     The value of the lovhenvisning property.
      */
-    public String getLovhenvisning() {
-        return lovhenvisning;
-    }
-
-    /**
-     * Sets the value of the lovhenvisning property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setLovhenvisning(String value) {
-        this.lovhenvisning = value;
-    }
-
-    public NavMappe useLovhenvisning(String value) {
-        setLovhenvisning(value);
-        return this;
+    public List<String> getLovhenvisning() {
+        if (lovhenvisning == null) {
+            lovhenvisning = new ArrayList<>();
+        }
+        return this.lovhenvisning;
     }
 
 }

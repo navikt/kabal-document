@@ -89,7 +89,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
             gjenopptak = null,
             forsterketRett = false,
             ettersendelse = true,
-            lovhenvisning = "ftrl. § 22-13",
+            lovhenvisning = setOf("ftrl. § 22-13"),
             representant = null,
         )
 
@@ -102,7 +102,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
 
         assertThat(retrieved.representant).isNull()
         assertThat(retrieved.kravfremsettelsesdato).isNull()
-        assertThat(retrieved.lovhenvisning).isEqualTo("ftrl. § 22-13")
+        assertThat(retrieved.lovhenvisning).isEqualTo(setOf("ftrl. § 22-13"))
     }
 
     private fun persistDokumentEnhet(): UUID {
@@ -166,7 +166,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
         gjenopptak = false,
         forsterketRett = true,
         ettersendelse = false,
-        lovhenvisning = "ftrl. § 12-7",
+        lovhenvisning = setOf("ftrl. § 12-7"),
         representant = Representant(
             partId = PartId(
                 type = PartIdType.PERSON,

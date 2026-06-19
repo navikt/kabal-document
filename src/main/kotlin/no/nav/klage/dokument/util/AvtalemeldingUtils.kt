@@ -36,7 +36,7 @@ const val SAKSPART_ROLLE_DAP = "DAP"
 const val SAKSPART_ROLLE_AMP = "AMP"
 const val SAKSPART_ROLLE_REPRESENTANT = "REP"
 const val TRYGDERETTEN_ORGNR = "974761084"
-const val NAV_KLAGEINSTANS_ORGNR = "991078045"
+const val NAV_KLAGEINSTANS_ORGNR = "991078061"
 const val UNDER_BEHANDLING = "Under behandling"
 const val MOTTAKER = "Mottaker"
 const val AVSENDER = "Avsender"
@@ -156,7 +156,7 @@ fun getNavMappe(
             isGjenopptak = trygderettenMetadata.gjenopptak
             isForsterketRett = trygderettenMetadata.forsterketRett
             isEttersendelse = trygderettenMetadata.ettersendelse
-            lovhenvisning = trygderettenMetadata.lovhenvisning
+            lovhenvisning.addAll(trygderettenMetadata.lovhenvisning)
         }
         no.nav.avtaltmelding.trygderetten.v2.ObjectFactory().createNavMappe(navMappe)
     } else {

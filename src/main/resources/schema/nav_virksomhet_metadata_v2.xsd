@@ -9,7 +9,7 @@
 			<xs:element name="saksnummer" type="xs:string"/>
 			<xs:element name="kravfremsettelsesdato" type="xs:date" minOccurs="0"/>
 			<xs:element name="paaanketVedtaksdato" type="xs:date"/>
-			<xs:element name="lovhenvisning" type="xs:string"/>
+			<xs:element name="lovhenvisning" type="xs:string" maxOccurs="unbounded"/>
 			<xs:element name="tidligereITROgOpphevetHenvist" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="gjenopptak" type="xs:boolean" minOccurs="0"/>
 			<xs:element name="forsterketRett" type="xs:boolean"/>

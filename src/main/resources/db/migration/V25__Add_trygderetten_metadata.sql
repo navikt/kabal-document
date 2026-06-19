@@ -8,7 +8,6 @@ CREATE TABLE document.trygderetten_metadata
     gjenopptak                          BOOLEAN,
     forsterket_rett                     BOOLEAN NOT NULL,
     ettersendelse                       BOOLEAN NOT NULL,
-    lovhenvisning                       TEXT    NOT NULL,
     representant_part_id_type           TEXT,
     representant_part_id_value          TEXT,
     representant_navn                   TEXT,
@@ -25,3 +24,15 @@ CREATE TABLE document.trygderetten_metadata
 );
 
 CREATE INDEX trygderetten_metadata_fk_idx ON document.trygderetten_metadata (dokumentenhet_id);
+
+CREATE TABLE document.trygderetten_metadata_lovhenvisning
+(
+    trygderetten_metadata_id UUID NOT NULL,
+    lovhenvisning            TEXT NOT NULL,
+    CONSTRAINT fk_trygderetten_metadata_lovhenvisning
+        FOREIGN KEY (trygderetten_metadata_id)
+            REFERENCES document.trygderetten_metadata (id)
+);
+
+CREATE INDEX trygderetten_metadata_lovhenvisning_fk_idx
+    ON document.trygderetten_metadata_lovhenvisning (trygderetten_metadata_id);

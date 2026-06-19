@@ -12,6 +12,6 @@ data class TrygderettenMetadataInput(
     val gjenopptak: Boolean?,
     val forsterketRett: Boolean,
     val ettersendelse: Boolean,
-    val lovhenvisning: String,
+    val lovhenvisning: Set<String>,
     val representant: Representant?,
 )

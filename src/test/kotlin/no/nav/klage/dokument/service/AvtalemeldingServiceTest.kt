@@ -105,7 +105,7 @@ class AvtalemeldingServiceTest {
         gjenopptak = false,
         forsterketRett = true,
         ettersendelse = false,
-        lovhenvisning = "ftrl. § 12-7",
+        lovhenvisning = setOf("ftrl. § 12-7"),
         representant = Representant(
             partId = PartId(
                 type = PartIdType.PERSON,
