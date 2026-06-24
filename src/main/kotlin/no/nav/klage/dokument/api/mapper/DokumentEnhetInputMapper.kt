@@ -187,8 +187,12 @@ class DokumentEnhetInputMapper {
     fun mapTrygderettenMetadataInput(
         input: TrygderettenMetadataInput,
         dokumentEnhetId: UUID,
-    ): TrygderettenMetadata =
-        TrygderettenMetadata(
+    ): TrygderettenMetadata {
+        if (input.lovhenvisning.isEmpty()) {
+            throw DokumentEnhetNotValidException("lovhenvisning cannot be empty")
+        }
+
+        return TrygderettenMetadata(
             dokumentEnhetId = dokumentEnhetId,
             kravfremsettelsesdato = input.kravfremsettelsesdato,
             paaanketVedtaksdato = input.paaanketVedtaksdato,
@@ -199,6 +203,7 @@ class DokumentEnhetInputMapper {
             lovhenvisning = input.lovhenvisning,
             representant = input.representant,
         )
+    }
 
     fun mapTrygderettenMetadataToInput(
         metadata: TrygderettenMetadata,

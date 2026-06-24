@@ -23,7 +23,7 @@ CREATE TABLE document.trygderetten_metadata
             REFERENCES document.dokumentenhet (id)
 );
 
-CREATE INDEX trygderetten_metadata_fk_idx ON document.trygderetten_metadata (dokumentenhet_id);
+CREATE UNIQUE INDEX trygderetten_metadata_dokumentenhet_id_uq ON document.trygderetten_metadata (dokumentenhet_id);
 
 CREATE TABLE document.trygderetten_metadata_lovhenvisning
 (
