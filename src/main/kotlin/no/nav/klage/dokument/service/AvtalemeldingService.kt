@@ -104,14 +104,17 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
+            val useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE)
             virksomhetsspesifikkeMetadata = getNavMappe(
                 arkivsaknummer = arkivsaksnummer,
-                useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE),
+                useV2 = useV2,
                 trygderettenMetadata = trygderettenMetadata,
             )
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
             part.add(getDAPPart(bruker = journalpost.bruker))
-            trygderettenMetadata?.representant?.let { part.add(getREPPart(representant = it)) }
+            if (useV2) {
+                trygderettenMetadata?.representant?.let { part.add(getREPPart(representant = it)) }
+            }
             saksdato = sakOpprettetDato
             administrativEnhet = NAV_KLAGEINSTANS_NAVN
             saksansvarlig = journalpost.opprettetAvNavn
