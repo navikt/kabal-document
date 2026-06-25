@@ -7,7 +7,7 @@ import jakarta.persistence.Embedded
 @Embeddable
 class Representant(
     @Embedded
-    val partId: PartId,
+    val partId: PartId?,
     @Column(name = "navn")
     val navn: String,
     @Embedded

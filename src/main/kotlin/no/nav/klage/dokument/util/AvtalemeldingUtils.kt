@@ -223,12 +223,15 @@ fun getREPPart(representant: Representant): Part {
     return Part().apply {
         partNavn = representant.navn
         partRolle = SAKSPART_ROLLE_REPRESENTANT
-        when (representant.partId.type) {
-            PartIdType.PERSON ->
-                foedselsnummer = FoedselsnummerType().apply { foedselsnummer = representant.partId.value }
+        when (val partId = representant.partId) {
+            null -> {}
+            else -> when (partId.type) {
+                PartIdType.PERSON ->
+                    foedselsnummer = FoedselsnummerType().apply { foedselsnummer = partId.value }
 
-            PartIdType.VIRKSOMHET ->
-                organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = representant.partId.value }
+                PartIdType.VIRKSOMHET ->
+                    organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = partId.value }
+            }
         }
         representant.adresse?.let { adresse ->
             postadresse.addAll(listOfNotNull(adresse.adresselinje1, adresse.adresselinje2, adresse.adresselinje3))

@@ -52,8 +52,8 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
 
         assertThat(retrieved.representant).isNotNull
         assertThat(retrieved.representant!!.navn).isEqualTo(metadata.representant!!.navn)
-        assertThat(retrieved.representant!!.partId.type).isEqualTo(metadata.representant!!.partId.type)
-        assertThat(retrieved.representant!!.partId.value).isEqualTo(metadata.representant!!.partId.value)
+        assertThat(retrieved.representant!!.partId!!.type).isEqualTo(metadata.representant!!.partId!!.type)
+        assertThat(retrieved.representant!!.partId!!.value).isEqualTo(metadata.representant!!.partId!!.value)
         assertThat(retrieved.representant!!.adresse).isNotNull
         assertThat(retrieved.representant!!.adresse!!.adresselinje1).isEqualTo(metadata.representant!!.adresse!!.adresselinje1)
         assertThat(retrieved.representant!!.adresse!!.land).isEqualTo(metadata.representant!!.adresse!!.land)
