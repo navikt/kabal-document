@@ -12,6 +12,7 @@ import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.*
 
@@ -236,6 +237,7 @@ class DokumentEnhetService(
         )
     }
 
+    @Transactional
     fun opprettDokumentEnhetMedDokumentreferanser(
         input: DokumentEnhetWithDokumentreferanserInput
     ): DokumentEnhet {
