@@ -143,6 +143,7 @@ enum class FagsaksSystem {
     REMEDY,
     EKSPERTBISTAND,
     ARGUS,
+    SPEIL,
 }
 
 enum class ArkivsaksSystem {
