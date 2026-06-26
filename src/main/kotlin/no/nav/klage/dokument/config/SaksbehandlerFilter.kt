@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.config
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ReadListener
@@ -29,7 +30,7 @@ class SaksbehandlerFilter(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val teamLogger = getTeamLogger()
-        private val objectMapper = jacksonObjectMapper()
+        private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
     }
 
     override fun doFilterInternal(
