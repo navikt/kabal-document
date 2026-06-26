@@ -10,6 +10,7 @@ import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
@@ -27,7 +28,7 @@ internal class DokumentEnhetServiceTest {
     private val dokumentDistribusjonService = mockk<DokumentDistribusjonService>()
     private val mellomlagerService = mockk<MellomlagerService>()
     private val avsenderMottakerDistribusjonRepository = mockk<AvsenderMottakerDistribusjonRepository>()
-
+    private val trygderettenMetadataRepository = mockk<TrygderettenMetadataRepository>()
     val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
     val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
     val JOURNALPOST_ID_3 = "JOURNALPOST_ID_3"
@@ -183,6 +184,7 @@ internal class DokumentEnhetServiceTest {
         journalfoeringService = journalfoeringService,
         dokumentDistribusjonService = dokumentDistribusjonService,
         avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository,
+        trygderettenMetadataRepository = trygderettenMetadataRepository,
         organisasjonsnummerTrygderetten = "123456789",
     )
 
@@ -190,6 +192,7 @@ internal class DokumentEnhetServiceTest {
     fun setup() {
         every { dokumentEnhetRepository.save(any()) } returns baseDokumentEnhet
         every { avsenderMottakerDistribusjonRepository.save(any()) } returns avsenderMottakerDistribusjon1
+        every { trygderettenMetadataRepository.findByDokumentEnhetId(any()) } returns null
         every {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker = avsenderMottaker1,
@@ -232,6 +235,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         } returns UUID.randomUUID()
     }
@@ -284,6 +288,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
         verify(exactly = 1) {
@@ -294,6 +299,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
     }
@@ -332,6 +338,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
     }
@@ -384,6 +391,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
     }
@@ -420,6 +428,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
         verify(exactly = 1) {
@@ -430,6 +439,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
     }
@@ -455,6 +465,7 @@ internal class DokumentEnhetServiceTest {
                 adresse = any(),
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
             )
         }
     }

@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val mockkVersion = "1.14.9"
+val mockkVersion = "1.14.11"
 val h2Version = "1.4.200"
-val tokenValidationVersion = "6.0.3"
+val tokenValidationVersion = "6.0.10"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.0.3"
@@ -21,8 +21,8 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.3.21"
-    id("org.springframework.boot") version "4.0.7"
+    val kotlinVersion = "2.4.0"
+    id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
@@ -45,7 +45,7 @@ dependencies {
     implementation("org.ehcache:ehcache:$ehcacheVersion")
 
     implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.5")
-    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.8")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.9")
 
     implementation("no.nav.klage:klage-kodeverk:$kodeverkVersion")
 

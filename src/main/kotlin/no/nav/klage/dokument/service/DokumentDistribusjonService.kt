@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.service
 
+import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.dokdistfordeling.Adressetype
 import no.nav.klage.dokument.clients.dokdistfordeling.DokDistFordelingClient
 import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
@@ -30,12 +31,14 @@ class DokumentDistribusjonService(
         adresse: Adresse?,
         avsenderMottakerDistribusjonId: UUID,
         mottakerIsTrygderetten: Boolean,
+        trygderettenMetadata: TrygderettenMetadataInput?,
     ): UUID {
         val avtalemelding =
             if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")) {
                 val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateMarshalledAvtalemelding(
                     journalpostId = journalpostId,
                     bestillingsId = avsenderMottakerDistribusjonId.toString(),
+                    trygderettenMetadata = trygderettenMetadata,
                 )
                 logger.debug("Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId")
                 if (activeSpringProfile == "dev") {
