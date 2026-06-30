@@ -139,12 +139,12 @@ fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
 fun getNavMappe(
     arkivsaknummer: String?,
     useV2: Boolean,
-    trygderettenMetadata: TrygderettenMetadataInput? = null,
+    trygderettenMetadata: TrygderettenMetadataInput?,
 ): JAXBElement<*> {
     val jaxbElement: JAXBElement<*> = if (useV2) {
         if (trygderettenMetadata == null) {
             throw DokumentEnhetNotValidException(
-                "trygderettenMetadata mangler. Påkrevd når feature toggle for nav-tr-v2 er aktivert."
+                "trygderettenMetadata mangler. Påkrevd når v2 skal brukes."
             )
         }
         val navMappe = no.nav.avtaltmelding.trygderetten.v2.NavMappe().apply {
