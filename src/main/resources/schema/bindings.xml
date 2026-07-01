@@ -41,6 +41,21 @@
             <jaxb:package name="no.nav.klage.gradle.plugin.xsd2java.xsd"/>
         </jaxb:schemaBindings>
     </jaxb:bindings>
+    <jaxb:bindings schemaLocation="nav_virksomhet_metadata_v2.xsd" node="/xs:schema">
+        <jaxb:bindings node="xs:complexType[@name='navMappe']">
+            <annox:annotateClass>@jakarta.xml.bind.annotation.XmlRootElement</annox:annotateClass>
+            <annox:annotatePackage>
+                @jakarta.xml.bind.annotation.XmlSchema(
+                xmlns = {
+                @jakarta.xml.bind.annotation.XmlNs(prefix = "nav", namespaceURI = "http://www.nav.no/avtaltmelding/trygderetten/v2")
+                },
+                elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
+            </annox:annotatePackage>
+        </jaxb:bindings>
+        <jaxb:schemaBindings>
+            <jaxb:package name="no.nav.klage.gradle.plugin.xsd2java.xsd"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
     <jaxb:bindings schemaLocation="metadatakatalog.xsd" node="/xs:schema">
         <jaxb:schemaBindings>
             <jaxb:package name="no.nav.klage.gradle.plugin.xsd2java.xsd"/>

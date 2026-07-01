@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns="http://www.nav.no/avtaltmelding/trygderetten/v2"
+		   targetNamespace="http://www.nav.no/avtaltmelding/trygderetten/v2"
+		   elementFormDefault="qualified" version="2.0">
+	<xs:element name="navMappe" type="navMappe"/>
+	<xs:complexType name="navMappe">
+		<xs:sequence>
+			<xs:element name="saksnummer" type="xs:string"/>
+			<xs:element name="kravfremsettelsesdato" type="xs:date" minOccurs="0"/>
+			<xs:element name="paaanketVedtaksdato" type="xs:date"/>
+			<xs:element name="lovhenvisning" type="xs:string" maxOccurs="unbounded"/>
+			<xs:element name="tidligereITROgOpphevetHenvist" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="gjenopptak" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="forsterketRett" type="xs:boolean"/>
+			<xs:element name="ettersendelse" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -6,11 +6,13 @@ import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.domain.dokument.*
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
+import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.isInngaaende
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.*
 
@@ -21,6 +23,7 @@ class DokumentEnhetService(
     private val journalfoeringService: JournalfoeringService,
     private val dokumentDistribusjonService: DokumentDistribusjonService,
     private val avsenderMottakerDistribusjonRepository: AvsenderMottakerDistribusjonRepository,
+    private val trygderettenMetadataRepository: TrygderettenMetadataRepository,
     @Value("\${ORGANISASJONSNUMMER_TRYGDERETTEN}") private val organisasjonsnummerTrygderetten: String,
     ) {
 
@@ -38,6 +41,9 @@ class DokumentEnhetService(
             logger.debug("Dokumentenhet {} already finalized.", dokumentEnhetId)
             return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
         }
+
+        val trygderettenMetadata = trygderettenMetadataRepository.findByDokumentEnhetId(dokumentEnhet.id)
+            ?.let { dokumentEnhetInputMapper.mapTrygderettenMetadataToInput(it) }
 
         dokumentEnhet.avsenderMottakerDistribusjoner.forEach { avsenderMottakerDistribusjon ->
             if (avsenderMottakerDistribusjon.journalpostId == null) {
@@ -164,7 +170,8 @@ class DokumentEnhetService(
                                     tvingSentralPrint = avsenderMottakerDistribusjon.avsenderMottaker.tvingSentralPrint,
                                     adresse = avsenderMottakerDistribusjon.avsenderMottaker.adresse,
                                     avsenderMottakerDistribusjonId = avsenderMottakerDistribusjon.id,
-                                    mottakerIsTrygderetten = avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten
+                                    mottakerIsTrygderetten = avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten,
+                                    trygderettenMetadata = trygderettenMetadata,
                                 )
                             avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                             avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
@@ -230,6 +237,7 @@ class DokumentEnhetService(
         )
     }
 
+    @Transactional
     fun opprettDokumentEnhetMedDokumentreferanser(
         input: DokumentEnhetWithDokumentreferanserInput
     ): DokumentEnhet {
@@ -261,7 +269,7 @@ class DokumentEnhetService(
             dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, vedleggIndex++)
         }?.toSet() ?: emptySet()
         val avsenderMottakerDistribusjoner = createAvsenderMottakerDistribusjoner(avsenderMottakere, hovedokument.id)
-        return dokumentEnhetRepository.save(
+        val dokumentEnhet = dokumentEnhetRepository.save(
             DokumentEnhet(
                 journalfoeringData = journalfoeringData,
                 avsenderMottakere = avsenderMottakere,
@@ -273,5 +281,16 @@ class DokumentEnhetService(
                 journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
             )
         )
+
+        if (input.trygderettenMetadata != null) {
+            trygderettenMetadataRepository.save(
+                dokumentEnhetInputMapper.mapTrygderettenMetadataInput(
+                    input = input.trygderettenMetadata,
+                    dokumentEnhetId = dokumentEnhet.id,
+                )
+            )
+        }
+
+        return dokumentEnhet
     }
 }
