@@ -172,8 +172,6 @@ class AvtalemeldingServiceTest {
             trygderettenMetadata = trygderettenMetadataInput,
         )
 
-        logger.debug("Generated v2 avtalemelding xml for arkivsaksnummer {}:\n{}", arkivsaksnummer, avtalemeldingXml)
-
         val v = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
         v.setSchemaSources(
             Input.fromStream(javaClass.getResourceAsStream("/schema/metadatakatalog.xsd")).build(),

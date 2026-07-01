@@ -37,13 +37,16 @@ class AvtalemeldingService(
         trygderettenMetadata: TrygderettenMetadataInput?,
     ): Pair<String, String> {
         return try {
+            val useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE)
             val (arkivsaksnummer, avtalemelding) = generateAvtalemelding(
                 journalpostId = journalpostId,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = trygderettenMetadata,
+                useV2 = useV2,
             )
             val avtalemeldingAsString = marshalAvtalemelding(
-                avtalemelding
+                avtalemelding = avtalemelding,
+                useV2 = useV2,
             )
             arkivsaksnummer to avtalemeldingAsString
         } catch (e: Exception) {
@@ -57,6 +60,7 @@ class AvtalemeldingService(
         journalpostId: String,
         bestillingsId: String,
         trygderettenMetadata: TrygderettenMetadataInput?,
+        useV2: Boolean = false,
     ): Pair<String, Arkivmelding> {
         val journalpost = getJournalpost(journalpostId = journalpostId)
         val datoAvtalemeldingOpprettet = getNow()
@@ -84,6 +88,7 @@ class AvtalemeldingService(
             dokumentBeskrivelser = dokumentBeskrivelser,
             arkivsaksnummer = arkivsaksnummer,
             trygderettenMetadata = trygderettenMetadata,
+            useV2 = useV2,
         ))
 
         return arkivsaksnummer to avtalemelding
@@ -94,6 +99,7 @@ class AvtalemeldingService(
         dokumentBeskrivelser: Collection<Dokumentbeskrivelse>,
         arkivsaksnummer: String,
         trygderettenMetadata: TrygderettenMetadataInput?,
+        useV2: Boolean,
     ): Saksmappe {
         val sakOpprettetDato = if (journalpost.sak?.datoOpprettet != null) {
             convertLocalDateTimeToXmlGregorianCalendar(journalpost.sak.datoOpprettet)
@@ -104,7 +110,6 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
-            val useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE)
             virksomhetsspesifikkeMetadata = getNavMappe(
                 arkivsaknummer = arkivsaksnummer,
                 useV2 = useV2,

@@ -242,11 +242,15 @@ fun getREPPart(representant: Representant): Part {
     }
 }
 
-fun marshalAvtalemelding(avtalemelding: Arkivmelding): String {
+fun marshalAvtalemelding(avtalemelding: Arkivmelding, useV2: Boolean): String {
+    val navMappeClass = if (useV2) {
+        no.nav.avtaltmelding.trygderetten.v2.NavMappe::class.java
+    } else {
+        NavMappe::class.java
+    }
     val jaxbContext = JAXBContext.newInstance(
         Arkivmelding::class.java,
-        NavMappe::class.java,
-        no.nav.avtaltmelding.trygderetten.v2.NavMappe::class.java,
+        navMappeClass,
     )
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
