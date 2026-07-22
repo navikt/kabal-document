@@ -10,7 +10,7 @@ val springDocVersion = "3.0.3"
 val shedlockVersion = "7.7.0"
 val archunitVersion = "1.4.2"
 val ehcacheVersion = "3.12.0"
-val kodeverkVersion = "3.3.5"
+val kodeverkVersion = "3.3.10"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
@@ -21,7 +21,7 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.4.0"
+    val kotlinVersion = "2.4.10"
     id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
