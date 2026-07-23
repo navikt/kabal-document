@@ -32,7 +32,7 @@ class JoarkClient(
         const val LARGE_FILE_THRESHOLD_BYTES = 5 * 1024 * 1024L
     }
 
-    @Retryable
+    @Retryable(predicate = SkipRetryOnContentTooLargePredicate::class)
     fun createJournalpostInJoarkAsSystemUser(
         journalpostRequestAsFile: File,
         journalfoerendeSaksbehandlerIdent: String,
