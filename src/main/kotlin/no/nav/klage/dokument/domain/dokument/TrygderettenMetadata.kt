@@ -14,13 +14,13 @@ class TrygderettenMetadata(
     @Column(name = "kravfremsettelsesdato")
     val kravfremsettelsesdato: LocalDate?,
     @Column(name = "paaanket_vedtaksdato")
-    val paaanketVedtaksdato: LocalDate,
+    val paaanketVedtaksdato: LocalDate?,
     @Column(name = "tidligere_i_tr_og_opphevet_henvist")
     val tidligereITROgOpphevetHenvist: Boolean?,
     @Column(name = "gjenopptak")
     val gjenopptak: Boolean?,
     @Column(name = "forsterket_rett")
-    val forsterketRett: Boolean,
+    val forsterketRett: Boolean?,
     @Column(name = "ettersendelse")
     val ettersendelse: Boolean,
     @ElementCollection(fetch = FetchType.EAGER)

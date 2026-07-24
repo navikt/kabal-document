@@ -147,11 +147,13 @@ fun getNavMappe(
                 "trygderettenMetadata mangler. Påkrevd når v2 skal brukes."
             )
         }
+        //TODO validate according to what kind of melding it should be. Gjenopptak, ettersendelse etc.
         val navMappe = no.nav.avtaltmelding.trygderetten.v2.NavMappe().apply {
             saksnummer = arkivsaknummer
             kravfremsettelsesdato =
                 trygderettenMetadata.kravfremsettelsesdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
-            paaanketVedtaksdato = convertLocalDateToXmlGregorianCalendar(trygderettenMetadata.paaanketVedtaksdato)
+            paaanketVedtaksdato =
+                trygderettenMetadata.paaanketVedtaksdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
             isTidligereITROgOpphevetHenvist = trygderettenMetadata.tidligereITROgOpphevetHenvist
             isGjenopptak = trygderettenMetadata.gjenopptak
             isForsterketRett = trygderettenMetadata.forsterketRett
