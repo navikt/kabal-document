@@ -30,7 +30,7 @@ import java.util.List;
  *         <element name="lovhenvisning" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/>
  *         <element name="tidligereITROgOpphevetHenvist" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="gjenopptak" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         <element name="forsterketRett" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         <element name="forsterketRett" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="ettersendelse" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       </sequence>
  *     </restriction>
@@ -58,14 +58,13 @@ public class NavMappe {
     protected String saksnummer;
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar kravfremsettelsesdato;
-    @XmlElement(required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar paaanketVedtaksdato;
     @XmlElement(required = true)
     protected List<String> lovhenvisning;
     protected Boolean tidligereITROgOpphevetHenvist;
     protected Boolean gjenopptak;
-    protected boolean forsterketRett;
+    protected Boolean forsterketRett;
     protected boolean ettersendelse;
 
     /**
@@ -217,7 +216,7 @@ public class NavMappe {
      * Gets the value of the forsterketRett property.
      *
      */
-    public boolean isForsterketRett() {
+    public Boolean isForsterketRett() {
         return forsterketRett;
     }
 
@@ -225,11 +224,11 @@ public class NavMappe {
      * Sets the value of the forsterketRett property.
      *
      */
-    public void setForsterketRett(boolean value) {
+    public void setForsterketRett(Boolean value) {
         this.forsterketRett = value;
     }
 
-    public NavMappe useForsterketRett(boolean value) {
+    public NavMappe useForsterketRett(Boolean value) {
         setForsterketRett(value);
         return this;
     }
