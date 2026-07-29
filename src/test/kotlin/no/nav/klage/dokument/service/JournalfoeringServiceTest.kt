@@ -99,7 +99,6 @@ internal class JournalfoeringServiceTest {
         journalfoeringService.createJournalpostAsSystemUser(
             avsenderMottaker = avsenderMottaker1,
             hoveddokument = hovedDokument,
-            vedleggDokumentSet = baseDokumentEnhet.vedlegg,
             journalfoeringData = baseDokumentEnhet.journalfoeringData,
             journalfoerendeSaksbehandlerIdent = baseDokumentEnhet.journalfoerendeSaksbehandlerIdent
         )

@@ -59,28 +59,16 @@ class DokumentEnhetService(
                     )
                     avsenderMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
-                    journalpostResponse.dokumenter.forEachIndexed { index, dokument ->
-                        if (index == 0) {
-                            dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
-                                DokumentInfoReference(
-                                    journalpostId = journalpostResponse.journalpostId,
-                                    dokumentInfoId = dokument.dokumentInfoId,
-                                )
-                            )
-                        } else {
-                            val currentDokumentEnhetVedlegg = dokumentEnhet.vedlegg.find { it.index == index - 1 }
-                            currentDokumentEnhetVedlegg?.dokumentInfoReferenceList?.add(
-                                DokumentInfoReference(
-                                    journalpostId = journalpostResponse.journalpostId,
-                                    dokumentInfoId = dokument.dokumentInfoId,
-                                )
-                            )
-                        }
-                    }
-
+                    dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
+                        DokumentInfoReference(
+                            journalpostId = journalpostResponse.journalpostId,
+                            dokumentInfoId = journalpostResponse.dokumenter.first().dokumentInfoId,
+                        )
+                    )
 
                     avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                     avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
+                    dokumentEnhetRepository.save(dokumentEnhet)
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to create journalpost for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
@@ -95,6 +83,53 @@ class DokumentEnhetService(
                     dokumentEnhet.id,
                     avsenderMottakerDistribusjon.journalpostId
                 )
+            }
+        }
+
+        //Vedlegg are uploaded one by one instead of being part of the createJournalpost request,
+        //because the total size of a createJournalpost request is limited to ~500 MB.
+        dokumentEnhet.avsenderMottakerDistribusjoner.forEach { avsenderMottakerDistribusjon ->
+            val journalpostId = avsenderMottakerDistribusjon.journalpostId!!
+
+            dokumentEnhet.vedlegg.sortedBy { it.index }.forEach { vedlegg ->
+                if (vedlegg.dokumentInfoReferenceList.none { it.journalpostId == journalpostId }) {
+                    try {
+                        logger.debug(
+                            "Uploading vedlegg {} to journalpost {} in dokumentEnhet {}",
+                            vedlegg.id,
+                            journalpostId,
+                            dokumentEnhet.id
+                        )
+                        val lastOppVedleggResponse = journalfoeringService.lastOppVedleggAsSystemUser(
+                            journalpostId = journalpostId,
+                            vedlegg = vedlegg,
+                            journalfoeringData = dokumentEnhet.journalfoeringData,
+                            journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
+                        )
+
+                        vedlegg.dokumentInfoReferenceList.add(
+                            DokumentInfoReference(
+                                journalpostId = journalpostId,
+                                dokumentInfoId = lastOppVedleggResponse.dokumentInfoId,
+                            )
+                        )
+
+                        dokumentEnhetRepository.save(dokumentEnhet)
+                    } catch (t: Throwable) {
+                        logger.error(
+                            "Failed to upload vedlegg ${vedlegg.id} to journalpost $journalpostId for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
+                            t
+                        )
+                        throw t
+                    }
+                } else {
+                    logger.debug(
+                        "Vedlegg {} already uploaded to journalpost {} in dokumentEnhet {}",
+                        vedlegg.id,
+                        journalpostId,
+                        dokumentEnhet.id
+                    )
+                }
             }
         }
 
@@ -209,7 +244,6 @@ class DokumentEnhetService(
         return journalfoeringService.createJournalpostAsSystemUser(
             avsenderMottaker = avsenderMottakerDistribusjon.avsenderMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,
-            vedleggDokumentSet = dokumentEnhet.vedlegg,
             journalfoeringData = dokumentEnhet.journalfoeringData,
             journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
         )

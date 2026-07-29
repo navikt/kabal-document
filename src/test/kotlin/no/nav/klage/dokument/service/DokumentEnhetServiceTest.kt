@@ -4,10 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
-import no.nav.klage.dokument.clients.joark.JournalpostResponse
-import no.nav.klage.dokument.clients.joark.JournalpostType
-import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
+import no.nav.klage.dokument.clients.joark.*
 import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
@@ -36,19 +35,19 @@ internal class DokumentEnhetServiceTest {
     val JOURNALPOST_RESPONSE_1 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_1,
         journalpostferdigstilt = false,
-        dokumenter = listOf()
+        dokumenter = listOf(DokumentInfoId(dokumentInfoId = "DOKUMENT_INFO_ID_1"))
     )
 
     val JOURNALPOST_RESPONSE_2 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_2,
         journalpostferdigstilt = false,
-        dokumenter = listOf()
+        dokumenter = listOf(DokumentInfoId(dokumentInfoId = "DOKUMENT_INFO_ID_2"))
     )
 
     val JOURNALPOST_RESPONSE_3 = JournalpostResponse(
         journalpostId = JOURNALPOST_ID_3,
         journalpostferdigstilt = false,
-        dokumenter = listOf()
+        dokumenter = listOf(DokumentInfoId(dokumentInfoId = "DOKUMENT_INFO_ID_3"))
     )
 
     val avsenderMottaker1 = AvsenderMottaker(
@@ -197,7 +196,6 @@ internal class DokumentEnhetServiceTest {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker = avsenderMottaker1,
                 hoveddokument = any(),
-                vedleggDokumentSet = any(),
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
@@ -207,7 +205,6 @@ internal class DokumentEnhetServiceTest {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker = avsenderMottaker2,
                 hoveddokument = any(),
-                vedleggDokumentSet = any(),
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
@@ -217,11 +214,19 @@ internal class DokumentEnhetServiceTest {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker = avsenderMottaker3,
                 hoveddokument = any(),
-                vedleggDokumentSet = any(),
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
         } returns JOURNALPOST_RESPONSE_3
+
+        every {
+            journalfoeringService.lastOppVedleggAsSystemUser(
+                journalpostId = any(),
+                vedlegg = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
+            )
+        } returns LastOppVedleggResponse(dokumentInfoId = "VEDLEGG_DOKUMENT_INFO_ID")
 
         every { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) } returns LocalDateTime.now()
         every { journalfoeringService.tilknyttVedleggAsSystemUser(any(), any()) } returns TilknyttVedleggResponse(
@@ -255,14 +260,12 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottaker1,
                 any(),
                 any(),
-                any(),
                 any()
             )
         }
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker2,
-                any(),
                 any(),
                 any(),
                 any()
@@ -319,7 +322,6 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottaker3,
                 any(),
                 any(),
-                any(),
                 any()
             )
         }
@@ -358,14 +360,12 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottaker1,
                 any(),
                 any(),
-                any(),
                 any()
             )
         }
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
                 avsenderMottaker2,
-                any(),
                 any(),
                 any(),
                 any()
@@ -407,7 +407,7 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any()) }
 
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
@@ -455,7 +455,7 @@ internal class DokumentEnhetServiceTest {
             dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any()) }
         verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) }
         verify(exactly = 0) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(

@@ -39,7 +39,6 @@ class JournalfoeringService(
         //Skal kanskje være noe annet, om vi skal støtte både utgående og inngående?
         avsenderMottaker: AvsenderMottaker,
         hoveddokument: OpplastetHoveddokument,
-        vedleggDokumentSet: Set<OpplastetVedlegg> = emptySet(),
         journalfoeringData: JournalfoeringData,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
@@ -50,18 +49,11 @@ class JournalfoeringService(
         )
         val mellomlagretHovedDokument = MellomlagretDokument(
             title = hoveddokument.name,
+            fileName = hoveddokument.name,
             file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
             contentType = MediaType.APPLICATION_PDF,
             rekkefoelge = null,
         )
-        val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
-            MellomlagretDokument(
-                title = it.name,
-                file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
-                contentType = MediaType.APPLICATION_PDF,
-                rekkefoelge = it.index,
-            )
-        }
 
         val partialJournalpostWithoutDocuments = joarkMapper.createPartialJournalpostWithoutDocuments(
             journalfoeringData = journalfoeringData,
@@ -71,57 +63,98 @@ class JournalfoeringService(
 
         val partialJournalpostAsJson = ourJacksonObjectMapper.writeValueAsString(partialJournalpostWithoutDocuments)
         val partialJournalpostAppendable = partialJournalpostAsJson.substring(0, partialJournalpostAsJson.length - 1)
-        val journalpostRequestAsFile = Files.createTempFile(null, null)
-        val journalpostRequestAsFileOutputStream = FileOutputStream(journalpostRequestAsFile.toFile())
-        journalpostRequestAsFileOutputStream.write(partialJournalpostAppendable.toByteArray())
+        val journalpostRequestAsFile = Files.createTempFile(null, null).toFile()
 
-        //add documents (base64 encoded) to the request
-        journalpostRequestAsFileOutputStream.write(",\"dokumenter\":[".toByteArray())
+        FileOutputStream(journalpostRequestAsFile).use { journalpostRequestAsFileOutputStream ->
+            journalpostRequestAsFileOutputStream.write(partialJournalpostAppendable.toByteArray())
 
-        writeDocumentsToJournalpostRequestAsFile(
-            mellomlagretDokumenter = listOf(mellomlagretHovedDokument) + mellomlagredeVedleggDokument,
-            journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
-            brevkode = journalfoeringData.brevKode
-        )
+            //add the hoveddokument (base64 encoded) to the request. Vedlegg are added separately via lastOppVedlegg,
+            //because the total request size of a createJournalpost call is limited to ~500 MB.
+            journalpostRequestAsFileOutputStream.write(",\"dokumenter\":[".toByteArray())
 
-        journalpostRequestAsFileOutputStream.write("]}".toByteArray())
-        journalpostRequestAsFileOutputStream.flush()
+            writeDocumentToOutputStream(
+                mellomlagretDokument = mellomlagretHovedDokument,
+                outputStream = journalpostRequestAsFileOutputStream,
+                brevkode = journalfoeringData.brevKode,
+            )
+
+            journalpostRequestAsFileOutputStream.write("]}".toByteArray())
+            journalpostRequestAsFileOutputStream.flush()
+        }
 
         return joarkClient.createJournalpostInJoarkAsSystemUser(
-            journalpostRequestAsFile = journalpostRequestAsFile.toFile(),
+            journalpostRequestAsFile = journalpostRequestAsFile,
             journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
         )
     }
 
-    private fun writeDocumentsToJournalpostRequestAsFile(
-        mellomlagretDokumenter: List<MellomlagretDokument>,
-        journalpostRequestAsFileOutputStream: FileOutputStream,
-        brevkode: String,
-    ) {
-        mellomlagretDokumenter.forEachIndexed { index, dokument ->
-            val base64File = Files.createTempFile(null, null).toFile()
-            encodeFileToBase64(dokument.file, base64File)
+    fun lastOppVedleggAsSystemUser(
+        journalpostId: String,
+        vedlegg: OpplastetVedlegg,
+        journalfoeringData: JournalfoeringData,
+        journalfoerendeSaksbehandlerIdent: String,
+    ): LastOppVedleggResponse {
+        logger.debug(
+            "Skal laste opp vedlegg {} til journalpost {}",
+            vedlegg.id,
+            journalpostId
+        )
 
-            val base64FileInputStream = FileInputStream(base64File)
+        val mellomlagretVedlegg = MellomlagretDokument(
+            title = vedlegg.name,
+            //Dokarkiv rejects a vedlegg if a document with the same filnavn already exists on the journalpost,
+            //so we make it unique. The title, which is what the user sees, is left untouched.
+            fileName = "${vedlegg.index}_${vedlegg.name}",
+            file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = vedlegg.mellomlagerId),
+            contentType = MediaType.APPLICATION_PDF,
+            rekkefoelge = vedlegg.index,
+        )
 
-            journalpostRequestAsFileOutputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"brevkode\":\"$brevkode\",\"rekkefoelge\":${dokument.rekkefoelge},\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+        val vedleggRequestAsFile = Files.createTempFile(null, null).toFile()
 
-            base64FileInputStream.use { input ->
-                val buffer = ByteArray(1024) // Use a buffer size of 1K for example
-                var length: Int
-                while (input.read(buffer).also { length = it } != -1) {
-                    journalpostRequestAsFileOutputStream.write(buffer, 0, length)
-                }
-            }
-            journalpostRequestAsFileOutputStream.write("\"}]}".toByteArray())
-            if (index < mellomlagretDokumenter.size - 1) {
-                journalpostRequestAsFileOutputStream.write(",".toByteArray())
-            }
+        FileOutputStream(vedleggRequestAsFile).use { vedleggRequestAsFileOutputStream ->
+            vedleggRequestAsFileOutputStream.write("{\"dokument\":".toByteArray())
 
-            base64File.delete()
-            dokument.file.delete()
+            writeDocumentToOutputStream(
+                mellomlagretDokument = mellomlagretVedlegg,
+                outputStream = vedleggRequestAsFileOutputStream,
+                brevkode = journalfoeringData.brevKode,
+            )
+
+            vedleggRequestAsFileOutputStream.write("}".toByteArray())
+            vedleggRequestAsFileOutputStream.flush()
         }
 
+        return joarkClient.lastOppVedleggAsSystemUser(
+            journalpostId = journalpostId,
+            vedleggRequestAsFile = vedleggRequestAsFile,
+            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent,
+        )
+    }
+
+    private fun writeDocumentToOutputStream(
+        mellomlagretDokument: MellomlagretDokument,
+        outputStream: FileOutputStream,
+        brevkode: String,
+    ) {
+        val base64File = Files.createTempFile(null, null).toFile()
+        encodeFileToBase64(mellomlagretDokument.file, base64File)
+
+        val base64FileInputStream = FileInputStream(base64File)
+
+        outputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(mellomlagretDokument.title)},\"brevkode\":\"$brevkode\",\"rekkefoelge\":${mellomlagretDokument.rekkefoelge},\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(mellomlagretDokument.fileName)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+
+        base64FileInputStream.use { input ->
+            val buffer = ByteArray(1024) // Use a buffer size of 1K for example
+            var length: Int
+            while (input.read(buffer).also { length = it } != -1) {
+                outputStream.write(buffer, 0, length)
+            }
+        }
+        outputStream.write("\"}]}".toByteArray())
+
+        base64File.delete()
+        mellomlagretDokument.file.delete()
     }
 
     private fun encodeFileToBase64(sourceFile: File, destinationFile: File) {
@@ -193,6 +226,7 @@ class JournalfoeringService(
 
     data class MellomlagretDokument(
         val title: String,
+        val fileName: String,
         val file: File,
         val contentType: MediaType,
         val rekkefoelge: Int?,

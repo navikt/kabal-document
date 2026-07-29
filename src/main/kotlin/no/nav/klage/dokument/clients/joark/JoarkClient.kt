@@ -37,20 +37,9 @@ class JoarkClient(
         journalpostRequestAsFile: File,
         journalfoerendeSaksbehandlerIdent: String,
     ): JournalpostResponse {
-        val dataBufferFactory = DefaultDataBufferFactory()
-        val dataBuffer = DataBufferUtils.read(journalpostRequestAsFile.toPath(), dataBufferFactory, 256 * 256)
-
-        // Choose WebClient based on file size
         val fileSize = journalpostRequestAsFile.length()
-        val webClient = if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
-            logger.debug("Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes", fileSize)
-            joarkLargeFileWebClient
-        } else {
-            logger.debug("Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes", fileSize)
-            joarkSmallFileWebClient
-        }
 
-        val post = webClient.post()
+        val post = webClientForFileSize(fileSize).post()
             .uri("?forsoekFerdigstill=false")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
 
@@ -61,16 +50,90 @@ class JoarkClient(
         val startTime = System.currentTimeMillis()
 
         val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
-            .body<DataBuffer>(dataBuffer)
+            .body<DataBuffer>(readFileAsDataBuffer(journalpostRequestAsFile))
             .retrieve()
             .bodyToMono<JournalpostResponse>()
             .block()
             ?: throw RuntimeException("Journalpost could not be created.")
 
-        val durationMs = System.currentTimeMillis() - startTime
+        logCallDuration(
+            callDescription = "POST journalpost",
+            durationMs = System.currentTimeMillis() - startTime,
+            fileSize = fileSize,
+        )
+
+        logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
+
+        journalpostRequestAsFile.delete()
+
+        return journalpostResponse
+    }
+
+    @Retryable(predicate = SkipRetryOnContentTooLargePredicate::class)
+    fun lastOppVedleggAsSystemUser(
+        journalpostId: String,
+        vedleggRequestAsFile: File,
+        journalfoerendeSaksbehandlerIdent: String,
+    ): LastOppVedleggResponse {
+        val fileSize = vedleggRequestAsFile.length()
+
+        val patch = webClientForFileSize(fileSize).patch()
+            .uri("/${journalpostId}/lastOppVedlegg")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+
+        if (journalfoerendeSaksbehandlerIdent != "SYSTEMBRUKER") {
+            patch.header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
+        }
+
+        val startTime = System.currentTimeMillis()
+
+        val lastOppVedleggResponse = patch.contentType(MediaType.APPLICATION_JSON)
+            .body<DataBuffer>(readFileAsDataBuffer(vedleggRequestAsFile))
+            .retrieve()
+            .bodyToMono<LastOppVedleggResponse>()
+            .block()
+            ?: throw RuntimeException("Vedlegg could not be added to journalpost $journalpostId.")
+
+        logCallDuration(
+            callDescription = "PATCH lastOppVedlegg",
+            durationMs = System.currentTimeMillis() - startTime,
+            fileSize = fileSize,
+        )
+
+        logger.debug(
+            "Vedlegg successfully added to journalpost {} with dokumentInfoId {}.",
+            journalpostId,
+            lastOppVedleggResponse.dokumentInfoId
+        )
+
+        vedleggRequestAsFile.delete()
+
+        return lastOppVedleggResponse
+    }
+
+    private fun readFileAsDataBuffer(file: File) =
+        DataBufferUtils.read(file.toPath(), DefaultDataBufferFactory(), 256 * 256)
+
+    private fun webClientForFileSize(fileSize: Long): WebClient =
+        if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
+            logger.debug(
+                "Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes",
+                fileSize
+            )
+            joarkLargeFileWebClient
+        } else {
+            logger.debug(
+                "Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes",
+                fileSize
+            )
+            joarkSmallFileWebClient
+        }
+
+    private fun logCallDuration(callDescription: String, durationMs: Long, fileSize: Long) {
         val sizeInMB = String.format("%.2f", fileSize / (1024.0 * 1024.0))
         logger.debug(
-            "POST journalpost call completed in {} ms ({} seconds). File size: {} bytes ({} MB)",
+            "{} call completed in {} ms ({} seconds). File size: {} bytes ({} MB)",
+            callDescription,
             durationMs,
             durationMs / 1000.0,
             fileSize,
@@ -88,19 +151,14 @@ class JoarkClient(
         }
         if (durationMs > expectedMaxMs) {
             logger.warn(
-                "Slow POST journalpost call: {} ms (expected max {} ms). File size: {} bytes ({} MB)",
+                "Slow {} call: {} ms (expected max {} ms). File size: {} bytes ({} MB)",
+                callDescription,
                 durationMs,
                 expectedMaxMs,
                 fileSize,
                 sizeInMB
             )
         }
-
-        logger.debug("Journalpost successfully created in Joark with id {}.", journalpostResponse.journalpostId)
-
-        journalpostRequestAsFile.delete()
-
-        return journalpostResponse
     }
 
     @Retryable
