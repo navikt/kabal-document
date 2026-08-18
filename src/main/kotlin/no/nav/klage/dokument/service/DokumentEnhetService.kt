@@ -30,6 +30,9 @@ class DokumentEnhetService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+
+        /** dokarkiv expects `rekkefoelge` to start at 1 for the first vedlegg. */
+        const val FIRST_VEDLEGG_INDEX = 1
     }
 
     fun ferdigstillDokumentEnhet(
@@ -59,25 +62,29 @@ class DokumentEnhetService(
                     )
                     avsenderMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
-                    journalpostResponse.dokumenter.forEachIndexed { index, dokument ->
-                        if (index == 0) {
-                            dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
-                                DokumentInfoReference(
-                                    journalpostId = journalpostResponse.journalpostId,
-                                    dokumentInfoId = dokument.dokumentInfoId,
-                                )
-                            )
-                        } else {
-                            val currentDokumentEnhetVedlegg = dokumentEnhet.vedlegg.find { it.index == index - 1 }
-                            currentDokumentEnhetVedlegg?.dokumentInfoReferenceList?.add(
-                                DokumentInfoReference(
-                                    journalpostId = journalpostResponse.journalpostId,
-                                    dokumentInfoId = dokument.dokumentInfoId,
-                                )
-                            )
-                        }
-                    }
+                    //The documents come back in the order they were sent: the hoveddokument first, then
+                    //the vedlegg ordered by index.
 
+                    //make sure they are sorted, but they should already be.
+                    val orderedUploadedVedlegg = dokumentEnhet.vedlegg.sortedBy { it.index }
+
+                    //first hoveddokument
+                    dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
+                        DokumentInfoReference(
+                            journalpostId = journalpostResponse.journalpostId,
+                            dokumentInfoId = journalpostResponse.dokumenter.first().dokumentInfoId,
+                        )
+                    )
+
+                    //then vedlegg
+                    journalpostResponse.dokumenter.drop(1).zip(orderedUploadedVedlegg) { dokument, vedlegg ->
+                        vedlegg.dokumentInfoReferenceList.add(
+                            DokumentInfoReference(
+                                journalpostId = journalpostResponse.journalpostId,
+                                dokumentInfoId = dokument.dokumentInfoId,
+                            )
+                        )
+                    }
 
                     avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                     avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
@@ -209,7 +216,7 @@ class DokumentEnhetService(
         return journalfoeringService.createJournalpostAsSystemUser(
             avsenderMottaker = avsenderMottakerDistribusjon.avsenderMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,
-            vedleggDokumentSet = dokumentEnhet.vedlegg,
+            vedleggDokumentSet = dokumentEnhet.vedlegg.sortedBy { it.index }.toSet(),
             journalfoeringData = dokumentEnhet.journalfoeringData,
             journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
         )
@@ -260,11 +267,13 @@ class DokumentEnhetService(
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
 
-        var vedleggIndex = 1
+        //The vedlegg are numbered by their position in the list, so the caller decides the order.
+        var vedleggIndex = FIRST_VEDLEGG_INDEX
 
         val vedlegg = input.dokumentreferanser.vedlegg?.map { document ->
             dokumentEnhetInputMapper.mapDokumentInputToVedlegg(document, vedleggIndex++)
         }?.toSet() ?: emptySet()
+
         val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map { document ->
             dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, vedleggIndex++)
         }?.toSet() ?: emptySet()
