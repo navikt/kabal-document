@@ -69,15 +69,17 @@ class DokumentEnhetService(
                     val orderedUploadedVedlegg = dokumentEnhet.vedlegg.sortedBy { it.index }
 
                     //first hoveddokument
-                    dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
-                        DokumentInfoReference(
-                            journalpostId = journalpostResponse.journalpostId,
-                            dokumentInfoId = journalpostResponse.dokumenter.first().dokumentInfoId,
+                    journalpostResponse.dokumenter.firstOrNull()?.let { hovedDokumentResponse ->
+                        dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
+                            DokumentInfoReference(
+                                journalpostId = journalpostResponse.journalpostId,
+                                dokumentInfoId = hovedDokumentResponse.dokumentInfoId,
+                            )
                         )
-                    )
+                    }
 
                     //then vedlegg
-                    journalpostResponse.dokumenter.drop(1).zip(orderedUploadedVedlegg) { dokument, vedlegg ->
+                    journalpostResponse.dokumenter.drop(1).zip(orderedUploadedVedlegg).forEach { (dokument, vedlegg) ->
                         vedlegg.dokumentInfoReferenceList.add(
                             DokumentInfoReference(
                                 journalpostId = journalpostResponse.journalpostId,
