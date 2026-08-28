@@ -6,7 +6,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.lang.reflect.Method
 
 class SkipRetryOnContentTooLargePredicate : MethodRetryPredicate {
-    override fun shouldRetry(method: Method, throwable: Throwable): Boolean {
-        return !(throwable is WebClientResponseException && throwable.statusCode == HttpStatus.CONTENT_TOO_LARGE)
-    }
+    override fun shouldRetry(
+        method: Method,
+        throwable: Throwable,
+    ): Boolean = !(throwable is WebClientResponseException && throwable.statusCode == HttpStatus.CONTENT_TOO_LARGE)
 }

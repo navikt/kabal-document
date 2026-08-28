@@ -2,7 +2,7 @@ package no.nav.klage.dokument.domain.dokument
 
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
-import java.util.*
+import java.util.UUID
 
 @Entity
 @DiscriminatorValue("VEDLEGG")
@@ -13,10 +13,10 @@ class OpplastetVedlegg(
     index: Int,
     sourceReference: UUID?,
 ) : OpplastetDokument(
-    id = id,
-    mellomlagerId = mellomlagerId,
-    name = name,
-    type = OpplastetDokumentType.VEDLEGG,
-    index = index,
-    sourceReference = sourceReference,
-)
+        id = id,
+        mellomlagerId = mellomlagerId,
+        name = name,
+        type = OpplastetDokumentType.VEDLEGG,
+        index = index,
+        sourceReference = sourceReference,
+    )

@@ -13,7 +13,7 @@ data class NoekkelInfoOmOrganisasjon(
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Navn(
-        val sammensattnavn: String
+        val sammensattnavn: String,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

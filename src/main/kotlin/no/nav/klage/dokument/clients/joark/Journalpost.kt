@@ -16,7 +16,7 @@ data class Journalpost(
     val bruker: Bruker?,
     val sak: Sak,
     val tilleggsopplysninger: List<Tilleggsopplysning> = mutableListOf(),
-    val dokumenter: List<Dokument>? = mutableListOf()
+    val dokumenter: List<Dokument>? = mutableListOf(),
 )
 
 /**
@@ -64,7 +64,7 @@ enum class Kanal {
 enum class JournalpostType {
     INNGAAENDE,
     UTGAAENDE,
-    NOTAT
+    NOTAT,
 }
 
 data class JournalpostAvsenderMottaker(
@@ -78,18 +78,18 @@ enum class AvsenderMottakerIdType {
     FNR,
     ORGNR,
     HPRNR,
-    UTL_ORG
+    UTL_ORG,
 }
 
 data class Bruker(
     val id: String,
-    val idType: BrukerIdType
+    val idType: BrukerIdType,
 )
 
 enum class BrukerIdType {
     FNR,
     ORGNR,
-    AKTOERID
+    AKTOERID,
 }
 
 data class Sak(
@@ -97,16 +97,16 @@ data class Sak(
     val fagsaksystem: FagsaksSystem,
     val fagsakid: String,
     val arkivsaksystem: ArkivsaksSystem? = null,
-    val arkivsaksnummer: String? = null
+    val arkivsaksnummer: String? = null,
 )
 
 enum class Sakstype {
     FAGSAK,
     GENERELL_SAK,
-    ARKIVSAK
+    ARKIVSAK,
 }
 
-//Should match no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem
+// Should match no.nav.dokarkiv.journalpost.v1.api.Fagsaksystem
 enum class FagsaksSystem {
     FS38,
     FS36,
@@ -148,25 +148,25 @@ enum class FagsaksSystem {
 
 enum class ArkivsaksSystem {
     GSAK,
-    PSAK
+    PSAK,
 }
 
 data class Dokument(
     val tittel: String,
     val brevkode: String,
-    val dokumentVarianter: List<DokumentVariant> = mutableListOf()
+    val dokumentVarianter: List<DokumentVariant> = mutableListOf(),
 )
 
 data class DokumentVariant(
     val filnavn: String,
     val filtype: String,
     val fysiskDokument: String,
-    val variantformat: String
+    val variantformat: String,
 )
 
 data class Tilleggsopplysning(
     val nokkel: String,
-    val verdi: String
+    val verdi: String,
 )
 
 data class UpdateDocumentTitleJournalpostInput(
@@ -177,4 +177,3 @@ data class UpdateDocumentTitleDokumentInput(
     val dokumentInfoId: String,
     val tittel: String,
 )
-

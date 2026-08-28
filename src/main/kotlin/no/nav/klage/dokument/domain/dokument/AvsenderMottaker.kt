@@ -1,8 +1,16 @@
 package no.nav.klage.dokument.domain.dokument
 
-import jakarta.persistence.*
+import jakarta.persistence.AttributeOverride
+import jakarta.persistence.AttributeOverrides
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import no.nav.klage.dokument.clients.joark.Kanal
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "avsender_mottaker", schema = "document")
@@ -13,8 +21,8 @@ class AvsenderMottaker(
     @AttributeOverrides(
         value = [
             AttributeOverride(name = "type", column = Column(name = "part_id_type_id")),
-            AttributeOverride(name = "value", column = Column(name = "part_id_value"))
-        ]
+            AttributeOverride(name = "value", column = Column(name = "part_id_value")),
+        ],
     )
     val partId: PartId?,
     @Column(name = "navn")
@@ -31,7 +39,7 @@ class AvsenderMottaker(
             AttributeOverride(name = "postnummer", column = Column(name = "adresse_postnummer")),
             AttributeOverride(name = "poststed", column = Column(name = "adresse_poststed")),
             AttributeOverride(name = "land", column = Column(name = "adresse_land")),
-        ]
+        ],
     )
     val adresse: Adresse?,
     @Column(name = "local_print")

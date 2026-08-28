@@ -1,6 +1,16 @@
 package no.nav.klage.dokument.domain.dokument
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
+import jakarta.persistence.OrderBy
+import jakarta.persistence.Table
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.DokumentTypeConverter
@@ -9,7 +19,7 @@ import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "dokumentenhet", schema = "document")
@@ -55,9 +65,7 @@ class DokumentEnhet(
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
 ) {
-    fun shouldBeDistributed(): Boolean {
-        return journalfoeringData.journalpostType == JournalpostType.UTGAAENDE
-    }
+    fun shouldBeDistributed(): Boolean = journalfoeringData.journalpostType == JournalpostType.UTGAAENDE
 
     fun isAvsluttet() = avsluttet != null
 
@@ -65,10 +73,11 @@ class DokumentEnhet(
         findAvsenderMottakerDistribusjon(avsenderMottaker).dokdistReferanse != null
 
     private fun isJournalfoertFor(avsenderMottaker: AvsenderMottaker): Boolean =
-        findAvsenderMottakerDistribusjon(avsenderMottaker).journalpostId != null && findAvsenderMottakerDistribusjon(avsenderMottaker).ferdigstiltIJoark != null
+        findAvsenderMottakerDistribusjon(avsenderMottaker).journalpostId != null &&
+            findAvsenderMottakerDistribusjon(avsenderMottaker).ferdigstiltIJoark != null
 
-    fun isProcessedForAll(): Boolean {
-        return if (shouldBeDistributed()) {
+    fun isProcessedForAll(): Boolean =
+        if (shouldBeDistributed()) {
             avsenderMottakere.all {
                 val avsenderMottakerDistribusjon = findAvsenderMottakerDistribusjon(it)
                 if (avsenderMottakerDistribusjon.shouldBeDistributed()) {
@@ -80,10 +89,8 @@ class DokumentEnhet(
         } else {
             isJournalfoertForAll()
         }
-    }
 
-    private fun isJournalfoertForAll(): Boolean =
-        avsenderMottakere.all { isJournalfoertFor(it) }
+    private fun isJournalfoertForAll(): Boolean = avsenderMottakere.all { isJournalfoertFor(it) }
 
     private fun findAvsenderMottakerDistribusjon(avsenderMottaker: AvsenderMottaker): AvsenderMottakerDistribusjon =
         avsenderMottakerDistribusjoner.find { it.avsenderMottaker == avsenderMottaker }!!

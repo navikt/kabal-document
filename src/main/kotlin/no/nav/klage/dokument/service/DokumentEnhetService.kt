@@ -3,7 +3,11 @@ package no.nav.klage.dokument.service
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottakerDistribusjon
+import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.DokumentInfoReference
+import no.nav.klage.dokument.domain.dokument.JournalfoertVedleggId
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
@@ -14,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Service
 class DokumentEnhetService(
@@ -24,9 +28,8 @@ class DokumentEnhetService(
     private val dokumentDistribusjonService: DokumentDistribusjonService,
     private val avsenderMottakerDistribusjonRepository: AvsenderMottakerDistribusjonRepository,
     private val trygderettenMetadataRepository: TrygderettenMetadataRepository,
-    @Value("\${ORGANISASJONSNUMMER_TRYGDERETTEN}") private val organisasjonsnummerTrygderetten: String,
-    ) {
-
+    @Value($$"${ORGANISASJONSNUMMER_TRYGDERETTEN}") private val organisasjonsnummerTrygderetten: String,
+) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -35,18 +38,18 @@ class DokumentEnhetService(
         const val FIRST_VEDLEGG_INDEX = 1
     }
 
-    fun ferdigstillDokumentEnhet(
-        dokumentEnhetId: UUID
-    ): DokumentEnhet {
+    fun ferdigstillDokumentEnhet(dokumentEnhetId: UUID): DokumentEnhet {
         val dokumentEnhet = dokumentEnhetRepository.getReferenceById(dokumentEnhetId)
 
         if (dokumentEnhet.isAvsluttet()) {
             logger.debug("Dokumentenhet {} already finalized.", dokumentEnhetId)
-            return dokumentEnhet //Vi går for idempotens og returnerer ingen feil her
+            return dokumentEnhet // Vi går for idempotens og returnerer ingen feil her
         }
 
-        val trygderettenMetadata = trygderettenMetadataRepository.findByDokumentEnhetId(dokumentEnhet.id)
-            ?.let { dokumentEnhetInputMapper.mapTrygderettenMetadataToInput(it) }
+        val trygderettenMetadata =
+            trygderettenMetadataRepository
+                .findByDokumentEnhetId(dokumentEnhet.id)
+                ?.let { dokumentEnhetInputMapper.mapTrygderettenMetadataToInput(it) }
 
         dokumentEnhet.avsenderMottakerDistribusjoner.forEach { avsenderMottakerDistribusjon ->
             if (avsenderMottakerDistribusjon.journalpostId == null) {
@@ -54,37 +57,38 @@ class DokumentEnhetService(
                     logger.debug(
                         "Creating journalpost for avsenderMottakerDistribusjon {} in dokumentEnhet {}",
                         avsenderMottakerDistribusjon.id,
-                        dokumentEnhet.id
+                        dokumentEnhet.id,
                     )
-                    val journalpostResponse = createJournalpost(
-                        avsenderMottakerDistribusjon = avsenderMottakerDistribusjon,
-                        dokumentEnhet = dokumentEnhet
-                    )
+                    val journalpostResponse =
+                        createJournalpost(
+                            avsenderMottakerDistribusjon = avsenderMottakerDistribusjon,
+                            dokumentEnhet = dokumentEnhet,
+                        )
                     avsenderMottakerDistribusjon.journalpostId = journalpostResponse.journalpostId
 
-                    //The documents come back in the order they were sent: the hoveddokument first, then
-                    //the vedlegg ordered by index.
+                    // The documents come back in the order they were sent: the hoveddokument first, then
+                    // the vedlegg ordered by index.
 
-                    //make sure they are sorted, but they should already be.
+                    // make sure they are sorted, but they should already be.
                     val orderedUploadedVedlegg = dokumentEnhet.vedlegg.sortedBy { it.index }
 
-                    //first hoveddokument
+                    // first hoveddokument
                     journalpostResponse.dokumenter.firstOrNull()?.let { hovedDokumentResponse ->
                         dokumentEnhet.hovedDokument?.dokumentInfoReferenceList?.add(
                             DokumentInfoReference(
                                 journalpostId = journalpostResponse.journalpostId,
                                 dokumentInfoId = hovedDokumentResponse.dokumentInfoId,
-                            )
+                            ),
                         )
                     }
 
-                    //then vedlegg
+                    // then vedlegg
                     journalpostResponse.dokumenter.drop(1).zip(orderedUploadedVedlegg).forEach { (dokument, vedlegg) ->
                         vedlegg.dokumentInfoReferenceList.add(
                             DokumentInfoReference(
                                 journalpostId = journalpostResponse.journalpostId,
                                 dokumentInfoId = dokument.dokumentInfoId,
-                            )
+                            ),
                         )
                     }
 
@@ -93,7 +97,7 @@ class DokumentEnhetService(
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to create journalpost for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
-                        t
+                        t,
                     )
                     throw t
                 }
@@ -102,40 +106,43 @@ class DokumentEnhetService(
                     "Journalpost for avsenderMottakerDistribusjon {} in dokumentEnhet {} already exists: {}",
                     avsenderMottakerDistribusjon.id,
                     dokumentEnhet.id,
-                    avsenderMottakerDistribusjon.journalpostId
+                    avsenderMottakerDistribusjon.journalpostId,
                 )
             }
         }
 
         dokumentEnhet.avsenderMottakerDistribusjoner.forEach { avsenderMottakerDistribusjon ->
-            val toJournalfoering = dokumentEnhet.journalfoerteVedlegg.filter { journalfoertVedlegg ->
-                avsenderMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }
-            }
+            val toJournalfoering =
+                dokumentEnhet.journalfoerteVedlegg.filter { journalfoertVedlegg ->
+                    avsenderMottakerDistribusjon.journalfoerteVedlegg.none { it.journalfoertVedleggId == journalfoertVedlegg.id }
+                }
 
             if (toJournalfoering.isNotEmpty()) {
-                val tilknyttVedleggResponse = journalfoeringService.tilknyttVedleggAsSystemUser(
-                    journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
-                    journalfoerteVedlegg = toJournalfoering,
-                )
+                val tilknyttVedleggResponse =
+                    journalfoeringService.tilknyttVedleggAsSystemUser(
+                        journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
+                        journalfoerteVedlegg = toJournalfoering,
+                    )
 
-                val setAsJournalfoert = if (tilknyttVedleggResponse.feiledeDokumenter.isEmpty()) {
-                    toJournalfoering
-                } else {
-                    logger.warn("Noen dokumenter kunne ikke bli tilknyttet: {}", tilknyttVedleggResponse)
+                val setAsJournalfoert =
+                    if (tilknyttVedleggResponse.feiledeDokumenter.isEmpty()) {
+                        toJournalfoering
+                    } else {
+                        logger.warn("Noen dokumenter kunne ikke bli tilknyttet: {}", tilknyttVedleggResponse)
 
-                    toJournalfoering.filter { journalfoertVedlegg ->
-                        tilknyttVedleggResponse.feiledeDokumenter.none { feiletDokument ->
-                            feiletDokument.kildeJournalpostId == journalfoertVedlegg.kildeJournalpostId &&
+                        toJournalfoering.filter { journalfoertVedlegg ->
+                            tilknyttVedleggResponse.feiledeDokumenter.none { feiletDokument ->
+                                feiletDokument.kildeJournalpostId == journalfoertVedlegg.kildeJournalpostId &&
                                     feiletDokument.dokumentInfoId == journalfoertVedlegg.dokumentInfoId
+                            }
                         }
                     }
-                }
 
                 setAsJournalfoert.forEach { journalfoertVedlegg ->
                     avsenderMottakerDistribusjon.journalfoerteVedlegg.add(
                         JournalfoertVedleggId(
-                            journalfoertVedleggId = journalfoertVedlegg.id
-                        )
+                            journalfoertVedleggId = journalfoertVedlegg.id,
+                        ),
                     )
                     avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
                 }
@@ -149,20 +156,26 @@ class DokumentEnhetService(
         dokumentEnhet.avsenderMottakerDistribusjoner.forEach { avsenderMottakerDistribusjon ->
             if (avsenderMottakerDistribusjon.ferdigstiltIJoark == null) {
                 try {
-                    logger.debug("Finalizing journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
+                    logger.debug(
+                        "Finalizing journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}",
+                    )
                     avsenderMottakerDistribusjon.ferdigstiltIJoark =
-                        journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon = avsenderMottakerDistribusjon)
+                        journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
+                            avsenderMottakerDistribusjon = avsenderMottakerDistribusjon,
+                        )
                     avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                     avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
                 } catch (t: Throwable) {
                     logger.error(
                         "Failed to finalize journalpost for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}, journalpost ${avsenderMottakerDistribusjon.journalpostId}",
-                        t
+                        t,
                     )
                     throw t
                 }
             } else {
-                logger.debug("Journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already finalized.")
+                logger.debug(
+                    "Journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already finalized.",
+                )
             }
         }
 
@@ -171,7 +184,9 @@ class DokumentEnhetService(
                 if (avsenderMottakerDistribusjon.shouldBeDistributed()) {
                     if (avsenderMottakerDistribusjon.dokdistReferanse == null) {
                         try {
-                            logger.debug("Distributing journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}")
+                            logger.debug(
+                                "Distributing journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}",
+                            )
                             avsenderMottakerDistribusjon.dokdistReferanse =
                                 dokumentDistribusjonService.distribuerJournalpostTilMottaker(
                                     journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
@@ -179,7 +194,8 @@ class DokumentEnhetService(
                                     tvingSentralPrint = avsenderMottakerDistribusjon.avsenderMottaker.tvingSentralPrint,
                                     adresse = avsenderMottakerDistribusjon.avsenderMottaker.adresse,
                                     avsenderMottakerDistribusjonId = avsenderMottakerDistribusjon.id,
-                                    mottakerIsTrygderetten = avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten,
+                                    mottakerIsTrygderetten =
+                                        avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten,
                                     trygderettenMetadata = trygderettenMetadata,
                                 )
                             avsenderMottakerDistribusjon.modified = LocalDateTime.now()
@@ -187,12 +203,14 @@ class DokumentEnhetService(
                         } catch (t: Throwable) {
                             logger.error(
                                 "Failed to distribute journalpost for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
-                                t
+                                t,
                             )
                             throw t
                         }
                     } else {
-                        logger.debug("Dokdist for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists, with id ${avsenderMottakerDistribusjon.dokdistReferanse}")
+                        logger.debug(
+                            "Dokdist for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id} already exists, with id ${avsenderMottakerDistribusjon.dokdistReferanse}",
+                        )
                     }
                 }
             }
@@ -213,43 +231,39 @@ class DokumentEnhetService(
 
     fun createJournalpost(
         avsenderMottakerDistribusjon: AvsenderMottakerDistribusjon,
-        dokumentEnhet: DokumentEnhet
-    ): JournalpostResponse {
-        return journalfoeringService.createJournalpostAsSystemUser(
+        dokumentEnhet: DokumentEnhet,
+    ): JournalpostResponse =
+        journalfoeringService.createJournalpostAsSystemUser(
             avsenderMottaker = avsenderMottakerDistribusjon.avsenderMottaker,
             hoveddokument = dokumentEnhet.hovedDokument!!,
             vedleggDokumentSet = dokumentEnhet.vedlegg.sortedBy { it.index }.toSet(),
             journalfoeringData = dokumentEnhet.journalfoeringData,
             journalfoerendeSaksbehandlerIdent = dokumentEnhet.journalfoerendeSaksbehandlerIdent,
         )
-    }
 
     fun createAvsenderMottakerDistribusjoner(
         avsenderMottakere: Set<AvsenderMottaker>,
-        hovedDokumentId: UUID
-    ): Set<AvsenderMottakerDistribusjon> {
-        return avsenderMottakere.map { avsenderMottaker ->
-            createAvsenderMottakerDistribusjon(
-                avsenderMottaker = avsenderMottaker,
-                hovedDokumentId = hovedDokumentId
-            )
-        }.toSet()
-    }
+        hovedDokumentId: UUID,
+    ): Set<AvsenderMottakerDistribusjon> =
+        avsenderMottakere
+            .map { avsenderMottaker ->
+                createAvsenderMottakerDistribusjon(
+                    avsenderMottaker = avsenderMottaker,
+                    hovedDokumentId = hovedDokumentId,
+                )
+            }.toSet()
 
     private fun createAvsenderMottakerDistribusjon(
         avsenderMottaker: AvsenderMottaker,
-        hovedDokumentId: UUID
-    ): AvsenderMottakerDistribusjon {
-        return AvsenderMottakerDistribusjon(
+        hovedDokumentId: UUID,
+    ): AvsenderMottakerDistribusjon =
+        AvsenderMottakerDistribusjon(
             avsenderMottaker = avsenderMottaker,
             opplastetDokumentId = hovedDokumentId,
         )
-    }
 
     @Transactional
-    fun opprettDokumentEnhetMedDokumentreferanser(
-        input: DokumentEnhetWithDokumentreferanserInput
-    ): DokumentEnhet {
+    fun opprettDokumentEnhetMedDokumentreferanser(input: DokumentEnhetWithDokumentreferanserInput): DokumentEnhet {
         logger.debug("Creating dokumentEnhet")
         val dokumentType = DokumentType.of(input.dokumentTypeId)
 
@@ -264,41 +278,50 @@ class DokumentEnhetService(
         }
 
         val journalfoeringData =
-            dokumentEnhetInputMapper.mapJournalfoeringDataInput(input.journalfoeringData, dokumentType)
+            dokumentEnhetInputMapper.mapJournalfoeringDataInput(input = input.journalfoeringData, dokumentType = dokumentType)
         val avsenderMottakere = dokumentEnhetInputMapper.mapAvsenderMottakerInputList(input.avsenderMottakerList)
         val hovedokument =
             dokumentEnhetInputMapper.mapDokumentInputToHoveddokument(input.dokumentreferanser.hoveddokument)
 
-        //The vedlegg are numbered by their position in the list, so the caller decides the order.
+        // The vedlegg are numbered by their position in the list, so the caller decides the order.
         var vedleggIndex = FIRST_VEDLEGG_INDEX
 
-        val vedlegg = input.dokumentreferanser.vedlegg?.map { document ->
-            dokumentEnhetInputMapper.mapDokumentInputToVedlegg(document, vedleggIndex++)
-        }?.toSet() ?: emptySet()
+        val vedlegg =
+            input.dokumentreferanser.vedlegg
+                ?.map { document ->
+                    dokumentEnhetInputMapper.mapDokumentInputToVedlegg(dokument = document, index = vedleggIndex++)
+                }?.toSet() ?: emptySet()
 
-        val journalfoerteVedlegg = input.dokumentreferanser.journalfoerteVedlegg?.map { document ->
-            dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(document, vedleggIndex++)
-        }?.toSet() ?: emptySet()
-        val avsenderMottakerDistribusjoner = createAvsenderMottakerDistribusjoner(avsenderMottakere, hovedokument.id)
-        val dokumentEnhet = dokumentEnhetRepository.save(
-            DokumentEnhet(
-                journalfoeringData = journalfoeringData,
+        val journalfoerteVedlegg =
+            input.dokumentreferanser.journalfoerteVedlegg
+                ?.map { document ->
+                    dokumentEnhetInputMapper.mapDokumentInputToJournalfoertVedlegg(dokument = document, index = vedleggIndex++)
+                }?.toSet() ?: emptySet()
+        val avsenderMottakerDistribusjoner =
+            createAvsenderMottakerDistribusjoner(
                 avsenderMottakere = avsenderMottakere,
-                avsenderMottakerDistribusjoner = avsenderMottakerDistribusjoner,
-                hovedDokument = hovedokument,
-                vedlegg = vedlegg,
-                journalfoerteVedlegg = journalfoerteVedlegg,
-                dokumentType = dokumentType,
-                journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
+                hovedDokumentId = hovedokument.id,
             )
-        )
+        val dokumentEnhet =
+            dokumentEnhetRepository.save(
+                DokumentEnhet(
+                    journalfoeringData = journalfoeringData,
+                    avsenderMottakere = avsenderMottakere,
+                    avsenderMottakerDistribusjoner = avsenderMottakerDistribusjoner,
+                    hovedDokument = hovedokument,
+                    vedlegg = vedlegg,
+                    journalfoerteVedlegg = journalfoerteVedlegg,
+                    dokumentType = dokumentType,
+                    journalfoerendeSaksbehandlerIdent = input.journalfoerendeSaksbehandlerIdent,
+                ),
+            )
 
         if (input.trygderettenMetadata != null) {
             trygderettenMetadataRepository.save(
                 dokumentEnhetInputMapper.mapTrygderettenMetadataInput(
                     input = input.trygderettenMetadata,
                     dokumentEnhetId = dokumentEnhet.id,
-                )
+                ),
             )
         }
 

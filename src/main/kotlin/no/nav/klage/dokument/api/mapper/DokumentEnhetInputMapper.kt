@@ -1,11 +1,18 @@
 package no.nav.klage.dokument.api.mapper
 
-
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.Kanal
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.Adresse
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.OpplastetVedlegg
+import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
+import no.nav.klage.dokument.domain.dokument.TrygderettenMetadata
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
@@ -13,23 +20,24 @@ import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
 import no.nav.klage.kodeverk.Tema
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class DokumentEnhetInputMapper {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun mapAvsenderMottakerInputList(avsenderMottakerInput: List<DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput>): Set<AvsenderMottaker> =
-        avsenderMottakerInput.map { mapAvsenderMottakerInput(it) }.toSet()
+    fun mapAvsenderMottakerInputList(
+        avsenderMottakerInput: List<DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput>,
+    ): Set<AvsenderMottaker> = avsenderMottakerInput.map { mapAvsenderMottakerInput(it) }.toSet()
 
     fun mapAvsenderMottakerInput(avsenderMottakerInput: DokumentEnhetWithDokumentreferanserInput.AvsenderMottakerInput): AvsenderMottaker =
         try {
             if (avsenderMottakerInput.kanal != null) {
-                if (avsenderMottakerInput.kanal !in listOf(
+                if (avsenderMottakerInput.kanal !in
+                    listOf(
                         Kanal.EESSI,
                         Kanal.ALTINN,
                         Kanal.ALTINN_INNBOKS,
@@ -43,7 +51,7 @@ class DokumentEnhetInputMapper {
                         Kanal.TRYGDERETTEN,
                         Kanal.INGEN_DISTRIBUSJON,
                         Kanal.NAV_NO_CHAT,
-                        Kanal.DPVT
+                        Kanal.DPVT,
                     )
                 ) {
                     throw Exception("Invalid kanal in avsenderMottakerInput: ${avsenderMottakerInput.kanal.name}")
@@ -104,19 +112,26 @@ class DokumentEnhetInputMapper {
         dokumentType: DokumentType,
     ): JournalfoeringData =
         try {
-            val journalpostType = when (dokumentType) {
-                DokumentType.NOTAT -> {
-                    JournalpostType.NOTAT
-                }
+            val journalpostType =
+                when (dokumentType) {
+                    DokumentType.NOTAT -> {
+                        JournalpostType.NOTAT
+                    }
 
-                DokumentType.KJENNELSE_FRA_TRYGDERETTEN, DokumentType.ANNEN_INNGAAENDE_POST -> {
-                    JournalpostType.INNGAAENDE
-                }
+                    DokumentType.KJENNELSE_FRA_TRYGDERETTEN, DokumentType.ANNEN_INNGAAENDE_POST -> {
+                        JournalpostType.INNGAAENDE
+                    }
 
-                DokumentType.VEDTAK, DokumentType.BREV, DokumentType.BESLUTNING, DokumentType.SVARBREV, DokumentType.FORLENGET_BEHANDLINGSTIDSBREV, DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN -> {
-                    JournalpostType.UTGAAENDE
+                    DokumentType.VEDTAK,
+                    DokumentType.BREV,
+                    DokumentType.BESLUTNING,
+                    DokumentType.SVARBREV,
+                    DokumentType.FORLENGET_BEHANDLINGSTIDSBREV,
+                    DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN,
+                    -> {
+                        JournalpostType.UTGAAENDE
+                    }
                 }
-            }
 
             if (journalpostType != JournalpostType.INNGAAENDE && input.datoMottatt != null) {
                 logger.error("Data fra klient er ikke gyldig, datoMottatt kan kun settes for inngående journalpost.")
@@ -133,7 +148,7 @@ class DokumentEnhetInputMapper {
                 behandlingstema = input.behandlingstema,
                 tittel = input.tittel,
                 brevKode = input.brevKode,
-                tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(it.key, it.value) },
+                tilleggsopplysning = input.tilleggsopplysning?.let { Tilleggsopplysning(key = it.key, value = it.value) },
                 journalpostType = journalpostType,
                 inngaaendeKanal = if (journalpostType == JournalpostType.INNGAAENDE) input.inngaaendeKanal else null,
                 datoMottatt = if (journalpostType == JournalpostType.INNGAAENDE && input.datoMottatt != null) input.datoMottatt else null,
@@ -152,18 +167,18 @@ class DokumentEnhetInputMapper {
 
     fun mapDokumentInputToVedlegg(
         dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.Dokument,
-        index: Int
+        index: Int,
     ): OpplastetVedlegg =
         OpplastetVedlegg(
             mellomlagerId = dokument.mellomlagerId,
             name = dokument.name,
             index = index,
-            sourceReference = dokument.sourceReference
+            sourceReference = dokument.sourceReference,
         )
 
     fun mapDokumentInputToJournalfoertVedlegg(
         dokument: DokumentEnhetWithDokumentreferanserInput.DokumentInput.JournalfoertDokument,
-        index: Int
+        index: Int,
     ): JournalfoertVedlegg =
         JournalfoertVedlegg(
             kildeJournalpostId = dokument.kildeJournalpostId,
@@ -171,18 +186,21 @@ class DokumentEnhetInputMapper {
             index = index,
         )
 
-    private fun mapPartIdInput(partIdInput: DokumentEnhetWithDokumentreferanserInput.PartIdInput): PartId {
-        return try {
+    private fun mapPartIdInput(partIdInput: DokumentEnhetWithDokumentreferanserInput.PartIdInput): PartId =
+        try {
             PartId(
-                type = if (partIdInput.partIdTypeId != null) PartIdType.of(partIdInput.partIdTypeId)
-                else PartIdType.valueOf(partIdInput.type!!),
-                value = partIdInput.value
+                type =
+                    if (partIdInput.partIdTypeId != null) {
+                        PartIdType.of(partIdInput.partIdTypeId)
+                    } else {
+                        PartIdType.valueOf(partIdInput.type!!)
+                    },
+                value = partIdInput.value,
             )
         } catch (iae: IllegalArgumentException) {
             logger.warn("Data fra klient er ikke gyldig", iae)
             throw DokumentEnhetNotValidException("Ulovlig input: ${iae.message}")
         }
-    }
 
     fun mapTrygderettenMetadataInput(
         input: TrygderettenMetadataInput,
@@ -205,9 +223,7 @@ class DokumentEnhetInputMapper {
         )
     }
 
-    fun mapTrygderettenMetadataToInput(
-        metadata: TrygderettenMetadata,
-    ): TrygderettenMetadataInput =
+    fun mapTrygderettenMetadataToInput(metadata: TrygderettenMetadata): TrygderettenMetadataInput =
         TrygderettenMetadataInput(
             kravfremsettelsesdato = metadata.kravfremsettelsesdato,
             paaanketVedtaksdato = metadata.paaanketVedtaksdato,

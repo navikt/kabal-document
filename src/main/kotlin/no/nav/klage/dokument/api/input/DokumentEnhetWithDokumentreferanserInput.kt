@@ -3,7 +3,7 @@ package no.nav.klage.dokument.api.input
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.klage.dokument.clients.joark.Kanal
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DokumentEnhetWithDokumentreferanserInput(
@@ -50,7 +50,9 @@ data class DokumentEnhetWithDokumentreferanserInput(
         val land: String,
     )
 
-    enum class Adressetype(val navn: String) {
+    enum class Adressetype(
+        val navn: String,
+    ) {
         NORSK_POSTADRESSE("norskPostadresse"),
         UTENLANDSK_POSTADRESSE("utenlandskPostadresse"),
     }
@@ -71,13 +73,13 @@ data class DokumentEnhetWithDokumentreferanserInput(
     ) {
         data class TilleggsopplysningInput(
             val key: String,
-            val value: String
+            val value: String,
         )
     }
 
     data class PartIdInput(
         val type: String?,
         val partIdTypeId: String?,
-        val value: String
+        val value: String,
     )
 }

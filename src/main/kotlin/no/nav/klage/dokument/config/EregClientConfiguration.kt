@@ -9,21 +9,19 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class EregClientConfiguration(
-    @Qualifier("fastLookupWebClientBuilder") private val fastLookupWebClientBuilder: WebClient.Builder
+    @Qualifier("fastLookupWebClientBuilder") private val fastLookupWebClientBuilder: WebClient.Builder,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @Value("\${EREG_URL}")
+    @Value($$"${EREG_URL}")
     private lateinit var eregServiceURL: String
 
     @Bean
-    fun eregWebClient(): WebClient {
-        return fastLookupWebClientBuilder
+    fun eregWebClient(): WebClient =
+        fastLookupWebClientBuilder
             .baseUrl(eregServiceURL)
             .build()
-    }
 }

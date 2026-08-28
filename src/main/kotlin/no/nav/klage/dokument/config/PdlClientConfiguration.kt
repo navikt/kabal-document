@@ -8,19 +8,17 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class PdlClientConfiguration(
-    @Qualifier("fastLookupWebClientBuilder") private val fastLookupWebClientBuilder: WebClient.Builder
+    @Qualifier("fastLookupWebClientBuilder") private val fastLookupWebClientBuilder: WebClient.Builder,
 ) {
-
-    @Value("\${PDL_BASE_URL}")
+    @Value($$"${PDL_BASE_URL}")
     private lateinit var pdlUrl: String
 
     @Bean
-    fun pdlWebClient(): WebClient {
-        return fastLookupWebClientBuilder
+    fun pdlWebClient(): WebClient =
+        fastLookupWebClientBuilder
             .baseUrl(pdlUrl)
             .defaultHeader("TEMA", "KLA")
-            //Fra behandlingskatalogen
+            // Fra behandlingskatalogen
             .defaultHeader("behandlingsnummer", "B392")
             .build()
-    }
 }

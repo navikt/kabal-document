@@ -3,12 +3,20 @@ package no.nav.klage.dokument.util
 import jakarta.xml.bind.JAXBContext
 import jakarta.xml.bind.JAXBElement
 import jakarta.xml.bind.Marshaller
-import no.arkivverket.standarder.noark5.arkivmelding.v2.*
+import no.arkivverket.standarder.noark5.arkivmelding.v2.Arkivmelding
+import no.arkivverket.standarder.noark5.arkivmelding.v2.Dokumentbeskrivelse
+import no.arkivverket.standarder.noark5.arkivmelding.v2.EnhetsidentifikatorType
+import no.arkivverket.standarder.noark5.arkivmelding.v2.FoedselsnummerType
+import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
 import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
-import no.nav.klage.dokument.clients.saf.graphql.*
+import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
+import no.nav.klage.dokument.clients.saf.graphql.Dokumentvariant
+import no.nav.klage.dokument.clients.saf.graphql.Filtype
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
+import no.nav.klage.dokument.clients.saf.graphql.Journalposttype
+import no.nav.klage.dokument.clients.saf.graphql.Variantformat
 import no.nav.klage.dokument.domain.dokument.Representant
 import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.kodeverk.PartIdType
@@ -17,12 +25,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
-import java.util.*
+import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeConfigurationException
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
-
 
 const val UKJENT_NAVN = "UKJENT NAVN"
 const val ARKIVMELDING_NAMESPACE = "http://www.arkivverket.no/standarder/noark5/arkivmelding"
@@ -48,9 +55,7 @@ const val HOVEDDOKUMENT = "Hoveddokument"
 const val VEDLEGG = "Vedlegg"
 const val REFERANSE_DOKUMENTFIL_FORMAT = "%s-%s.%s"
 
-fun getOldestDateFromDokumentbeskrivelser(
-    dokumentBeskrivelser: Collection<Dokumentbeskrivelse>
-): XMLGregorianCalendar? {
+fun getOldestDateFromDokumentbeskrivelser(dokumentBeskrivelser: Collection<Dokumentbeskrivelse>): XMLGregorianCalendar? {
     val now = getNow()
     return dokumentBeskrivelser.minBy { it.opprettetDato.toGregorianCalendar() }.opprettetDato ?: now
 }
@@ -58,36 +63,37 @@ fun getOldestDateFromDokumentbeskrivelser(
 fun getDokumentbeskrivelseOpprettetDato(
     originalJournalpost: Journalpost?,
     newJournalpost: Journalpost,
-): XMLGregorianCalendar {
-    return if (originalJournalpost?.getDatoJournalfoert() != null) {
+): XMLGregorianCalendar =
+    if (originalJournalpost?.getDatoJournalfoert() != null) {
         convertLocalDateTimeToXmlGregorianCalendar(originalJournalpost.getDatoJournalfoert()!!)
     } else {
         convertLocalDateTimeToXmlGregorianCalendar(
-            newJournalpost.getDatoJournalfoert() ?: throw RuntimeException("No journalfoeringData in journalpost")
+            newJournalpost.getDatoJournalfoert() ?: throw RuntimeException("No journalfoeringData in journalpost"),
         )
     }
-}
 
 fun convertLocalDateTimeToXmlGregorianCalendar(localDateTime: LocalDateTime): XMLGregorianCalendar {
     try {
-        return DatatypeFactory.newInstance()
+        return DatatypeFactory
+            .newInstance()
             .newXMLGregorianCalendar(localDateTime.format(ISO_LOCAL_DATE_TIME))
     } catch (e: DatatypeConfigurationException) {
         throw RuntimeException(
             "Kunne ikke konvertere fra localDateTime til XmlGregorianCalendar. Forsøkte å konvertere localDateTime=$localDateTime",
-            e
+            e,
         )
     }
 }
 
 fun convertLocalDateToXmlGregorianCalendar(localDate: LocalDate): XMLGregorianCalendar {
     try {
-        return DatatypeFactory.newInstance()
+        return DatatypeFactory
+            .newInstance()
             .newXMLGregorianCalendar(localDate.format(ISO_LOCAL_DATE))
     } catch (e: DatatypeConfigurationException) {
         throw RuntimeException(
             "Kunne ikke konvertere fra localDate til XmlGregorianCalendar. Forsøkte å konvertere localDate=$localDate",
-            e
+            e,
         )
     }
 }
@@ -112,7 +118,9 @@ fun getDokumentbeskrivelseTittel(
                 "${dokumentInfo.tittel}, Til $avsenderMottakerNavn"
             }
 
-            else -> dokumentInfo.tittel
+            else -> {
+                dokumentInfo.tittel
+            }
         }
     } else {
         dokumentInfo.tittel
@@ -122,18 +130,17 @@ fun getDokumentbeskrivelseTittel(
 fun getDokumentbeskrivelseOpprettetAv(
     originalJournalpost: Journalpost?,
     newJournalpost: Journalpost,
-    isHoveddokument: Boolean
-): String {
-    return if (!isHoveddokument && originalJournalpost != null) {
+    isHoveddokument: Boolean,
+): String =
+    if (!isHoveddokument && originalJournalpost != null) {
         originalJournalpost.opprettetAvNavn ?: UKJENT
     } else {
         newJournalpost.journalfortAvNavn!!
     }
-}
 
 fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
     val mellomnavn = navn?.mellomnavn?.let { " ${it.trim()}" } ?: ""
-    return navn?.let { "${it.fornavn}${mellomnavn} ${it.etternavn}" }
+    return navn?.let { "${it.fornavn}$mellomnavn ${it.etternavn}" }
 }
 
 fun getNavMappe(
@@ -141,66 +148,74 @@ fun getNavMappe(
     useV2: Boolean,
     trygderettenMetadata: TrygderettenMetadataInput?,
 ): JAXBElement<*> {
-    val jaxbElement: JAXBElement<*> = if (useV2) {
-        if (trygderettenMetadata == null) {
-            throw DokumentEnhetNotValidException(
-                "trygderettenMetadata mangler. Påkrevd når v2 skal brukes."
-            )
+    val jaxbElement: JAXBElement<*> =
+        if (useV2) {
+            if (trygderettenMetadata == null) {
+                throw DokumentEnhetNotValidException(
+                    "trygderettenMetadata mangler. Påkrevd når v2 skal brukes.",
+                )
+            }
+            // TODO validate according to what kind of melding it should be. Gjenopptak, ettersendelse etc.
+            val navMappe =
+                no.nav.avtaltmelding.trygderetten.v2.NavMappe().apply {
+                    saksnummer = arkivsaknummer
+                    kravfremsettelsesdato =
+                        trygderettenMetadata.kravfremsettelsesdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
+                    paaanketVedtaksdato =
+                        trygderettenMetadata.paaanketVedtaksdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
+                    isTidligereITROgOpphevetHenvist = trygderettenMetadata.tidligereITROgOpphevetHenvist
+                    isGjenopptak = trygderettenMetadata.gjenopptak
+                    isForsterketRett = trygderettenMetadata.forsterketRett
+                    isEttersendelse = trygderettenMetadata.ettersendelse
+                    lovhenvisning.addAll(trygderettenMetadata.lovhenvisning)
+                }
+            no.nav.avtaltmelding.trygderetten.v2
+                .ObjectFactory()
+                .createNavMappe(navMappe)
+        } else {
+            val navMappe =
+                NavMappe().apply {
+                    saksnummer = arkivsaknummer
+                }
+            no.nav.avtaltmelding.trygderetten.v1
+                .ObjectFactory()
+                .createNavMappe(navMappe)
         }
-        //TODO validate according to what kind of melding it should be. Gjenopptak, ettersendelse etc.
-        val navMappe = no.nav.avtaltmelding.trygderetten.v2.NavMappe().apply {
-            saksnummer = arkivsaknummer
-            kravfremsettelsesdato =
-                trygderettenMetadata.kravfremsettelsesdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
-            paaanketVedtaksdato =
-                trygderettenMetadata.paaanketVedtaksdato?.let { convertLocalDateToXmlGregorianCalendar(it) }
-            isTidligereITROgOpphevetHenvist = trygderettenMetadata.tidligereITROgOpphevetHenvist
-            isGjenopptak = trygderettenMetadata.gjenopptak
-            isForsterketRett = trygderettenMetadata.forsterketRett
-            isEttersendelse = trygderettenMetadata.ettersendelse
-            lovhenvisning.addAll(trygderettenMetadata.lovhenvisning)
-        }
-        no.nav.avtaltmelding.trygderetten.v2.ObjectFactory().createNavMappe(navMappe)
-    } else {
-        val navMappe = NavMappe().apply {
-            saksnummer = arkivsaknummer
-        }
-        no.nav.avtaltmelding.trygderetten.v1.ObjectFactory().createNavMappe(navMappe)
-    }
 
     return JAXBElement(
         QName(ARKIVMELDING_NAMESPACE, "virksomhetsspesifikkeMetadata"),
         JAXBElement::class.java,
-        jaxbElement
+        jaxbElement,
     )
 }
 
 fun getDokumentbeskrivelseReferanseDokumentFil(
     dokument: DokumentInfo,
     newJournalpost: Journalpost,
-    gjeldendeDokumentVariant: Dokumentvariant
-): String {
-    return String.format(
+    gjeldendeDokumentVariant: Dokumentvariant,
+): String =
+    String.format(
         REFERANSE_DOKUMENTFIL_FORMAT,
         newJournalpost.journalpostId,
         dokument.dokumentInfoId,
         gjeldendeDokumentVariant.filtype?.name?.lowercase() ?: throw RuntimeException(
-            "Klarte ikke mappe filtype til format."
-        )
+            "Klarte ikke mappe filtype til format.",
+        ),
     )
-}
 
-fun getDokumentbeskrivelseVariantFormat(dokumentVariant: Dokumentvariant): String {
-    return if (dokumentVariant.variantformat == Variantformat.SLADDET) {
+fun getDokumentbeskrivelseVariantFormat(dokumentVariant: Dokumentvariant): String =
+    if (dokumentVariant.variantformat == Variantformat.SLADDET) {
         DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET
-    } else if (dokumentVariant.filtype in listOf(
+    } else if (dokumentVariant.filtype in
+        listOf(
             Filtype.JPEG,
             Filtype.PNG,
         )
     ) {
         ARKIVFORMAT
-    } else PRODUKSJONSFORMAT
-}
+    } else {
+        PRODUKSJONSFORMAT
+    }
 
 fun getNow(): XMLGregorianCalendar? {
     val now: XMLGregorianCalendar?
@@ -212,27 +227,31 @@ fun getNow(): XMLGregorianCalendar? {
     return now
 }
 
-fun getAMPPart(opprettetAvNavn: String?): Part {
-    return Part().apply {
+fun getAMPPart(opprettetAvNavn: String?): Part =
+    Part().apply {
         partNavn = NAV_KLAGEINSTANS_NAVN
         partRolle = SAKSPART_ROLLE_AMP
         organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = NAV_KLAGEINSTANS_ORGNR }
         kontaktperson = opprettetAvNavn
     }
-}
 
-fun getREPPart(representant: Representant): Part {
-    return Part().apply {
+fun getREPPart(representant: Representant): Part =
+    Part().apply {
         partNavn = representant.navn
         partRolle = SAKSPART_ROLLE_REPRESENTANT
         when (val partId = representant.partId) {
             null -> {}
-            else -> when (partId.type) {
-                PartIdType.PERSON ->
-                    foedselsnummer = FoedselsnummerType().apply { foedselsnummer = partId.value }
 
-                PartIdType.VIRKSOMHET ->
-                    organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = partId.value }
+            else -> {
+                when (partId.type) {
+                    PartIdType.PERSON -> {
+                        foedselsnummer = FoedselsnummerType().apply { foedselsnummer = partId.value }
+                    }
+
+                    PartIdType.VIRKSOMHET -> {
+                        organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = partId.value }
+                    }
+                }
             }
         }
         representant.adresse?.let { adresse ->
@@ -242,18 +261,22 @@ fun getREPPart(representant: Representant): Part {
             land = adresse.land
         }
     }
-}
 
-fun marshalAvtalemelding(avtalemelding: Arkivmelding, useV2: Boolean): String {
-    val navMappeClass = if (useV2) {
-        no.nav.avtaltmelding.trygderetten.v2.NavMappe::class.java
-    } else {
-        NavMappe::class.java
-    }
-    val jaxbContext = JAXBContext.newInstance(
-        Arkivmelding::class.java,
-        navMappeClass,
-    )
+fun marshalAvtalemelding(
+    avtalemelding: Arkivmelding,
+    useV2: Boolean,
+): String {
+    val navMappeClass =
+        if (useV2) {
+            no.nav.avtaltmelding.trygderetten.v2.NavMappe::class.java
+        } else {
+            NavMappe::class.java
+        }
+    val jaxbContext =
+        JAXBContext.newInstance(
+            Arkivmelding::class.java,
+            navMappeClass,
+        )
     val marshaller: Marshaller = jaxbContext.createMarshaller()
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     val sw = StringWriter()

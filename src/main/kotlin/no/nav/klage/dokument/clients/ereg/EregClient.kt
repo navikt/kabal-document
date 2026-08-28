@@ -1,6 +1,5 @@
 package no.nav.klage.dokument.clients.ereg
 
-
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.dokument.util.logErrorResponse
 import org.springframework.beans.factory.annotation.Value
@@ -15,8 +14,7 @@ import reactor.core.publisher.Mono
 class EregClient(
     private val eregWebClient: WebClient,
 ) {
-
-    @Value("\${spring.application.name}")
+    @Value($$"${spring.application.name}")
     lateinit var applicationName: String
 
     companion object {
@@ -24,15 +22,15 @@ class EregClient(
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun hentNoekkelInformasjonOmOrganisasjon(orgnummer: String): NoekkelInfoOmOrganisasjon {
-        return eregWebClient.get()
+    fun hentNoekkelInformasjonOmOrganisasjon(orgnummer: String): NoekkelInfoOmOrganisasjon =
+        eregWebClient
+            .get()
             .uri { uriBuilder ->
                 uriBuilder
                     .path("/organisasjon/{orgnummer}/noekkelinfo")
                     .queryParam("inkluderHierarki", false)
                     .build(orgnummer)
-            }
-            .accept(MediaType.APPLICATION_JSON)
+            }.accept(MediaType.APPLICATION_JSON)
             .header("Nav-Consumer-Id", applicationName)
             .retrieve()
             .onStatus(HttpStatusCode::isError) { response ->
@@ -49,10 +47,7 @@ class EregClient(
                         )
                     }
                 }
-            }
-            .bodyToMono<NoekkelInfoOmOrganisasjon>()
+            }.bodyToMono<NoekkelInfoOmOrganisasjon>()
             .block()
             ?: throw RuntimeException("hentNoekkelInformasjonOmOrganisasjon for $orgnummer returned null.")
-
-    }
 }

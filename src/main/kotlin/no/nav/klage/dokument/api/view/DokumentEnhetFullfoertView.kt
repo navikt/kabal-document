@@ -1,6 +1,6 @@
 package no.nav.klage.dokument.api.view
 
-import java.util.*
+import java.util.UUID
 
 data class DokumentEnhetFullfoertView(
     val sourceReferenceWithJoarkReferencesList: List<SourceReferenceWithJoarkReferences>,
@@ -8,7 +8,7 @@ data class DokumentEnhetFullfoertView(
 
 data class SourceReferenceWithJoarkReferences(
     val sourceReference: UUID?,
-    val joarkReferenceList: List<JoarkReference>
+    val joarkReferenceList: List<JoarkReference>,
 )
 
 data class JoarkReference(

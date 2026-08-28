@@ -7,7 +7,14 @@ import no.nav.klage.dokument.api.mapper.DokumentEnhetInputMapper
 import no.nav.klage.dokument.clients.joark.JournalpostResponse
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottakerDistribusjon
+import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.OpplastetVedlegg
+import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
 import no.nav.klage.dokument.repositories.AvsenderMottakerDistribusjonRepository
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
@@ -19,7 +26,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 internal class DokumentEnhetServiceTest {
     private val dokumentEnhetRepository = mockk<DokumentEnhetRepository>()
@@ -29,164 +36,186 @@ internal class DokumentEnhetServiceTest {
     private val mellomlagerService = mockk<MellomlagerService>()
     private val avsenderMottakerDistribusjonRepository = mockk<AvsenderMottakerDistribusjonRepository>()
     private val trygderettenMetadataRepository = mockk<TrygderettenMetadataRepository>()
-    val JOURNALPOST_ID_1 = "JOURNALPOST_ID_1"
-    val JOURNALPOST_ID_2 = "JOURNALPOST_ID_2"
-    val JOURNALPOST_ID_3 = "JOURNALPOST_ID_3"
+    val journalpostId1 = "JOURNALPOST_ID_1"
+    val journalpostId2 = "JOURNALPOST_ID_2"
+    val journalpostId3 = "JOURNALPOST_ID_3"
 
-    val JOURNALPOST_RESPONSE_1 = JournalpostResponse(
-        journalpostId = JOURNALPOST_ID_1,
-        journalpostferdigstilt = false,
-        dokumenter = listOf()
-    )
+    val journalpostResponse1 =
+        JournalpostResponse(
+            journalpostId = journalpostId1,
+            journalpostferdigstilt = false,
+            dokumenter = listOf(),
+        )
 
-    val JOURNALPOST_RESPONSE_2 = JournalpostResponse(
-        journalpostId = JOURNALPOST_ID_2,
-        journalpostferdigstilt = false,
-        dokumenter = listOf()
-    )
+    val journalpostResponse2 =
+        JournalpostResponse(
+            journalpostId = journalpostId2,
+            journalpostferdigstilt = false,
+            dokumenter = listOf(),
+        )
 
-    val JOURNALPOST_RESPONSE_3 = JournalpostResponse(
-        journalpostId = JOURNALPOST_ID_3,
-        journalpostferdigstilt = false,
-        dokumenter = listOf()
-    )
+    val journalpostResponse3 =
+        JournalpostResponse(
+            journalpostId = journalpostId3,
+            journalpostferdigstilt = false,
+            dokumenter = listOf(),
+        )
 
-    val avsenderMottaker1 = AvsenderMottaker(
-        partId = PartId(
-            type = PartIdType.PERSON,
-            value = "01011012345"
-        ),
-        navn = "Test Person",
-        adresse = null,
-        tvingSentralPrint = false,
-        localPrint = false,
-        kanal = null,
-    )
+    val avsenderMottaker1 =
+        AvsenderMottaker(
+            partId =
+                PartId(
+                    type = PartIdType.PERSON,
+                    value = "01011012345",
+                ),
+            navn = "Test Person",
+            adresse = null,
+            tvingSentralPrint = false,
+            localPrint = false,
+            kanal = null,
+        )
 
-    val avsenderMottaker2 = AvsenderMottaker(
-        partId = PartId(
-            type = PartIdType.PERSON,
-            value = "20022012345"
-        ),
-        navn = "Mottaker Person",
-        adresse = null,
-        tvingSentralPrint = false,
-        localPrint = false,
-        kanal = null,
-    )
+    val avsenderMottaker2 =
+        AvsenderMottaker(
+            partId =
+                PartId(
+                    type = PartIdType.PERSON,
+                    value = "20022012345",
+                ),
+            navn = "Mottaker Person",
+            adresse = null,
+            tvingSentralPrint = false,
+            localPrint = false,
+            kanal = null,
+        )
 
-    val avsenderMottaker3 = AvsenderMottaker(
-        partId = PartId(
-            type = PartIdType.PERSON,
-            value = "01011012345"
-        ),
-        navn = "Test Person",
-        adresse = null,
-        tvingSentralPrint = false,
-        localPrint = true,
-        kanal = null,
-    )
+    val avsenderMottaker3 =
+        AvsenderMottaker(
+            partId =
+                PartId(
+                    type = PartIdType.PERSON,
+                    value = "01011012345",
+                ),
+            navn = "Test Person",
+            adresse = null,
+            tvingSentralPrint = false,
+            localPrint = true,
+            kanal = null,
+        )
 
-    val hovedDokument = OpplastetHoveddokument(
-        mellomlagerId = "123",
-        name = "fil.pdf",
-        sourceReference = UUID.randomUUID(),
-    )
+    val hovedDokument =
+        OpplastetHoveddokument(
+            mellomlagerId = "123",
+            name = "fil.pdf",
+            sourceReference = UUID.randomUUID(),
+        )
 
-    val avsenderMottakerDistribusjon1 = AvsenderMottakerDistribusjon(
-        avsenderMottaker = avsenderMottaker1,
-        opplastetDokumentId = hovedDokument.id,
-    )
+    val avsenderMottakerDistribusjon1 =
+        AvsenderMottakerDistribusjon(
+            avsenderMottaker = avsenderMottaker1,
+            opplastetDokumentId = hovedDokument.id,
+        )
 
-    val avsenderMottakerDistribusjon2 = AvsenderMottakerDistribusjon(
-        avsenderMottaker = avsenderMottaker2,
-        opplastetDokumentId = hovedDokument.id,
-    )
+    val avsenderMottakerDistribusjon2 =
+        AvsenderMottakerDistribusjon(
+            avsenderMottaker = avsenderMottaker2,
+            opplastetDokumentId = hovedDokument.id,
+        )
 
-    val avsenderMottakerDistribusjon3 = AvsenderMottakerDistribusjon(
-        avsenderMottaker = avsenderMottaker3,
-        opplastetDokumentId = hovedDokument.id,
-    )
+    val avsenderMottakerDistribusjon3 =
+        AvsenderMottakerDistribusjon(
+            avsenderMottaker = avsenderMottaker3,
+            opplastetDokumentId = hovedDokument.id,
+        )
 
-    val baseDokumentEnhet = DokumentEnhet(
-        journalfoeringData = JournalfoeringData(
-            sakenGjelder = PartId(
-                type = PartIdType.PERSON,
-                value = "20022012345"
-            ),
-            tema = Tema.OMS,
-            sakFagsakId = "sakFagsakId",
-            sakFagsystem = Fagsystem.FS36,
-            kildeReferanse = "kildeReferanse",
-            enhet = "Enhet",
-            behandlingstema = "behandlingstema",
-            tittel = "Tittel",
-            brevKode = "brevKode",
-            tilleggsopplysning = Tilleggsopplysning("key", "value"),
-            journalpostType = JournalpostType.UTGAAENDE,
-            inngaaendeKanal = null,
-            datoMottatt = null,
-        ),
-        avsenderMottakere = setOf(avsenderMottaker1, avsenderMottaker2),
-        avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon1, avsenderMottakerDistribusjon2),
-        hovedDokument = hovedDokument,
-        vedlegg = setOf(
-            OpplastetVedlegg(
-                mellomlagerId = "456",
-                name = "fil2.pdf",
-                index = 0,
-                sourceReference = UUID.randomUUID(),
-            )
-        ),
-        avsluttet = null,
-        journalfoerendeSaksbehandlerIdent = "S123456",
-        dokumentType = DokumentType.VEDTAK,
-    )
+    val baseDokumentEnhet =
+        DokumentEnhet(
+            journalfoeringData =
+                JournalfoeringData(
+                    sakenGjelder =
+                        PartId(
+                            type = PartIdType.PERSON,
+                            value = "20022012345",
+                        ),
+                    tema = Tema.OMS,
+                    sakFagsakId = "sakFagsakId",
+                    sakFagsystem = Fagsystem.FS36,
+                    kildeReferanse = "kildeReferanse",
+                    enhet = "Enhet",
+                    behandlingstema = "behandlingstema",
+                    tittel = "Tittel",
+                    brevKode = "brevKode",
+                    tilleggsopplysning = Tilleggsopplysning(key = "key", value = "value"),
+                    journalpostType = JournalpostType.UTGAAENDE,
+                    inngaaendeKanal = null,
+                    datoMottatt = null,
+                ),
+            avsenderMottakere = setOf(avsenderMottaker1, avsenderMottaker2),
+            avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon1, avsenderMottakerDistribusjon2),
+            hovedDokument = hovedDokument,
+            vedlegg =
+                setOf(
+                    OpplastetVedlegg(
+                        mellomlagerId = "456",
+                        name = "fil2.pdf",
+                        index = 0,
+                        sourceReference = UUID.randomUUID(),
+                    ),
+                ),
+            avsluttet = null,
+            journalfoerendeSaksbehandlerIdent = "S123456",
+            dokumentType = DokumentType.VEDTAK,
+        )
 
-    val dokumentEnhetWithLocalPrint = DokumentEnhet(
-        journalfoeringData = JournalfoeringData(
-            sakenGjelder = PartId(
-                type = PartIdType.PERSON,
-                value = "20022012345"
-            ),
-            tema = Tema.OMS,
-            sakFagsakId = "sakFagsakId",
-            sakFagsystem = Fagsystem.FS36,
-            kildeReferanse = "kildeReferanse",
-            enhet = "Enhet",
-            behandlingstema = "behandlingstema",
-            tittel = "Tittel",
-            brevKode = "brevKode",
-            tilleggsopplysning = Tilleggsopplysning("key", "value"),
-            journalpostType = JournalpostType.UTGAAENDE,
-            inngaaendeKanal = null,
-            datoMottatt = null,
-        ),
-        avsenderMottakere = setOf(avsenderMottaker3),
-        avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon3),
-        hovedDokument = hovedDokument,
-        vedlegg = setOf(
-            OpplastetVedlegg(
-                mellomlagerId = "456",
-                name = "fil2.pdf",
-                index = 0,
-                sourceReference = UUID.randomUUID(),
-            )
-        ),
-        avsluttet = null,
-        journalfoerendeSaksbehandlerIdent = "S123456",
-        dokumentType = DokumentType.VEDTAK,
-    )
+    val dokumentEnhetWithLocalPrint =
+        DokumentEnhet(
+            journalfoeringData =
+                JournalfoeringData(
+                    sakenGjelder =
+                        PartId(
+                            type = PartIdType.PERSON,
+                            value = "20022012345",
+                        ),
+                    tema = Tema.OMS,
+                    sakFagsakId = "sakFagsakId",
+                    sakFagsystem = Fagsystem.FS36,
+                    kildeReferanse = "kildeReferanse",
+                    enhet = "Enhet",
+                    behandlingstema = "behandlingstema",
+                    tittel = "Tittel",
+                    brevKode = "brevKode",
+                    tilleggsopplysning = Tilleggsopplysning(key = "key", value = "value"),
+                    journalpostType = JournalpostType.UTGAAENDE,
+                    inngaaendeKanal = null,
+                    datoMottatt = null,
+                ),
+            avsenderMottakere = setOf(avsenderMottaker3),
+            avsenderMottakerDistribusjoner = setOf(avsenderMottakerDistribusjon3),
+            hovedDokument = hovedDokument,
+            vedlegg =
+                setOf(
+                    OpplastetVedlegg(
+                        mellomlagerId = "456",
+                        name = "fil2.pdf",
+                        index = 0,
+                        sourceReference = UUID.randomUUID(),
+                    ),
+                ),
+            avsluttet = null,
+            journalfoerendeSaksbehandlerIdent = "S123456",
+            dokumentType = DokumentType.VEDTAK,
+        )
 
-    private val dokumentEnhetService = DokumentEnhetService(
-        dokumentEnhetRepository = dokumentEnhetRepository,
-        dokumentEnhetInputMapper = dokumentEnhetInputMapper,
-        journalfoeringService = journalfoeringService,
-        dokumentDistribusjonService = dokumentDistribusjonService,
-        avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository,
-        trygderettenMetadataRepository = trygderettenMetadataRepository,
-        organisasjonsnummerTrygderetten = "123456789",
-    )
+    private val dokumentEnhetService =
+        DokumentEnhetService(
+            dokumentEnhetRepository = dokumentEnhetRepository,
+            dokumentEnhetInputMapper = dokumentEnhetInputMapper,
+            journalfoeringService = journalfoeringService,
+            dokumentDistribusjonService = dokumentDistribusjonService,
+            avsenderMottakerDistribusjonRepository = avsenderMottakerDistribusjonRepository,
+            trygderettenMetadataRepository = trygderettenMetadataRepository,
+            organisasjonsnummerTrygderetten = "123456789",
+        )
 
     @BeforeEach
     fun setup() {
@@ -201,7 +230,7 @@ internal class DokumentEnhetServiceTest {
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
-        } returns JOURNALPOST_RESPONSE_1
+        } returns journalpostResponse1
 
         every {
             journalfoeringService.createJournalpostAsSystemUser(
@@ -211,7 +240,7 @@ internal class DokumentEnhetServiceTest {
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
-        } returns JOURNALPOST_RESPONSE_2
+        } returns journalpostResponse2
 
         every {
             journalfoeringService.createJournalpostAsSystemUser(
@@ -221,12 +250,13 @@ internal class DokumentEnhetServiceTest {
                 journalfoeringData = any(),
                 journalfoerendeSaksbehandlerIdent = any(),
             )
-        } returns JOURNALPOST_RESPONSE_3
+        } returns journalpostResponse3
 
         every { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) } returns LocalDateTime.now()
-        every { journalfoeringService.tilknyttVedleggAsSystemUser(any(), any()) } returns TilknyttVedleggResponse(
-            feiledeDokumenter = emptyList()
-        )
+        every { journalfoeringService.tilknyttVedleggAsSystemUser(journalpostId = any(), journalfoerteVedlegg = any()) } returns
+            TilknyttVedleggResponse(
+                feiledeDokumenter = emptyList(),
+            )
         every {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
                 journalpostId = any(),
@@ -247,42 +277,42 @@ internal class DokumentEnhetServiceTest {
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
         assertFerdigDistribuert(
-            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id),
         )
 
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
-                avsenderMottaker1,
-                any(),
-                any(),
-                any(),
-                any()
+                avsenderMottaker = avsenderMottaker1,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         }
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
-                avsenderMottaker2,
-                any(),
-                any(),
-                any(),
-                any()
+                avsenderMottaker = avsenderMottaker2,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         }
 
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon1
+                avsenderMottakerDistribusjon1,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon2
+                avsenderMottakerDistribusjon2,
             )
         }
 
         verify(exactly = 1) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
-                journalpostId = JOURNALPOST_ID_1,
+                journalpostId = journalpostId1,
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
@@ -293,7 +323,7 @@ internal class DokumentEnhetServiceTest {
         }
         verify(exactly = 1) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
-                journalpostId = JOURNALPOST_ID_2,
+                journalpostId = journalpostId2,
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
@@ -311,22 +341,22 @@ internal class DokumentEnhetServiceTest {
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
         assertFerdigJournalfoert(
-            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id),
         )
 
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
-                avsenderMottaker3,
-                any(),
-                any(),
-                any(),
-                any()
+                avsenderMottaker = avsenderMottaker3,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         }
 
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon3
+                avsenderMottakerDistribusjon3,
             )
         }
 
@@ -350,36 +380,36 @@ internal class DokumentEnhetServiceTest {
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
         assertFerdigJournalfoert(
-            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id),
         )
 
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
-                avsenderMottaker1,
-                any(),
-                any(),
-                any(),
-                any()
+                avsenderMottaker = avsenderMottaker1,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         }
         verify(exactly = 1) {
             journalfoeringService.createJournalpostAsSystemUser(
-                avsenderMottaker2,
-                any(),
-                any(),
-                any(),
-                any()
+                avsenderMottaker = avsenderMottaker2,
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
             )
         }
 
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon1
+                avsenderMottakerDistribusjon1,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon2
+                avsenderMottakerDistribusjon2,
             )
         }
 
@@ -398,31 +428,38 @@ internal class DokumentEnhetServiceTest {
 
     @Test
     fun `journalfoert men ikke distribuert dokumentEnhet skal distribueres korrekt`() {
-
         val dokumentEnhetTilDist = journalfoertMenIkkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
 
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
         assertFerdigDistribuert(
-            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id),
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) {
+            journalfoeringService.createJournalpostAsSystemUser(
+                avsenderMottaker = any(),
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
+            )
+        }
 
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon1
+                avsenderMottakerDistribusjon1,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
-                avsenderMottakerDistribusjon2
+                avsenderMottakerDistribusjon2,
             )
         }
 
         verify(exactly = 1) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
-                journalpostId = JOURNALPOST_ID_1,
+                journalpostId = journalpostId1,
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
@@ -433,7 +470,7 @@ internal class DokumentEnhetServiceTest {
         }
         verify(exactly = 1) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
-                journalpostId = JOURNALPOST_ID_2,
+                journalpostId = journalpostId2,
                 dokumentType = any(),
                 tvingSentralPrint = any(),
                 adresse = any(),
@@ -446,16 +483,23 @@ internal class DokumentEnhetServiceTest {
 
     @Test
     fun `journalfoert og distribuert dokumentEnhet skal ikke kalle på andre funksjoner`() {
-
         val dokumentEnhetTilDist = journalfoertOgDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
 
         every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
 
         assertFerdigDistribuert(
-            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+            dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id),
         )
 
-        verify(exactly = 0) { journalfoeringService.createJournalpostAsSystemUser(any(), any(), any(), any(), any()) }
+        verify(exactly = 0) {
+            journalfoeringService.createJournalpostAsSystemUser(
+                avsenderMottaker = any(),
+                hoveddokument = any(),
+                vedleggDokumentSet = any(),
+                journalfoeringData = any(),
+                journalfoerendeSaksbehandlerIdent = any(),
+            )
+        }
         verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) }
         verify(exactly = 0) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
@@ -491,13 +535,9 @@ internal class DokumentEnhetServiceTest {
         assertThat(dokumentEnhet.hovedDokument).isNotNull
     }
 
-    fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
-        return baseDokumentEnhet
-    }
+    fun ikkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet = baseDokumentEnhet
 
-    fun ikkeDistribuertDokumentEnhetMedVedleggOgEnBrevMottakerLokalPrint(): DokumentEnhet {
-        return dokumentEnhetWithLocalPrint
-    }
+    fun ikkeDistribuertDokumentEnhetMedVedleggOgEnBrevMottakerLokalPrint(): DokumentEnhet = dokumentEnhetWithLocalPrint
 
     fun ikkeDistribuertNotatDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
@@ -507,17 +547,17 @@ internal class DokumentEnhetServiceTest {
 
     fun journalfoertMenIkkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
-        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
-        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = journalpostId1
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = journalpostId2
         return dokumentEnhet
     }
 
     fun journalfoertOgDistribuertDokumentEnhetMedVedleggOgToBrevMottakere(): DokumentEnhet {
         val dokumentEnhet = baseDokumentEnhet
-        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = JOURNALPOST_ID_1
+        dokumentEnhet.avsenderMottakerDistribusjoner.first().journalpostId = journalpostId1
         dokumentEnhet.avsenderMottakerDistribusjoner.first().ferdigstiltIJoark = LocalDateTime.now()
         dokumentEnhet.avsenderMottakerDistribusjoner.first().dokdistReferanse = UUID.randomUUID()
-        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = JOURNALPOST_ID_2
+        dokumentEnhet.avsenderMottakerDistribusjoner.last().journalpostId = journalpostId2
         dokumentEnhet.avsenderMottakerDistribusjoner.last().ferdigstiltIJoark = LocalDateTime.now()
         dokumentEnhet.avsenderMottakerDistribusjoner.last().dokdistReferanse = UUID.randomUUID()
         return dokumentEnhet

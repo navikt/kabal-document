@@ -4,11 +4,11 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "dokument_info_reference", schema = "document")
-class DokumentInfoReference (
+class DokumentInfoReference(
     @Id
     val id: UUID = UUID.randomUUID(),
     @Column(name = "journalpost_id")

@@ -1,10 +1,18 @@
 package no.nav.klage.dokument.service
 
-
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.klage.dokument.clients.joark.*
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.clients.joark.JoarkClient
+import no.nav.klage.dokument.clients.joark.JoarkMapper
+import no.nav.klage.dokument.clients.joark.JournalpostResponse
+import no.nav.klage.dokument.clients.joark.TilknyttVedleggPayload
+import no.nav.klage.dokument.clients.joark.TilknyttVedleggResponse
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottakerDistribusjon
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.JournalfoertVedlegg
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.OpplastetVedlegg
 import no.nav.klage.dokument.exceptions.JournalpostNotFoundException
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.http.MediaType
@@ -16,7 +24,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Base64
 
 @Service
 class JournalfoeringService(
@@ -24,19 +32,19 @@ class JournalfoeringService(
     private val joarkMapper: JoarkMapper,
     private val mellomlagerService: MellomlagerService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
         const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
 
-        val ourJacksonObjectMapper = jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
-            .setDateFormat(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))
+        val ourJacksonObjectMapper =
+            jacksonObjectMapper()
+                .registerModule(JavaTimeModule())
+                .setDateFormat(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS"))
     }
 
     fun createJournalpostAsSystemUser(
-        //Skal kanskje være noe annet, om vi skal støtte både utgående og inngående?
+        // Skal kanskje være noe annet, om vi skal støtte både utgående og inngående?
         avsenderMottaker: AvsenderMottaker,
         hoveddokument: OpplastetHoveddokument,
         vedleggDokumentSet: Set<OpplastetVedlegg> = emptySet(),
@@ -46,42 +54,49 @@ class JournalfoeringService(
         logger.debug(
             "Skal opprette journalpost som systembruker for avsenderMottaker {} og dokument {}",
             avsenderMottaker.id,
-            hoveddokument.id
+            hoveddokument.id,
         )
-        val mellomlagretHovedDokument = MellomlagretDokument(
-            title = hoveddokument.name,
-            file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
-            contentType = MediaType.APPLICATION_PDF,
-            rekkefoelge = null,
-        )
-        val mellomlagredeVedleggDokument = vedleggDokumentSet.map {
+        val mellomlagretHovedDokument =
             MellomlagretDokument(
-                title = it.name,
-                file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
+                title = hoveddokument.name,
+                file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = hoveddokument.mellomlagerId),
                 contentType = MediaType.APPLICATION_PDF,
-                rekkefoelge = it.index,
+                rekkefoelge = null,
             )
-        }
+        val mellomlagredeVedleggDokument =
+            vedleggDokumentSet.map {
+                MellomlagretDokument(
+                    title = it.name,
+                    file = mellomlagerService.getUploadedDocumentAsSystemUser(mellomlagerId = it.mellomlagerId),
+                    contentType = MediaType.APPLICATION_PDF,
+                    rekkefoelge = it.index,
+                )
+            }
 
-        val partialJournalpostWithoutDocuments = joarkMapper.createPartialJournalpostWithoutDocuments(
-            journalfoeringData = journalfoeringData,
-            opplastetHovedDokument = hoveddokument,
-            avsenderMottaker = avsenderMottaker
-        )
+        val partialJournalpostWithoutDocuments =
+            joarkMapper.createPartialJournalpostWithoutDocuments(
+                journalfoeringData = journalfoeringData,
+                opplastetHovedDokument = hoveddokument,
+                avsenderMottaker = avsenderMottaker,
+            )
 
         val partialJournalpostAsJson = ourJacksonObjectMapper.writeValueAsString(partialJournalpostWithoutDocuments)
-        val partialJournalpostAppendable = partialJournalpostAsJson.substring(0, partialJournalpostAsJson.length - 1)
+        val partialJournalpostAppendable =
+            partialJournalpostAsJson.substring(
+                startIndex = 0,
+                endIndex = partialJournalpostAsJson.length - 1,
+            )
         val journalpostRequestAsFile = Files.createTempFile(null, null)
         val journalpostRequestAsFileOutputStream = FileOutputStream(journalpostRequestAsFile.toFile())
         journalpostRequestAsFileOutputStream.write(partialJournalpostAppendable.toByteArray())
 
-        //add documents (base64 encoded) to the request
+        // add documents (base64 encoded) to the request
         journalpostRequestAsFileOutputStream.write(",\"dokumenter\":[".toByteArray())
 
         writeDocumentsToJournalpostRequestAsFile(
             mellomlagretDokumenter = listOf(mellomlagretHovedDokument) + mellomlagredeVedleggDokument,
             journalpostRequestAsFileOutputStream = journalpostRequestAsFileOutputStream,
-            brevkode = journalfoeringData.brevKode
+            brevkode = journalfoeringData.brevKode,
         )
 
         journalpostRequestAsFileOutputStream.write("]}".toByteArray())
@@ -89,7 +104,7 @@ class JournalfoeringService(
 
         return joarkClient.createJournalpostInJoarkAsSystemUser(
             journalpostRequestAsFile = journalpostRequestAsFile.toFile(),
-            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent
+            journalfoerendeSaksbehandlerIdent = journalfoerendeSaksbehandlerIdent,
         )
     }
 
@@ -100,11 +115,21 @@ class JournalfoeringService(
     ) {
         mellomlagretDokumenter.forEachIndexed { index, dokument ->
             val base64File = Files.createTempFile(null, null).toFile()
-            encodeFileToBase64(dokument.file, base64File)
+            encodeFileToBase64(sourceFile = dokument.file, destinationFile = base64File)
 
             val base64FileInputStream = FileInputStream(base64File)
 
-            journalpostRequestAsFileOutputStream.write("{\"tittel\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"brevkode\":\"$brevkode\",\"rekkefoelge\":${dokument.rekkefoelge},\"dokumentvarianter\":[{\"filnavn\":${ourJacksonObjectMapper.writeValueAsString(dokument.title)},\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\"".toByteArray())
+            val tittelAsJson = ourJacksonObjectMapper.writeValueAsString(dokument.title)
+
+            journalpostRequestAsFileOutputStream.write(
+                (
+                    "{\"tittel\":$tittelAsJson," +
+                        "\"brevkode\":\"$brevkode\"," +
+                        "\"rekkefoelge\":${dokument.rekkefoelge}," +
+                        "\"dokumentvarianter\":[{\"filnavn\":$tittelAsJson," +
+                        "\"filtype\":\"PDF\",\"variantformat\":\"ARKIV\",\"fysiskDokument\":\""
+                ).toByteArray(),
+            )
 
             base64FileInputStream.use { input ->
                 val buffer = ByteArray(1024) // Use a buffer size of 1K for example
@@ -121,10 +146,12 @@ class JournalfoeringService(
             base64File.delete()
             dokument.file.delete()
         }
-
     }
 
-    private fun encodeFileToBase64(sourceFile: File, destinationFile: File) {
+    private fun encodeFileToBase64(
+        sourceFile: File,
+        destinationFile: File,
+    ) {
         val sourceFileInputStream = FileInputStream(sourceFile)
         val destinationFileOutputStream = FileOutputStream(destinationFile)
         val encoder = Base64.getEncoder().wrap(destinationFileOutputStream)
@@ -142,52 +169,60 @@ class JournalfoeringService(
         destinationFileOutputStream.close()
     }
 
-    fun finalizeJournalpostAsSystemUser(
-        journalpostId: String,
-    ) {
-        return joarkClient.finalizeJournalpostAsSystemUser(
+    fun finalizeJournalpostAsSystemUser(journalpostId: String) =
+        joarkClient.finalizeJournalpostAsSystemUser(
             journalpostId = journalpostId,
-            journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET
+            journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET,
         )
-    }
 
     fun tilknyttVedleggAsSystemUser(
         journalpostId: String,
-        journalfoerteVedlegg: List<JournalfoertVedlegg>
-    ): TilknyttVedleggResponse {
-        return joarkClient.tilknyttVedleggAsSystemUser(
+        journalfoerteVedlegg: List<JournalfoertVedlegg>,
+    ): TilknyttVedleggResponse =
+        joarkClient.tilknyttVedleggAsSystemUser(
             journalpostId = journalpostId,
-            input = TilknyttVedleggPayload(
-                dokument = journalfoerteVedlegg.map {
-                    logger.debug("Adding vedlegg with dokumentInfoId ${it.dokumentInfoId} to journalpost $journalpostId with rekkefoelge ${it.index}")
-                    TilknyttVedleggPayload.VedleggReference(
-                        kildeJournalpostId = it.kildeJournalpostId,
-                        dokumentInfoId = it.dokumentInfoId,
-                        rekkefoelge = it.index,
-                    )
-                }
-            )
+            input =
+                TilknyttVedleggPayload(
+                    dokument =
+                        journalfoerteVedlegg.map {
+                            logger.debug(
+                                "Adding vedlegg with dokumentInfoId ${it.dokumentInfoId} to journalpost $journalpostId with rekkefoelge ${it.index}",
+                            )
+                            TilknyttVedleggPayload.VedleggReference(
+                                kildeJournalpostId = it.kildeJournalpostId,
+                                dokumentInfoId = it.dokumentInfoId,
+                                rekkefoelge = it.index,
+                            )
+                        },
+                ),
         )
-    }
 
     fun ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon: AvsenderMottakerDistribusjon): LocalDateTime {
         if (avsenderMottakerDistribusjon.journalpostId == null) {
-            throw JournalpostNotFoundException("Ingen journalpostId registrert i avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}")
+            throw JournalpostNotFoundException(
+                "Ingen journalpostId registrert i avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
+            )
         }
 
         finalizeJournalpostAsSystemUser(
-            journalpostId = avsenderMottakerDistribusjon.journalpostId!!
+            journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
         )
 
         return LocalDateTime.now()
     }
 
-    fun updateDocumentTitle(journalpostId: String, dokumentInfoId: String, title: String) {
+    fun updateDocumentTitle(
+        journalpostId: String,
+        dokumentInfoId: String,
+        title: String,
+    ) {
         joarkClient.updateDocumentTitleOnBehalfOf(
             journalpostId = journalpostId,
-            input = joarkMapper.createUpdateDocumentTitleJournalpostInput(
-                dokumentInfoId = dokumentInfoId, title = title
-            )
+            input =
+                joarkMapper.createUpdateDocumentTitleJournalpostInput(
+                    dokumentInfoId = dokumentInfoId,
+                    title = title,
+                ),
         )
     }
 
@@ -197,5 +232,4 @@ class JournalfoeringService(
         val contentType: MediaType,
         val rekkefoelge: Int?,
     )
-
 }

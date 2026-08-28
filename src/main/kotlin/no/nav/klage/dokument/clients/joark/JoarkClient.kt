@@ -42,17 +42,28 @@ class JoarkClient(
 
         // Choose WebClient based on file size
         val fileSize = journalpostRequestAsFile.length()
-        val webClient = if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
-            logger.debug("Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes", fileSize)
-            joarkLargeFileWebClient
-        } else {
-            logger.debug("Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) for file of size {} bytes", fileSize)
-            joarkSmallFileWebClient
-        }
+        val webClient =
+            if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
+                logger.debug(
+                    "Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
+                        "for file of size {} bytes",
+                    fileSize,
+                )
+                joarkLargeFileWebClient
+            } else {
+                logger.debug(
+                    "Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
+                        "for file of size {} bytes",
+                    fileSize,
+                )
+                joarkSmallFileWebClient
+            }
 
-        val post = webClient.post()
-            .uri("?forsoekFerdigstill=false")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+        val post =
+            webClient
+                .post()
+                .uri("?forsoekFerdigstill=false")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
 
         if (journalfoerendeSaksbehandlerIdent != "SYSTEMBRUKER") {
             post.header("Nav-User-Id", journalfoerendeSaksbehandlerIdent)
@@ -60,12 +71,14 @@ class JoarkClient(
 
         val startTime = System.currentTimeMillis()
 
-        val journalpostResponse = post.contentType(MediaType.APPLICATION_JSON)
-            .body<DataBuffer>(dataBuffer)
-            .retrieve()
-            .bodyToMono<JournalpostResponse>()
-            .block()
-            ?: throw RuntimeException("Journalpost could not be created.")
+        val journalpostResponse =
+            post
+                .contentType(MediaType.APPLICATION_JSON)
+                .body<DataBuffer>(dataBuffer)
+                .retrieve()
+                .bodyToMono<JournalpostResponse>()
+                .block()
+                ?: throw RuntimeException("Journalpost could not be created.")
 
         val durationMs = System.currentTimeMillis() - startTime
         val sizeInMB = String.format("%.2f", fileSize / (1024.0 * 1024.0))
@@ -74,25 +87,36 @@ class JoarkClient(
             durationMs,
             durationMs / 1000.0,
             fileSize,
-            sizeInMB
+            sizeInMB,
         )
 
         // Log warning if request takes longer than expected based on file size
-        val expectedMaxMs = when {
-            fileSize < 500_000 -> 400L                      // 1 byte - 500KB: max 400ms
-            fileSize < 1_000_000 -> 1_000L                  // 500KB - 1MB: max 1s
-            fileSize < 2_000_000 -> 2_000L                  // 1MB - 2MB: max 2s
-            fileSize < 5_000_000 -> 4_000L                  // 2MB - 5MB: max 4s
-            fileSize < 15_000_000 -> 10_000L                // 5MB - 15MB: max 10s
-            else -> 25_000L                                 // 15MB+: max 25s
-        }
+        val expectedMaxMs =
+            when {
+                fileSize < 500_000 -> 400L
+
+                // 1 byte - 500KB: max 400ms
+                fileSize < 1_000_000 -> 1_000L
+
+                // 500KB - 1MB: max 1s
+                fileSize < 2_000_000 -> 2_000L
+
+                // 1MB - 2MB: max 2s
+                fileSize < 5_000_000 -> 4_000L
+
+                // 2MB - 5MB: max 4s
+                fileSize < 15_000_000 -> 10_000L
+
+                // 5MB - 15MB: max 10s
+                else -> 25_000L // 15MB+: max 25s
+            }
         if (durationMs > expectedMaxMs) {
             logger.warn(
                 "Slow POST journalpost call: {} ms (expected max {} ms). File size: {} bytes ({} MB)",
                 durationMs,
                 expectedMaxMs,
                 fileSize,
-                sizeInMB
+                sizeInMB,
             )
         }
 
@@ -104,9 +128,13 @@ class JoarkClient(
     }
 
     @Retryable
-    fun finalizeJournalpostAsSystemUser(journalpostId: String, journalfoerendeEnhet: String) {
-        joarkSmallFileWebClient.patch()
-            .uri("/${journalpostId}/ferdigstill")
+    fun finalizeJournalpostAsSystemUser(
+        journalpostId: String,
+        journalfoerendeEnhet: String,
+    ) {
+        joarkSmallFileWebClient
+            .patch()
+            .uri("/$journalpostId/ferdigstill")
             .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(FerdigstillJournalpostPayload(journalfoerendeEnhet))
@@ -119,16 +147,21 @@ class JoarkClient(
     }
 
     @Retryable
-    fun tilknyttVedleggAsSystemUser(journalpostId: String, input: TilknyttVedleggPayload): TilknyttVedleggResponse {
-        val response = joarkLargeFileWebClient.put()
-            .uri("/${journalpostId}/tilknyttVedlegg")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(input)
-            .retrieve()
-            .bodyToMono<TilknyttVedleggResponse>()
-            .block()
-            ?: throw RuntimeException("Could not tilknytt vedlegg.")
+    fun tilknyttVedleggAsSystemUser(
+        journalpostId: String,
+        input: TilknyttVedleggPayload,
+    ): TilknyttVedleggResponse {
+        val response =
+            joarkLargeFileWebClient
+                .put()
+                .uri("/$journalpostId/tilknyttVedlegg")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(input)
+                .retrieve()
+                .bodyToMono<TilknyttVedleggResponse>()
+                .block()
+                ?: throw RuntimeException("Could not tilknytt vedlegg.")
 
         logger.debug("tilknyttVedleggAsSystemUser to journalpost with id $journalpostId was successful.")
 
@@ -136,15 +169,18 @@ class JoarkClient(
     }
 
     @Retryable
-    fun updateDocumentTitleOnBehalfOf(journalpostId: String, input: UpdateDocumentTitleJournalpostInput) {
+    fun updateDocumentTitleOnBehalfOf(
+        journalpostId: String,
+        input: UpdateDocumentTitleJournalpostInput,
+    ) {
         try {
-            joarkSmallFileWebClient.put()
-                .uri("/${journalpostId}")
+            joarkSmallFileWebClient
+                .put()
+                .uri("/$journalpostId")
                 .header(
                     HttpHeaders.AUTHORIZATION,
-                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivScope()}"
-                )
-                .contentType(MediaType.APPLICATION_JSON)
+                    "Bearer ${tokenUtil.getSaksbehandlerAccessTokenWithDokarkivScope()}",
+                ).contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(input)
                 .retrieve()
                 .bodyToMono(UpdateJournalpostResponse::class.java)
@@ -154,6 +190,8 @@ class JoarkClient(
             logger.error("Error updating journalpost $journalpostId:", e)
         }
 
-        logger.debug("Document from journalpost $journalpostId with dokumentInfoId id ${input.dokumenter.first().dokumentInfoId} was succesfully updated.")
+        logger.debug(
+            "Document from journalpost $journalpostId with dokumentInfoId id ${input.dokumenter.first().dokumentInfoId} was succesfully updated.",
+        )
     }
 }

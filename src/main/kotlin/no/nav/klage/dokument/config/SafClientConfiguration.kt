@@ -11,26 +11,24 @@ import java.util.function.Consumer
 
 @Configuration
 class SafClientConfiguration(
-    @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder
+    @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder,
 ) {
-
-    @Value("\${SAF_BASE_URL}")
+    @Value($$"${SAF_BASE_URL}")
     private lateinit var safUrl: String
 
     @Bean
-    fun safWebClient(): WebClient {
-        return standardWebClientBuilder
+    fun safWebClient(): WebClient =
+        standardWebClientBuilder
             .baseUrl(safUrl)
             .exchangeStrategies(
                 ExchangeStrategies
                     .builder()
-                    .codecs(Consumer { codecs: ClientCodecConfigurer? ->
-                        codecs!!
-                            .defaultCodecs()
-                            .maxInMemorySize(32 * 1024 * 1024) // 32 MB to handle large GraphQL responses
-                    })
-                    .build()
-            )
-            .build()
-    }
+                    .codecs(
+                        Consumer { codecs: ClientCodecConfigurer? ->
+                            codecs!!
+                                .defaultCodecs()
+                                .maxInMemorySize(32 * 1024 * 1024) // 32 MB to handle large GraphQL responses
+                        },
+                    ).build(),
+            ).build()
 }

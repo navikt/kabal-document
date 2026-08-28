@@ -3,11 +3,15 @@ package no.nav.klage.dokument.clients.pdl.graphql
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class HentPersonResponse(val data: PdlPersonDataWrapper?, val errors: List<PdlPerson.PdlError>? = null)
+data class HentPersonResponse(
+    val data: PdlPersonDataWrapper?,
+    val errors: List<PdlPerson.PdlError>? = null,
+)
 
-data class PdlPersonDataWrapper(val hentPerson: PdlPerson?)
+data class PdlPersonDataWrapper(
+    val hentPerson: PdlPerson?,
+)
 
 data class PdlPerson(
     val folkeregisteridentifikator: List<Folkeregisteridentifikator>,
@@ -17,13 +21,15 @@ data class PdlPerson(
     val sivilstand: List<Sivilstand>,
     val vergemaalEllerFremtidsfullmakt: List<VergemaalEllerFremtidsfullmakt>,
     val doedsfall: List<Doedsfall>,
-    val sikkerhetstiltak: List<Sikkerhetstiltak>
+    val sikkerhetstiltak: List<Sikkerhetstiltak>,
 ) {
     data class Folkeregisteridentifikator(
-        val identifikasjonsnummer: String
+        val identifikasjonsnummer: String,
     )
 
-    data class Adressebeskyttelse(val gradering: GraderingType) {
+    data class Adressebeskyttelse(
+        val gradering: GraderingType,
+    ) {
         enum class GraderingType { STRENGT_FORTROLIG_UTLAND, STRENGT_FORTROLIG, FORTROLIG, UGRADERT }
     }
 
@@ -31,9 +37,8 @@ data class PdlPerson(
         val type: SivilstandType,
         val gyldigFraOgMed: LocalDate?,
         val relatertVedSivilstand: String?,
-        val bekreftelsesdato: LocalDate?
+        val bekreftelsesdato: LocalDate?,
     ) {
-
         fun dato(): LocalDate? = gyldigFraOgMed ?: bekreftelsesdato
 
         enum class SivilstandType {
@@ -46,29 +51,31 @@ data class PdlPerson(
             REGISTRERT_PARTNER,
             SEPARERT_PARTNER,
             SKILT_PARTNER,
-            GJENLEVENDE_PARTNER
+            GJENLEVENDE_PARTNER,
         }
     }
 
     data class Navn(
         val fornavn: String,
         val mellomnavn: String?,
-        val etternavn: String
+        val etternavn: String,
     )
 
-    data class Kjoenn(val kjoenn: KjoennType?) {
+    data class Kjoenn(
+        val kjoenn: KjoennType?,
+    ) {
         enum class KjoennType { MANN, KVINNE, UKJENT }
     }
 
     data class VergemaalEllerFremtidsfullmakt(
         val type: String,
         val embete: String,
-        val vergeEllerFullmektig: VergeEllerFullmektig
+        val vergeEllerFullmektig: VergeEllerFullmektig,
     ) {
         data class VergeEllerFullmektig(
             val motpartsPersonident: String,
             val omfang: String?,
-            val omfangetErInnenPersonligOmraad: Boolean?
+            val omfangetErInnenPersonligOmraad: Boolean?,
         )
     }
 
@@ -95,12 +102,12 @@ data class PdlPerson(
         val message: String,
         val locations: List<PdlErrorLocation>,
         val path: List<String>?,
-        val extensions: PdlErrorExtension
+        val extensions: PdlErrorExtension,
     )
 
     data class PdlErrorLocation(
         val line: Int?,
-        val column: Int?
+        val column: Int?,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -7,13 +7,12 @@ import java.io.File
 
 @Service
 class MellomlagerService(
-    private val fileApiClient: FileApiClient
+    private val fileApiClient: FileApiClient,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): File =
-        fileApiClient.getDocument(mellomlagerId)
+    fun getUploadedDocumentAsSystemUser(mellomlagerId: String): File = fileApiClient.getDocument(mellomlagerId)
 }

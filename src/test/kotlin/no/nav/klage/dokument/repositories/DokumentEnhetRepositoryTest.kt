@@ -1,7 +1,13 @@
 package no.nav.klage.dokument.repositories
 
 import no.nav.klage.dokument.db.PostgresIntegrationTestBase
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.AvsenderMottakerDistribusjon
+import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.OpplastetVedlegg
+import no.nav.klage.dokument.domain.dokument.PartId
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
@@ -9,17 +15,15 @@ import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
-
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDateTime
 import java.util.UUID
 
 @ActiveProfiles("local")
 @DataJpaTest
-class DokumentEnhetRepositoryTest: PostgresIntegrationTestBase() {
-
+class DokumentEnhetRepositoryTest : PostgresIntegrationTestBase() {
     @Autowired
     lateinit var testEntityManager: TestEntityManager
 
@@ -41,12 +45,13 @@ class DokumentEnhetRepositoryTest: PostgresIntegrationTestBase() {
     @Test
     fun `update child property works as expected`() {
         val dokumentEnhet = dokumentEnhet
-        dokumentEnhet.avsenderMottakerDistribusjoner = setOf(
-            AvsenderMottakerDistribusjon(
-                avsenderMottaker = dokumentEnhet.avsenderMottakere.first(),
-                opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
+        dokumentEnhet.avsenderMottakerDistribusjoner =
+            setOf(
+                AvsenderMottakerDistribusjon(
+                    avsenderMottaker = dokumentEnhet.avsenderMottakere.first(),
+                    opplastetDokumentId = dokumentEnhet.hovedDokument!!.id,
+                ),
             )
-        )
 
         dokumentEnhetRepository.save(dokumentEnhet)
 
@@ -58,7 +63,9 @@ class DokumentEnhetRepositoryTest: PostgresIntegrationTestBase() {
 
         val retrievedObject2 = dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)
 
-        assertThat(retrievedObject2.avsenderMottakerDistribusjoner.first().journalpostId).isEqualTo(retrievedObject.avsenderMottakerDistribusjoner.first().journalpostId)
+        assertThat(
+            retrievedObject2.avsenderMottakerDistribusjoner.first().journalpostId,
+        ).isEqualTo(retrievedObject.avsenderMottakerDistribusjoner.first().journalpostId)
     }
 
     @Test
@@ -71,51 +78,57 @@ class DokumentEnhetRepositoryTest: PostgresIntegrationTestBase() {
         assertThat(firstDokumentEnhet).isEqualTo(secondDokumentEnhet)
     }
 
-    val dokumentEnhet = DokumentEnhet(
-        journalfoeringData = JournalfoeringData(
-            sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
-            tema = Tema.OMS,
-            sakFagsakId = "123",
-            sakFagsystem = Fagsystem.AO01,
-            kildeReferanse = "",
-            enhet = "",
-            behandlingstema = "",
-            tittel = "",
-            brevKode = "",
-            tilleggsopplysning = null,
-            inngaaendeKanal = null,
-            datoMottatt = null,
-        ),
-        avsenderMottakere = setOf(
-            AvsenderMottaker(
-                partId = PartId(
-                    type = PartIdType.PERSON,
-                    value = "01011012345"
+    val dokumentEnhet =
+        DokumentEnhet(
+            journalfoeringData =
+                JournalfoeringData(
+                    sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
+                    tema = Tema.OMS,
+                    sakFagsakId = "123",
+                    sakFagsystem = Fagsystem.AO01,
+                    kildeReferanse = "",
+                    enhet = "",
+                    behandlingstema = "",
+                    tittel = "",
+                    brevKode = "",
+                    tilleggsopplysning = null,
+                    inngaaendeKanal = null,
+                    datoMottatt = null,
                 ),
-                navn = "Test Person",
-                adresse = null,
-                tvingSentralPrint = false,
-                localPrint = false,
-                kanal = null,
-            ),
-        ),
-        vedlegg = setOf(
-            OpplastetVedlegg(
-                mellomlagerId = "456",
-                name = "fil2.pdf",
-                index = 0,
-                sourceReference = UUID.randomUUID(),
-            )
-        ),
-        hovedDokument = OpplastetHoveddokument(
-            mellomlagerId = "4567",
-            name = "fil1.pdf",
-            sourceReference = UUID.randomUUID(),
-        ),
-        dokumentType = DokumentType.VEDTAK,
-        avsenderMottakerDistribusjoner = setOf(),
-        avsluttet = null,
-        journalfoerendeSaksbehandlerIdent = "S123456",
-        modified = LocalDateTime.now(),
-    )
+            avsenderMottakere =
+                setOf(
+                    AvsenderMottaker(
+                        partId =
+                            PartId(
+                                type = PartIdType.PERSON,
+                                value = "01011012345",
+                            ),
+                        navn = "Test Person",
+                        adresse = null,
+                        tvingSentralPrint = false,
+                        localPrint = false,
+                        kanal = null,
+                    ),
+                ),
+            vedlegg =
+                setOf(
+                    OpplastetVedlegg(
+                        mellomlagerId = "456",
+                        name = "fil2.pdf",
+                        index = 0,
+                        sourceReference = UUID.randomUUID(),
+                    ),
+                ),
+            hovedDokument =
+                OpplastetHoveddokument(
+                    mellomlagerId = "4567",
+                    name = "fil1.pdf",
+                    sourceReference = UUID.randomUUID(),
+                ),
+            dokumentType = DokumentType.VEDTAK,
+            avsenderMottakerDistribusjoner = setOf(),
+            avsluttet = null,
+            journalfoerendeSaksbehandlerIdent = "S123456",
+            modified = LocalDateTime.now(),
+        )
 }
