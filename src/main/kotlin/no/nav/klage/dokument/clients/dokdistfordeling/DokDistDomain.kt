@@ -45,6 +45,7 @@ data class Adresse(
     val land: String,
 )
 
+// TODO maybe handle this differently.
 // The entry names are the wire format: they are sent to DOKDIST as the JSON value and
 // resolved from the incoming request with valueOf, so they cannot be renamed to the
 // casing ktlint expects without breaking the integration.
