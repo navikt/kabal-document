@@ -23,11 +23,13 @@ class FileApiClient(
     fun getDocument(id: String): File {
         logger.debug("Fetching document with id {}", id)
 
-        val dataBufferFlux = fileWebClient.get()
-            .uri { it.path("/document/{id}").build(id) }
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKabalFileApiScope()}")
-            .retrieve()
-            .bodyToFlux(DataBuffer::class.java)
+        val dataBufferFlux =
+            fileWebClient
+                .get()
+                .uri { it.path("/document/{id}").build(id) }
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithKabalFileApiScope()}")
+                .retrieve()
+                .bodyToFlux(DataBuffer::class.java)
 
         val tempFile = Files.createTempFile(null, null)
 

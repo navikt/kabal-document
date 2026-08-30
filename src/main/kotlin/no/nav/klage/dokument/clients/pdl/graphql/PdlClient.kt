@@ -11,11 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import java.lang.System.currentTimeMillis
 
-
 @Component
 class PdlClient(
     private val pdlWebClient: WebClient,
-    private val tokenUtil: TokenUtil
+    private val tokenUtil: TokenUtil,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
@@ -23,10 +22,11 @@ class PdlClient(
     }
 
     @Retryable
-    fun getPersonInfo(ident: String): HentPersonResponse {
-        return runWithTiming {
+    fun getPersonInfo(ident: String): HentPersonResponse =
+        runWithTiming {
             val pdlSystembrukerToken = tokenUtil.getAppAccessTokenWithPdlScope()
-            pdlWebClient.post()
+            pdlWebClient
+                .post()
                 .header(HttpHeaders.AUTHORIZATION, "Bearer $pdlSystembrukerToken")
                 .bodyValue(hentPersonQuery(ident))
                 .retrieve()
@@ -36,11 +36,9 @@ class PdlClient(
                         functionName = ::getPersonInfo.name,
                         classLogger = logger,
                     )
-                }
-                .bodyToMono<HentPersonResponse>()
+                }.bodyToMono<HentPersonResponse>()
                 .block() ?: throw RuntimeException("Person not found")
         }
-    }
 
     fun <T> runWithTiming(block: () -> T): T {
         val start = currentTimeMillis()

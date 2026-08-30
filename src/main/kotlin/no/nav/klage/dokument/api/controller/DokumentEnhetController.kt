@@ -9,8 +9,12 @@ import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @Tag(name = "kabal-document", description = "API for håndtering av dokumentenheter.")
@@ -32,14 +36,14 @@ class DokumentEnhetController(
         logger.debug("Kall mottatt på createDokumentEnhetWithDokumentreferanser")
         return dokumentEnhetMapper.mapToDokumentEnhetView(
             dokumentEnhetService.opprettDokumentEnhetMedDokumentreferanser(
-                input
-            )
+                input,
+            ),
         )
     }
 
     @PostMapping("/{dokumentEnhetId}/fullfoer")
     fun fullfoerDokumentEnhet(
-        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID
+        @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): DokumentEnhetFullfoertView {
         logger.debug("Kall mottatt på fullfoerDokumentEnhet for {}", dokumentEnhetId)
         val dokumentEnhet = dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetId)

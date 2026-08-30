@@ -1,7 +1,9 @@
 package no.nav.klage.dokument.api.mapper
 
-
-import no.nav.klage.dokument.api.view.*
+import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
+import no.nav.klage.dokument.api.view.DokumentEnhetView
+import no.nav.klage.dokument.api.view.JoarkReference
+import no.nav.klage.dokument.api.view.SourceReferenceWithJoarkReferences
 import no.nav.klage.dokument.domain.dokument.DokumentEnhet
 import no.nav.klage.dokument.domain.dokument.OpplastetDokument
 import no.nav.klage.dokument.util.getLogger
@@ -14,16 +16,16 @@ class DokumentEnhetMapper {
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    fun mapToDokumentEnhetView(dokumentEnhet: DokumentEnhet): DokumentEnhetView {
-        return DokumentEnhetView(
+    fun mapToDokumentEnhetView(dokumentEnhet: DokumentEnhet): DokumentEnhetView =
+        DokumentEnhetView(
             id = dokumentEnhet.id.toString(),
         )
-    }
 
     fun mapToDokumentEnhetFullfoertView(dokumentEnhet: DokumentEnhet): DokumentEnhetFullfoertView {
-        val dokumentEnhetFullfoertView = DokumentEnhetFullfoertView(
-            sourceReferenceWithJoarkReferencesList = getSourceReferenceWithJoarkReferencesList(dokumentEnhet)
-        )
+        val dokumentEnhetFullfoertView =
+            DokumentEnhetFullfoertView(
+                sourceReferenceWithJoarkReferencesList = getSourceReferenceWithJoarkReferencesList(dokumentEnhet),
+            )
 
         return dokumentEnhetFullfoertView
     }
@@ -40,18 +42,15 @@ class DokumentEnhetMapper {
         return output
     }
 
-    private fun getSourceReferenceWithJoarkReferences(opplastetDokument: OpplastetDokument): SourceReferenceWithJoarkReferences {
-        return SourceReferenceWithJoarkReferences(
+    private fun getSourceReferenceWithJoarkReferences(opplastetDokument: OpplastetDokument): SourceReferenceWithJoarkReferences =
+        SourceReferenceWithJoarkReferences(
             sourceReference = opplastetDokument.sourceReference,
             joarkReferenceList = opplastetDokument.dokumentInfoReferenceList.map { getJoarkReference(it) },
         )
-    }
 
-    private fun getJoarkReference(it: no.nav.klage.dokument.domain.dokument.DokumentInfoReference): JoarkReference {
-        return JoarkReference(
+    private fun getJoarkReference(it: no.nav.klage.dokument.domain.dokument.DokumentInfoReference): JoarkReference =
+        JoarkReference(
             journalpostId = it.journalpostId,
-            dokumentInfoId = it.dokumentInfoId
+            dokumentInfoId = it.dokumentInfoId,
         )
-    }
 }
-

@@ -1,7 +1,15 @@
 package no.nav.klage.dokument.repositories
 
 import no.nav.klage.dokument.db.PostgresIntegrationTestBase
-import no.nav.klage.dokument.domain.dokument.*
+import no.nav.klage.dokument.domain.dokument.Adresse
+import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
+import no.nav.klage.dokument.domain.dokument.DokumentEnhet
+import no.nav.klage.dokument.domain.dokument.JournalfoeringData
+import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
+import no.nav.klage.dokument.domain.dokument.OpplastetVedlegg
+import no.nav.klage.dokument.domain.dokument.PartId
+import no.nav.klage.dokument.domain.dokument.Representant
+import no.nav.klage.dokument.domain.dokument.TrygderettenMetadata
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
@@ -14,12 +22,11 @@ import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager
 import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles("local")
 @DataJpaTest
 class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
-
     @Autowired
     lateinit var testEntityManager: TestEntityManager
 
@@ -81,17 +88,18 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
 
     @Test
     fun `store TrygderettenMetadata without representant works as expected`() {
-        val metadata = TrygderettenMetadata(
-            dokumentEnhetId = persistDokumentEnhet(),
-            kravfremsettelsesdato = null,
-            paaanketVedtaksdato = LocalDate.of(2026, 1, 15),
-            tidligereITROgOpphevetHenvist = null,
-            gjenopptak = null,
-            forsterketRett = false,
-            ettersendelse = true,
-            lovhenvisning = setOf("ftrl. § 22-13"),
-            representant = null,
-        )
+        val metadata =
+            TrygderettenMetadata(
+                dokumentEnhetId = persistDokumentEnhet(),
+                kravfremsettelsesdato = null,
+                paaanketVedtaksdato = LocalDate.of(2026, 1, 15),
+                tidligereITROgOpphevetHenvist = null,
+                gjenopptak = null,
+                forsterketRett = false,
+                ettersendelse = true,
+                lovhenvisning = setOf("ftrl. § 22-13"),
+                representant = null,
+            )
 
         trygderettenMetadataRepository.save(metadata)
 
@@ -106,82 +114,92 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
     }
 
     private fun persistDokumentEnhet(): UUID {
-        val dokumentEnhet = DokumentEnhet(
-            journalfoeringData = JournalfoeringData(
-                sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
-                tema = Tema.OMS,
-                sakFagsakId = "123",
-                sakFagsystem = Fagsystem.AO01,
-                kildeReferanse = "",
-                enhet = "",
-                behandlingstema = "",
-                tittel = "",
-                brevKode = "",
-                tilleggsopplysning = null,
-                inngaaendeKanal = null,
-                datoMottatt = null,
-            ),
-            avsenderMottakere = setOf(
-                AvsenderMottaker(
-                    partId = PartId(
-                        type = PartIdType.PERSON,
-                        value = "01011012345"
+        val dokumentEnhet =
+            DokumentEnhet(
+                journalfoeringData =
+                    JournalfoeringData(
+                        sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
+                        tema = Tema.OMS,
+                        sakFagsakId = "123",
+                        sakFagsystem = Fagsystem.AO01,
+                        kildeReferanse = "",
+                        enhet = "",
+                        behandlingstema = "",
+                        tittel = "",
+                        brevKode = "",
+                        tilleggsopplysning = null,
+                        inngaaendeKanal = null,
+                        datoMottatt = null,
                     ),
-                    navn = "Test Person",
-                    adresse = null,
-                    tvingSentralPrint = false,
-                    localPrint = false,
-                    kanal = null,
-                ),
-            ),
-            vedlegg = setOf(
-                OpplastetVedlegg(
-                    mellomlagerId = "456",
-                    name = "fil2.pdf",
-                    index = 0,
-                    sourceReference = UUID.randomUUID(),
-                )
-            ),
-            hovedDokument = OpplastetHoveddokument(
-                mellomlagerId = "4567",
-                name = "fil1.pdf",
-                sourceReference = UUID.randomUUID(),
-            ),
-            dokumentType = DokumentType.VEDTAK,
-            avsenderMottakerDistribusjoner = setOf(),
-            avsluttet = null,
-            journalfoerendeSaksbehandlerIdent = "S123456",
-            modified = LocalDateTime.now(),
-        )
+                avsenderMottakere =
+                    setOf(
+                        AvsenderMottaker(
+                            partId =
+                                PartId(
+                                    type = PartIdType.PERSON,
+                                    value = "01011012345",
+                                ),
+                            navn = "Test Person",
+                            adresse = null,
+                            tvingSentralPrint = false,
+                            localPrint = false,
+                            kanal = null,
+                        ),
+                    ),
+                vedlegg =
+                    setOf(
+                        OpplastetVedlegg(
+                            mellomlagerId = "456",
+                            name = "fil2.pdf",
+                            index = 0,
+                            sourceReference = UUID.randomUUID(),
+                        ),
+                    ),
+                hovedDokument =
+                    OpplastetHoveddokument(
+                        mellomlagerId = "4567",
+                        name = "fil1.pdf",
+                        sourceReference = UUID.randomUUID(),
+                    ),
+                dokumentType = DokumentType.VEDTAK,
+                avsenderMottakerDistribusjoner = setOf(),
+                avsluttet = null,
+                journalfoerendeSaksbehandlerIdent = "S123456",
+                modified = LocalDateTime.now(),
+            )
         dokumentEnhetRepository.save(dokumentEnhet)
         testEntityManager.flush()
         return dokumentEnhet.id
     }
 
-    private fun trygderettenMetadataFor(dokumentEnhetId: UUID) = TrygderettenMetadata(
-        dokumentEnhetId = dokumentEnhetId,
-        kravfremsettelsesdato = LocalDate.of(2025, 11, 1),
-        paaanketVedtaksdato = LocalDate.of(2026, 2, 20),
-        tidligereITROgOpphevetHenvist = true,
-        gjenopptak = false,
-        forsterketRett = true,
-        ettersendelse = false,
-        lovhenvisning = setOf("ftrl. § 12-7"),
-        representant = Representant(
-            partId = PartId(
-                type = PartIdType.PERSON,
-                value = "01011012345",
-            ),
-            navn = "Representant Representantsen",
-            adresse = Adresse(
-                adressetype = "norskPostadresse",
-                adresselinje1 = "Gateveien 1",
-                adresselinje2 = null,
-                adresselinje3 = null,
-                postnummer = "0001",
-                poststed = "OSLO",
-                land = "NO",
-            ),
-        ),
-    )
+    private fun trygderettenMetadataFor(dokumentEnhetId: UUID) =
+        TrygderettenMetadata(
+            dokumentEnhetId = dokumentEnhetId,
+            kravfremsettelsesdato = LocalDate.of(2025, 11, 1),
+            paaanketVedtaksdato = LocalDate.of(2026, 2, 20),
+            tidligereITROgOpphevetHenvist = true,
+            gjenopptak = false,
+            forsterketRett = true,
+            ettersendelse = false,
+            lovhenvisning = setOf("ftrl. § 12-7"),
+            representant =
+                Representant(
+                    partId =
+                        PartId(
+                            type = PartIdType.PERSON,
+                            value = "01011012345",
+                        ),
+                    navn = "Representant Representantsen",
+                    adresse =
+                        Adresse(
+                            adressetype = "norskPostadresse",
+                            adresselinje1 = "Gateveien 1",
+                            adresselinje2 = null,
+                            adresselinje3 = null,
+                            postnummer = "0001",
+                            poststed = "OSLO",
+                            land = "NO",
+                        ),
+                ),
+        )
 }

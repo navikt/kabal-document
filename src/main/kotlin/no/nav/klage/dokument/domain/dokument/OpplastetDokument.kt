@@ -1,10 +1,20 @@
 package no.nav.klage.dokument.domain.dokument
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorColumn
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import org.hibernate.annotations.BatchSize
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "opplastetdokument", schema = "document")
@@ -45,5 +55,5 @@ abstract class OpplastetDokument(
 
 enum class OpplastetDokumentType {
     HOVEDDOKUMENT,
-    VEDLEGG
+    VEDLEGG,
 }

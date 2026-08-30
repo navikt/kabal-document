@@ -9,21 +9,19 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class FileApiClientConfiguration(
-    @Qualifier("fileApiWebClientBuilder") private val fileApiWebClientBuilder: WebClient.Builder
+    @Qualifier("fileApiWebClientBuilder") private val fileApiWebClientBuilder: WebClient.Builder,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @Value("\${KABAL_FILE_API_BASE_URL}")
+    @Value($$"${KABAL_FILE_API_BASE_URL}")
     private lateinit var fileServiceURL: String
 
     @Bean
-    fun fileWebClient(): WebClient {
-        return fileApiWebClientBuilder
+    fun fileWebClient(): WebClient =
+        fileApiWebClientBuilder
             .baseUrl(fileServiceURL)
             .build()
-    }
 }

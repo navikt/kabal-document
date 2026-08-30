@@ -7,28 +7,25 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 
-
 @Configuration
 class DokDistFordelingClientConfiguration(
-    @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder
+    @Qualifier("standardWebClientBuilder") private val standardWebClientBuilder: WebClient.Builder,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
     }
 
-    @Value("\${DOKDIST_SERVICE_URL}")
+    @Value($$"${DOKDIST_SERVICE_URL}")
     private lateinit var dokDistServiceURL: String
 
-    @Value("\${DOKDIST_APIKEY}")
+    @Value($$"${DOKDIST_APIKEY}")
     private lateinit var apiKey: String
 
     @Bean
-    fun dokDistWebClient(): WebClient {
-        return standardWebClientBuilder
+    fun dokDistWebClient(): WebClient =
+        standardWebClientBuilder
             .defaultHeader("x-nav-apiKey", apiKey)
             .baseUrl(dokDistServiceURL)
             .build()
-    }
 }

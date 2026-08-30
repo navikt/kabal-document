@@ -9,7 +9,6 @@ class TokenUtil(
     private val clientConfigurationProperties: ClientConfigurationProperties,
     private val oAuth2AccessTokenService: OAuth2AccessTokenService,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -50,5 +49,4 @@ class TokenUtil(
         val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
         return response.access_token!!
     }
-
 }

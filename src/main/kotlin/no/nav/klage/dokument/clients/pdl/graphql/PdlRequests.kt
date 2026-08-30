@@ -4,7 +4,7 @@ import java.net.URL
 
 data class PersonGraphqlQuery(
     val query: String,
-    val variables: IdentVariables
+    val variables: IdentVariables,
 )
 
 data class IdentVariables(
@@ -15,7 +15,7 @@ data class IdentVariables(
 fun hentPersonQuery(ident: String): PersonGraphqlQuery {
     val query =
         PersonGraphqlQuery::class.java.getResource("/pdl/hentPerson.graphql").cleanForGraphql()
-    return PersonGraphqlQuery(query, IdentVariables(ident))
+    return PersonGraphqlQuery(query = query, variables = IdentVariables(ident = ident))
 }
 
 enum class IdentType {
@@ -23,4 +23,4 @@ enum class IdentType {
     AKTORID,
 }
 
-fun URL.cleanForGraphql() = readText().replace("[\n\r]", "")
+fun URL.cleanForGraphql() = readText().replace(oldValue = "[\n\r]", newValue = "")

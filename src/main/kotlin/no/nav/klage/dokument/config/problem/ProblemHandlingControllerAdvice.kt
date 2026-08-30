@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @RestControllerAdvice
 class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val ourLogger = getLogger(javaClass.enclosingClass)
@@ -20,24 +19,21 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler
-    fun handleValidationException(
-        ex: ValidationException,
-    ): ProblemDetail =
-        create(HttpStatus.BAD_REQUEST, ex)
+    fun handleValidationException(ex: ValidationException): ProblemDetail = create(httpStatus = HttpStatus.BAD_REQUEST, ex = ex)
 
     @ExceptionHandler
-    fun handleResponseStatusException(
-        ex: WebClientResponseException,
-    ): ProblemDetail =
-        createProblemForWebClientResponseException(ex)
+    fun handleResponseStatusException(ex: WebClientResponseException): ProblemDetail = createProblemForWebClientResponseException(ex)
 
-    private fun create(httpStatus: HttpStatus, ex: Exception): ProblemDetail {
+    private fun create(
+        httpStatus: HttpStatus,
+        ex: Exception,
+    ): ProblemDetail {
         val errorMessage = ex.message ?: "No error message available"
 
         logError(
             httpStatus = httpStatus,
             errorMessage = errorMessage,
-            exception = ex
+            exception = ex,
         )
 
         return ProblemDetail.forStatusAndDetail(httpStatus, errorMessage).apply {
@@ -49,7 +45,7 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         logError(
             httpStatus = HttpStatus.valueOf(ex.statusCode.value()),
             errorMessage = ex.statusText,
-            exception = ex
+            exception = ex,
         )
 
         return ProblemDetail.forStatus(ex.statusCode).apply {
@@ -58,7 +54,11 @@ class ProblemHandlingControllerAdvice : ResponseEntityExceptionHandler() {
         }
     }
 
-    private fun logError(httpStatus: HttpStatus, errorMessage: String, exception: Exception) {
+    private fun logError(
+        httpStatus: HttpStatus,
+        errorMessage: String,
+        exception: Exception,
+    ) {
         when {
             httpStatus.is5xxServerError -> {
                 ourLogger.error("Exception thrown to client: ${exception.javaClass.name}. See team-logs for more details.")

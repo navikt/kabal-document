@@ -1,6 +1,15 @@
 package no.nav.klage.dokument.domain.dokument
 
-import jakarta.persistence.*
+import jakarta.persistence.AttributeOverride
+import jakarta.persistence.AttributeOverrides
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.kodeverk.Fagsystem
@@ -8,7 +17,7 @@ import no.nav.klage.kodeverk.FagsystemConverter
 import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.TemaConverter
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "journalfoeringdata", schema = "document")
@@ -19,8 +28,8 @@ class JournalfoeringData(
     @AttributeOverrides(
         value = [
             AttributeOverride(name = "type", column = Column(name = "saken_gjelder_type_id")),
-            AttributeOverride(name = "value", column = Column(name = "saken_gjelder_value"))
-        ]
+            AttributeOverride(name = "value", column = Column(name = "saken_gjelder_value")),
+        ],
     )
     val sakenGjelder: PartId,
     @Column(name = "tema_id")
@@ -45,8 +54,8 @@ class JournalfoeringData(
     @AttributeOverrides(
         value = [
             AttributeOverride(name = "key", column = Column(name = "tilleggsopplysning_key")),
-            AttributeOverride(name = "value", column = Column(name = "tilleggsopplysning_value"))
-        ]
+            AttributeOverride(name = "value", column = Column(name = "tilleggsopplysning_value")),
+        ],
     )
     val tilleggsopplysning: Tilleggsopplysning?,
     @Column(name = "journalposttype")
@@ -58,4 +67,3 @@ class JournalfoeringData(
     @Column(name = "dato_mottatt")
     var datoMottatt: LocalDate?,
 )
-

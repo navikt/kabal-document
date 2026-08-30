@@ -12,18 +12,16 @@ class UnleashConfiguration(
     @Value($$"${NAIS_POD_NAME}")
     private val naisPodName: String,
     @Value($$"${NAIS_APP_NAME}")
-    private val naisAppName: String
+    private val naisAppName: String,
 ) {
-
     @Bean
     @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-    fun klageUnleashProxyContextProvider(currentSaksbehandlerHolder: CurrentSaksbehandlerHolder): KlageUnleashProxyContext {
-        return KlageUnleashProxyContext(
+    fun klageUnleashProxyContextProvider(currentSaksbehandlerHolder: CurrentSaksbehandlerHolder): KlageUnleashProxyContext =
+        KlageUnleashProxyContext(
             navIdent = currentSaksbehandlerHolder.navIdent,
             appName = naisAppName,
             podName = naisPodName,
         )
-    }
 }
 
 open class KlageUnleashProxyContext(

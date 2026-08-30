@@ -1,8 +1,18 @@
 package no.nav.klage.dokument.domain.dokument
 
-import jakarta.persistence.*
+import jakarta.persistence.AttributeOverride
+import jakarta.persistence.AttributeOverrides
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Table
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "trygderetten_metadata", schema = "document")
@@ -44,7 +54,7 @@ class TrygderettenMetadata(
             AttributeOverride(name = "adresse.postnummer", column = Column(name = "representant_adresse_postnummer")),
             AttributeOverride(name = "adresse.poststed", column = Column(name = "representant_adresse_poststed")),
             AttributeOverride(name = "adresse.land", column = Column(name = "representant_adresse_land")),
-        ]
+        ],
     )
     val representant: Representant?,
 ) {

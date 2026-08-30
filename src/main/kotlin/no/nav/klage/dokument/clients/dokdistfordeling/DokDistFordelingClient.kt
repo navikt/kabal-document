@@ -30,26 +30,29 @@ class DokDistFordelingClient(
         avtalemeldingTilTrygderetten: String?,
     ): DistribuerJournalpostResponse {
         logger.debug("Skal distribuere journalpost $journalpostId")
-        val payload = mapToDistribuerJournalpostRequest(
-            journalpostId = journalpostId,
-            dokumentType = dokumentType,
-            adresse = adresse,
-            tvingSentralPrint = tvingSentralPrint,
-            avtalemeldingTilTrygderetten = avtalemeldingTilTrygderetten,
-        )
-        val distribuerJournalpostResponse = dokDistWebClient.post()
-            .header("Nav-Consumer-Id", applicationName)
-            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokdistScope()}")
-            .bodyValue(payload)
-            .retrieve()
-            .bodyToMono(DistribuerJournalpostResponse::class.java)
-            .block()
-            ?: throw RuntimeException("Journalpost with id $journalpostId could not be distributed.")
+        val payload =
+            mapToDistribuerJournalpostRequest(
+                journalpostId = journalpostId,
+                dokumentType = dokumentType,
+                adresse = adresse,
+                tvingSentralPrint = tvingSentralPrint,
+                avtalemeldingTilTrygderetten = avtalemeldingTilTrygderetten,
+            )
+        val distribuerJournalpostResponse =
+            dokDistWebClient
+                .post()
+                .header("Nav-Consumer-Id", applicationName)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokdistScope()}")
+                .bodyValue(payload)
+                .retrieve()
+                .bodyToMono(DistribuerJournalpostResponse::class.java)
+                .block()
+                ?: throw RuntimeException("Journalpost with id $journalpostId could not be distributed.")
 
         logger.debug(
             "Journalpost with id {} successfully distributed, resulting in bestillingsId {}.",
             journalpostId,
-            distribuerJournalpostResponse.bestillingsId
+            distribuerJournalpostResponse.bestillingsId,
         )
 
         return distribuerJournalpostResponse
@@ -61,19 +64,28 @@ class DokDistFordelingClient(
         tvingSentralPrint: Boolean,
         adresse: Adresse?,
         avtalemeldingTilTrygderetten: String?,
-    ): DistribuerJournalpostRequest {
-        return DistribuerJournalpostRequest(
+    ): DistribuerJournalpostRequest =
+        DistribuerJournalpostRequest(
             journalpostId = journalpostId,
             bestillendeFagsystem = applicationName,
             dokumentProdApp = applicationName,
             distribusjonstype = dokumentType.toDistribusjonsType(),
             distribusjonstidspunkt = dokumentType.toDistribusjonstidspunkt(),
             adresse = adresse,
-            tvingKanal = if (tvingSentralPrint) {
-                DistribuerJournalpostRequest.Kanal.PRINT
-            } else null,
+            tvingKanal =
+                if (tvingSentralPrint) {
+                    DistribuerJournalpostRequest.Kanal.PRINT
+                } else {
+                    null
+                },
             forsendelseMetadata = avtalemeldingTilTrygderetten,
-            forsendelseMetadataType = if (avtalemeldingTilTrygderetten != null) DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING else null,
+            forsendelseMetadataType =
+                if (avtalemeldingTilTrygderetten !=
+                    null
+                ) {
+                    DistribuerJournalpostRequest.ForsendelseMetadataType.DPO_AVTALEMELDING
+                } else {
+                    null
+                },
         )
-    }
 }

@@ -9,7 +9,7 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 
 @Service
 class DokumentDistribusjonService(
@@ -18,7 +18,6 @@ class DokumentDistribusjonService(
     @Value($$"${spring.profiles.active:}") private val activeSpringProfile: String,
     private val klageUnleashProxyClient: KlageUnleashProxyClient,
 ) {
-
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
@@ -34,30 +33,38 @@ class DokumentDistribusjonService(
         trygderettenMetadata: TrygderettenMetadataInput?,
     ): UUID {
         val avtalemelding =
-            if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten && klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")) {
-                val (arkivsaksnummer, avtalemelding) = avtalemeldingService.generateMarshalledAvtalemelding(
-                    journalpostId = journalpostId,
-                    bestillingsId = avsenderMottakerDistribusjonId.toString(),
-                    trygderettenMetadata = trygderettenMetadata,
+            if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten &&
+                klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")
+            ) {
+                val (arkivsaksnummer, avtalemelding) =
+                    avtalemeldingService.generateMarshalledAvtalemelding(
+                        journalpostId = journalpostId,
+                        bestillingsId = avsenderMottakerDistribusjonId.toString(),
+                        trygderettenMetadata = trygderettenMetadata,
+                    )
+                logger.debug(
+                    "Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId",
                 )
-                logger.debug("Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId")
                 if (activeSpringProfile == "dev") {
                     logger.debug("Avtalemelding content (first 2000 chars): ${avtalemelding.take(2000)}")
                 }
                 avtalemelding
-            } else null
+            } else {
+                null
+            }
 
-        return dokDistFordelingClient.distribuerJournalpost(
-            journalpostId = journalpostId,
-            dokumentType = dokumentType,
-            tvingSentralPrint = tvingSentralPrint,
-            adresse = adresse?.toDokDistAdresse(),
-            avtalemeldingTilTrygderetten = avtalemelding,
-        ).bestillingsId
+        return dokDistFordelingClient
+            .distribuerJournalpost(
+                journalpostId = journalpostId,
+                dokumentType = dokumentType,
+                tvingSentralPrint = tvingSentralPrint,
+                adresse = adresse?.toDokDistAdresse(),
+                avtalemeldingTilTrygderetten = avtalemelding,
+            ).bestillingsId
     }
 
-    private fun Adresse.toDokDistAdresse(): no.nav.klage.dokument.clients.dokdistfordeling.Adresse {
-        return no.nav.klage.dokument.clients.dokdistfordeling.Adresse(
+    private fun Adresse.toDokDistAdresse(): no.nav.klage.dokument.clients.dokdistfordeling.Adresse =
+        no.nav.klage.dokument.clients.dokdistfordeling.Adresse(
             adressetype = Adressetype.valueOf(adressetype),
             adresselinje1 = adresselinje1,
             adresselinje2 = adresselinje2,
@@ -66,5 +73,4 @@ class DokumentDistribusjonService(
             poststed = poststed,
             land = land,
         )
-    }
 }
