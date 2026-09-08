@@ -38,6 +38,7 @@ import no.nav.klage.dokument.clients.saf.graphql.Variantformat
 import no.nav.klage.dokument.domain.dokument.Adresse
 import no.nav.klage.dokument.domain.dokument.PartId
 import no.nav.klage.dokument.domain.dokument.Representant
+import no.nav.klage.dokument.exceptions.DokumentEnhetNotValidException
 import no.nav.klage.dokument.util.ARKIVFORMAT
 import no.nav.klage.dokument.util.AVSENDER
 import no.nav.klage.dokument.util.DOKUMENTASJON
@@ -62,6 +63,7 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.PartIdType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.xmlunit.builder.Input
 import org.xmlunit.validation.Languages
 import org.xmlunit.validation.ValidationResult
@@ -146,6 +148,7 @@ class AvtalemeldingServiceTest {
             forsterketRett = true,
             ettersendelse = false,
             lovhenvisning = setOf("ftrl. § 12-7"),
+            trygderettenSaksnummer = "2027123",
             representant =
                 Representant(
                     partId =
@@ -233,6 +236,69 @@ class AvtalemeldingServiceTest {
         val validationResult = v.validateInstance(Input.fromString(avtalemeldingXml).build())
         validationResult?.problems?.forEach { logger.warn("Validation problem: {}", it) }
         assertThat(validationResult?.isValid).isTrue
+    }
+
+    @Test
+    fun `trygderettenSaksnummer is split into saksaar and sakssekvensnummer on the saksmappe`() {
+        val journalpost1 =
+            getJournalpost(
+                brukerOrgNummer = null,
+                originalJournalpostIdForVedlegg = null,
+            )
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+
+        val (_, avtalemelding) =
+            avtalemeldingService.generateAvtalemelding(
+                journalpostId = journalpostId1,
+                bestillingsId = bestillingsId,
+                trygderettenMetadata = trygderettenMetadataInput,
+            )
+
+        val saksmappe = avtalemelding.mappe.first() as Saksmappe
+        assertThat(saksmappe.saksaar).isEqualTo(BigInteger.valueOf(2027))
+        assertThat(saksmappe.sakssekvensnummer).isEqualTo(BigInteger.valueOf(123))
+    }
+
+    @Test
+    fun `saksaar and sakssekvensnummer are left out when trygderettenSaksnummer is missing`() {
+        val journalpost1 =
+            getJournalpost(
+                brukerOrgNummer = null,
+                originalJournalpostIdForVedlegg = null,
+            )
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+
+        val (_, avtalemelding) =
+            avtalemeldingService.generateAvtalemelding(
+                journalpostId = journalpostId1,
+                bestillingsId = bestillingsId,
+                trygderettenMetadata = trygderettenMetadataInput.copy(trygderettenSaksnummer = null),
+            )
+
+        val saksmappe = avtalemelding.mappe.first() as Saksmappe
+        assertThat(saksmappe.saksaar).isNull()
+        assertThat(saksmappe.sakssekvensnummer).isNull()
+    }
+
+    @Test
+    fun `invalid trygderettenSaksnummer is rejected`() {
+        val journalpost1 =
+            getJournalpost(
+                brukerOrgNummer = null,
+                originalJournalpostIdForVedlegg = null,
+            )
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
+        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+
+        assertThrows<DokumentEnhetNotValidException> {
+            avtalemeldingService.generateAvtalemelding(
+                journalpostId = journalpostId1,
+                bestillingsId = bestillingsId,
+                trygderettenMetadata = trygderettenMetadataInput.copy(trygderettenSaksnummer = "2027"),
+            )
+        }
     }
 
     @Test

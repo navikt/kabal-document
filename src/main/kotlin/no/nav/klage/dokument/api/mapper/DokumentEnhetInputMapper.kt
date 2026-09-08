@@ -220,6 +220,7 @@ class DokumentEnhetInputMapper {
             ettersendelse = input.ettersendelse,
             lovhenvisning = input.lovhenvisning,
             representant = input.representant,
+            trygderettenSaksnummer = input.trygderettenSaksnummer,
         )
     }
 
@@ -233,5 +234,6 @@ class DokumentEnhetInputMapper {
             ettersendelse = metadata.ettersendelse,
             lovhenvisning = metadata.lovhenvisning,
             representant = metadata.representant,
+            trygderettenSaksnummer = metadata.trygderettenSaksnummer,
         )
 }

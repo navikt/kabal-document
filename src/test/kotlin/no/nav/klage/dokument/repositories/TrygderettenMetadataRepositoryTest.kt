@@ -56,6 +56,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
         assertThat(retrieved.forsterketRett).isEqualTo(metadata.forsterketRett)
         assertThat(retrieved.ettersendelse).isEqualTo(metadata.ettersendelse)
         assertThat(retrieved.lovhenvisning).isEqualTo(metadata.lovhenvisning)
+        assertThat(retrieved.trygderettenSaksnummer).isEqualTo(metadata.trygderettenSaksnummer)
 
         assertThat(retrieved.representant).isNotNull
         assertThat(retrieved.representant!!.navn).isEqualTo(metadata.representant!!.navn)
@@ -99,6 +100,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
                 ettersendelse = true,
                 lovhenvisning = setOf("ftrl. § 22-13"),
                 representant = null,
+                trygderettenSaksnummer = null,
             )
 
         trygderettenMetadataRepository.save(metadata)
@@ -182,6 +184,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
             forsterketRett = true,
             ettersendelse = false,
             lovhenvisning = setOf("ftrl. § 12-7"),
+            trygderettenSaksnummer = "2027123",
             representant =
                 Representant(
                     partId =
