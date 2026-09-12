@@ -46,6 +46,7 @@ import no.nav.klage.dokument.util.getOldestDateFromDokumentbeskrivelser
 import no.nav.klage.dokument.util.getREPPart
 import no.nav.klage.dokument.util.getSammensattNavn
 import no.nav.klage.dokument.util.marshalAvtalemelding
+import no.nav.klage.dokument.util.splitTrygderettenSaksnummer
 import no.nav.klage.kodeverk.Tema
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -154,6 +155,11 @@ class AvtalemeldingService(
             tittel = Tema.valueOf(journalpost.tema!!.name).beskrivelse
             opprettetDato = sakOpprettetDato
             opprettetAv = journalpost.opprettetAvNavn
+            trygderettenMetadata?.trygderettenSaksnummer?.let { trygderettenSaksnummer ->
+                val (aar, sekvensnummer) = splitTrygderettenSaksnummer(trygderettenSaksnummer)
+                saksaar = aar.toBigInteger()
+                sakssekvensnummer = sekvensnummer.toBigInteger()
+            }
             virksomhetsspesifikkeMetadata =
                 getNavMappe(
                     arkivsaknummer = arkivsaksnummer,

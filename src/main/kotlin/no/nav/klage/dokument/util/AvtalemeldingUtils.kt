@@ -32,6 +32,9 @@ import javax.xml.datatype.XMLGregorianCalendar
 import javax.xml.namespace.QName
 
 const val UKJENT_NAVN = "UKJENT NAVN"
+
+/** Four digit year followed by at least one digit of counter. */
+private val TRYGDERETTEN_SAKSNUMMER_PATTERN = Regex("^\\d{5,}$")
 const val ARKIVMELDING_NAMESPACE = "http://www.arkivverket.no/standarder/noark5/arkivmelding"
 const val DOKUMENT_HVOR_DELER_AV_INNHOLDET_ER_SKJERMET = "Dokument hvor deler av innholdet er skjermet"
 const val ARKIVFORMAT = "Arkivformat"
@@ -141,6 +144,22 @@ fun getDokumentbeskrivelseOpprettetAv(
 fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
     val mellomnavn = navn?.mellomnavn?.let { " ${it.trim()}" } ?: ""
     return navn?.let { "${it.fornavn}$mellomnavn ${it.etternavn}" }
+}
+
+/**
+ * Splits saksnummeret fra Trygderetten into saksaar and sakssekvensnummer for the saksmappe. The number
+ * consists of the four digit year followed by a running counter, e.g. 2027123 becomes saksaar 2027 and
+ * sakssekvensnummer 123.
+ */
+fun splitTrygderettenSaksnummer(trygderettenSaksnummer: String): Pair<Int, Int> {
+    // The saksnummer must fit in an Int, which is the range Trygderetten uses.
+    if (!TRYGDERETTEN_SAKSNUMMER_PATTERN.matches(trygderettenSaksnummer) || trygderettenSaksnummer.toIntOrNull() == null) {
+        throw DokumentEnhetNotValidException(
+            "Ugyldig saksnummer fra Trygderetten: $trygderettenSaksnummer. Forventet årstall etterfulgt av løpenummer.",
+        )
+    }
+
+    return trygderettenSaksnummer.take(4).toInt() to trygderettenSaksnummer.drop(4).toInt()
 }
 
 fun getNavMappe(

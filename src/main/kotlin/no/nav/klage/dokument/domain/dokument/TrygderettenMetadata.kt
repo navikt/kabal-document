@@ -33,6 +33,8 @@ class TrygderettenMetadata(
     val forsterketRett: Boolean?,
     @Column(name = "ettersendelse")
     val ettersendelse: Boolean,
+    @Column(name = "trygderetten_saksnummer")
+    val trygderettenSaksnummer: String?,
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "trygderetten_metadata_lovhenvisning",
