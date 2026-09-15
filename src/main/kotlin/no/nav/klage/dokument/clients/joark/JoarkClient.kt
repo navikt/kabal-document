@@ -170,6 +170,19 @@ class JoarkClient(
     }
 
     @Retryable
+    fun feilregistrerSakstilknytningAsSystemUser(journalpostId: String) {
+        joarkSmallFileWebClient
+            .patch()
+            .uri("/$journalpostId/feilregistrer/feilregistrerSakstilknytning")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer ${tokenUtil.getAppAccessTokenWithDokarkivScope()}")
+            .retrieve()
+            .bodyToMono<String>()
+            .block()
+
+        logger.debug("Sakstilknytning for journalpost with id {} was successfully feilregistrert.", journalpostId)
+    }
+
+    @Retryable
     fun updateDocumentTitleOnBehalfOf(
         journalpostId: String,
         input: UpdateDocumentTitleJournalpostInput,

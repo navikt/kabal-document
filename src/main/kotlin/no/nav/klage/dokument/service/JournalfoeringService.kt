@@ -211,6 +211,10 @@ class JournalfoeringService(
         return LocalDateTime.now()
     }
 
+    fun feilregistrerSakstilknytning(journalpostId: String) {
+        joarkClient.feilregistrerSakstilknytningAsSystemUser(journalpostId = journalpostId)
+    }
+
     fun updateDocumentTitle(
         journalpostId: String,
         dokumentInfoId: String,
