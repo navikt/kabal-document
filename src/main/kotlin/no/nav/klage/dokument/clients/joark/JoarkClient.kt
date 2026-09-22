@@ -43,21 +43,22 @@ class JoarkClient(
         // Choose WebClient based on file size
         val fileSize = journalpostRequestAsFile.length()
         val webClient =
-            if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
-                logger.debug(
-                    "Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
-                        "for file of size {} bytes",
-                    fileSize,
-                )
-                joarkLargeFileWebClient
-            } else {
-                logger.debug(
-                    "Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
-                        "for file of size {} bytes",
-                    fileSize,
-                )
-                joarkSmallFileWebClient
-            }
+//            if (fileSize > LARGE_FILE_THRESHOLD_BYTES) {
+//                logger.debug(
+//                    "Using large file WebClient ($LARGE_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
+//                        "for file of size {} bytes",
+//                    fileSize,
+//                )
+            // Temporarily use client with long timeout, while waiting for SAF fix.
+            joarkLargeFileWebClient
+//            } else {
+//                logger.debug(
+//                    "Using small file WebClient ($SMALL_FILE_UPLOAD_TIMEOUT_SECONDS)s timeout) " +
+//                        "for file of size {} bytes",
+//                    fileSize,
+//                )
+//                joarkSmallFileWebClient
+//            }
 
         val post =
             webClient
