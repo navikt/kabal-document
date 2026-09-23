@@ -8,8 +8,8 @@ val h2Version = "1.4.200"
 val tokenValidationVersion = "6.0.12"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.1.0"
-val shedlockVersion = "7.9.0"
+val springDocVersion = "3.1.1"
+val shedlockVersion = "7.10.1"
 val archunitVersion = "1.5.0"
 val ehcacheVersion = "3.12.0"
 val kodeverkVersion = "3.3.10"
@@ -23,7 +23,7 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.4.10"
+    val kotlinVersion = "2.4.20"
     id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
