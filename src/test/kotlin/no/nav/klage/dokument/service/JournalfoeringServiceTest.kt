@@ -17,6 +17,7 @@ import no.nav.klage.dokument.domain.dokument.Tilleggsopplysning
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -73,6 +74,7 @@ internal class JournalfoeringServiceTest {
                     tema = Tema.OMS,
                     sakFagsakId = "sakFagsakId",
                     sakFagsystem = Fagsystem.FS36,
+                    sakSakstype = Sakstype.FAGSAK,
                     kildeReferanse = "kildeReferanse",
                     enhet = "Enhet",
                     behandlingstema = "behandlingstema",

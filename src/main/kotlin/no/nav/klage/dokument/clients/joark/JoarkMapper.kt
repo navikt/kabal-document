@@ -6,6 +6,7 @@ import no.nav.klage.dokument.domain.dokument.OpplastetHoveddokument
 import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.PartIdType
 import org.springframework.stereotype.Service
+import no.nav.klage.kodeverk.Sakstype as KodeverkSakstype
 
 @Service
 class JoarkMapper {
@@ -84,11 +85,29 @@ class JoarkMapper {
         }
 
     private fun createSak(journalfoeringData: JournalfoeringData): Sak =
-        Sak(
-            sakstype = Sakstype.FAGSAK,
-            fagsaksystem = FagsaksSystem.valueOf(journalfoeringData.sakFagsystem.name),
-            fagsakid = journalfoeringData.sakFagsakId,
-        )
+        when (journalfoeringData.sakSakstype) {
+            KodeverkSakstype.FAGSAK -> {
+                Sak(
+                    sakstype = Sakstype.FAGSAK,
+                    fagsaksystem = FagsaksSystem.valueOf(journalfoeringData.sakFagsystem.name),
+                    fagsakid =
+                        journalfoeringData.sakFagsakId
+                            ?: throw IllegalStateException("Mangler fagsakId for sakstype FAGSAK"),
+                )
+            }
+
+            KodeverkSakstype.GENERELL_SAK -> {
+                Sak(
+                    sakstype = Sakstype.GENERELL_SAK,
+                    fagsaksystem = null,
+                    fagsakid = null,
+                )
+            }
+
+            KodeverkSakstype.ARKIVSAK -> {
+                throw IllegalStateException("Sakstype ARKIVSAK støttes ikke")
+            }
+        }
 
     private fun createBruker(journalfoeringData: JournalfoeringData): Bruker =
         Bruker(

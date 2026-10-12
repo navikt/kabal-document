@@ -14,6 +14,8 @@ import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.clients.joark.Kanal
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.FagsystemConverter
+import no.nav.klage.kodeverk.Sakstype
+import no.nav.klage.kodeverk.SakstypeConverter
 import no.nav.klage.kodeverk.Tema
 import no.nav.klage.kodeverk.TemaConverter
 import java.time.LocalDate
@@ -36,10 +38,13 @@ class JournalfoeringData(
     @Convert(converter = TemaConverter::class)
     val tema: Tema,
     @Column(name = "sak_fagsak_id")
-    val sakFagsakId: String,
+    val sakFagsakId: String?,
     @Column(name = "sak_fagsystem_id")
     @Convert(converter = FagsystemConverter::class)
     val sakFagsystem: Fagsystem,
+    @Column(name = "sak_sakstype_id")
+    @Convert(converter = SakstypeConverter::class)
+    val sakSakstype: Sakstype,
     @Column(name = "kilde_referanse")
     val kildeReferanse: String,
     @Column(name = "enhet")

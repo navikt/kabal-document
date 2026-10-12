@@ -13,6 +13,7 @@ import no.nav.klage.dokument.domain.dokument.TrygderettenMetadata
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -124,6 +125,7 @@ class TrygderettenMetadataRepositoryTest : PostgresIntegrationTestBase() {
                         tema = Tema.OMS,
                         sakFagsakId = "123",
                         sakFagsystem = Fagsystem.AO01,
+                        sakSakstype = Sakstype.FAGSAK,
                         kildeReferanse = "",
                         enhet = "",
                         behandlingstema = "",

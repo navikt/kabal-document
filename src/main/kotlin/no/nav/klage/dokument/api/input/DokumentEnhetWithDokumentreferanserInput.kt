@@ -60,8 +60,10 @@ data class DokumentEnhetWithDokumentreferanserInput(
     data class JournalfoeringDataInput(
         val sakenGjelder: PartIdInput,
         val temaId: String,
-        val sakFagsakId: String,
+        val sakFagsakId: String?,
         val sakFagsystemId: String,
+        // null tolkes som FAGSAK for bakoverkompatibilitet
+        val sakstypeId: String? = null,
         val kildeReferanse: String,
         val enhet: String,
         val behandlingstema: String,

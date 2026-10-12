@@ -18,6 +18,7 @@ import no.nav.klage.dokument.util.getLogger
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -138,11 +139,27 @@ class DokumentEnhetInputMapper {
                 throw IllegalArgumentException("datoMottatt kan kun settes for inngående journalpost")
             }
 
+            val sakstype = Sakstype.of(input.sakstypeId ?: Sakstype.FAGSAK.id)
+            when (sakstype) {
+                Sakstype.FAGSAK -> {
+                    if (input.sakFagsakId.isNullOrBlank()) {
+                        throw IllegalArgumentException("sakFagsakId må være satt for sakstype FAGSAK")
+                    }
+                }
+
+                Sakstype.GENERELL_SAK -> {}
+
+                Sakstype.ARKIVSAK -> {
+                    throw IllegalArgumentException("Sakstype ARKIVSAK støttes ikke")
+                }
+            }
+
             JournalfoeringData(
                 sakenGjelder = mapPartIdInput(input.sakenGjelder),
                 tema = Tema.of(input.temaId),
-                sakFagsakId = input.sakFagsakId,
+                sakFagsakId = if (sakstype == Sakstype.FAGSAK) input.sakFagsakId else null,
                 sakFagsystem = Fagsystem.of(input.sakFagsystemId),
+                sakSakstype = sakstype,
                 kildeReferanse = input.kildeReferanse,
                 enhet = input.enhet,
                 behandlingstema = input.behandlingstema,
