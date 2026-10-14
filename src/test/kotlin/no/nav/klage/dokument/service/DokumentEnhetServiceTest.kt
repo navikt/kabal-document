@@ -21,6 +21,7 @@ import no.nav.klage.dokument.repositories.TrygderettenMetadataRepository
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -140,6 +141,7 @@ internal class DokumentEnhetServiceTest {
                     tema = Tema.OMS,
                     sakFagsakId = "sakFagsakId",
                     sakFagsystem = Fagsystem.FS36,
+                    sakSakstype = Sakstype.FAGSAK,
                     kildeReferanse = "kildeReferanse",
                     enhet = "Enhet",
                     behandlingstema = "behandlingstema",
@@ -179,6 +181,7 @@ internal class DokumentEnhetServiceTest {
                     tema = Tema.OMS,
                     sakFagsakId = "sakFagsakId",
                     sakFagsystem = Fagsystem.FS36,
+                    sakSakstype = Sakstype.FAGSAK,
                     kildeReferanse = "kildeReferanse",
                     enhet = "Enhet",
                     behandlingstema = "behandlingstema",

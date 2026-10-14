@@ -1,5 +1,6 @@
 package no.nav.klage.dokument.clients.joark
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.klage.kodeverk.Tema
 import java.time.LocalDate
 
@@ -92,10 +93,11 @@ enum class BrukerIdType {
     AKTOERID,
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Sak(
     val sakstype: Sakstype,
-    val fagsaksystem: FagsaksSystem,
-    val fagsakid: String,
+    val fagsaksystem: FagsaksSystem?,
+    val fagsakid: String?,
     val arkivsaksystem: ArkivsaksSystem? = null,
     val arkivsaksnummer: String? = null,
 )
@@ -144,6 +146,8 @@ enum class FagsaksSystem {
     EKSPERTBISTAND,
     ARGUS,
     SPEIL,
+    FS22,
+    FS39,
 }
 
 enum class ArkivsaksSystem {

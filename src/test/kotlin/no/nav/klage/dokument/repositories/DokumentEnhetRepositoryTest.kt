@@ -11,6 +11,7 @@ import no.nav.klage.dokument.domain.dokument.PartId
 import no.nav.klage.kodeverk.DokumentType
 import no.nav.klage.kodeverk.Fagsystem
 import no.nav.klage.kodeverk.PartIdType
+import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -40,6 +41,46 @@ class DokumentEnhetRepositoryTest : PostgresIntegrationTestBase() {
         testEntityManager.clear()
 
         assertThat(dokumentEnhetRepository.getReferenceById(dokumentEnhet.id)).isEqualTo(dokumentEnhet)
+    }
+
+    @Test
+    fun `store DokumentEnhet with GENERELL_SAK and no fagsakId works as expected`() {
+        val generellSakDokumentEnhet =
+            DokumentEnhet(
+                journalfoeringData =
+                    JournalfoeringData(
+                        sakenGjelder = PartId(type = PartIdType.PERSON, value = ""),
+                        tema = Tema.OPP,
+                        sakFagsakId = null,
+                        sakFagsystem = Fagsystem.FS22,
+                        sakSakstype = Sakstype.GENERELL_SAK,
+                        kildeReferanse = "",
+                        enhet = "",
+                        behandlingstema = "",
+                        tittel = "",
+                        brevKode = "",
+                        tilleggsopplysning = null,
+                        inngaaendeKanal = null,
+                        datoMottatt = null,
+                    ),
+                avsenderMottakere = setOf(),
+                vedlegg = setOf(),
+                hovedDokument = null,
+                dokumentType = DokumentType.VEDTAK,
+                avsenderMottakerDistribusjoner = setOf(),
+                avsluttet = null,
+                journalfoerendeSaksbehandlerIdent = "S123456",
+                modified = LocalDateTime.now(),
+            )
+
+        dokumentEnhetRepository.save(generellSakDokumentEnhet)
+
+        testEntityManager.flush()
+        testEntityManager.clear()
+
+        val retrieved = dokumentEnhetRepository.findById(generellSakDokumentEnhet.id).get()
+        assertThat(retrieved.journalfoeringData.sakSakstype).isEqualTo(Sakstype.GENERELL_SAK)
+        assertThat(retrieved.journalfoeringData.sakFagsakId).isNull()
     }
 
     @Test
@@ -86,6 +127,7 @@ class DokumentEnhetRepositoryTest : PostgresIntegrationTestBase() {
                     tema = Tema.OMS,
                     sakFagsakId = "123",
                     sakFagsystem = Fagsystem.AO01,
+                    sakSakstype = Sakstype.FAGSAK,
                     kildeReferanse = "",
                     enhet = "",
                     behandlingstema = "",

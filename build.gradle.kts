@@ -13,7 +13,7 @@ val springDocVersion = "3.1.1"
 val shedlockVersion = "7.10.1"
 val archunitVersion = "1.5.1"
 val ehcacheVersion = "3.12.0"
-val kodeverkVersion = "3.3.10"
+val kodeverkVersion = "3.4.1"
 val syslog4jVersion = "1.0.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_21
