@@ -37,7 +37,11 @@ internal class DokumentEnhetInputMapperTest {
 
     @Test
     fun `input without sakstypeId is mapped to FAGSAK`() {
-        val result = mapper.mapJournalfoeringDataInput(input(sakFagsakId = "123", sakstypeId = null), DokumentType.VEDTAK)
+        val result =
+            mapper.mapJournalfoeringDataInput(
+                input = input(sakFagsakId = "123", sakstypeId = null),
+                dokumentType = DokumentType.VEDTAK,
+            )
 
         assertThat(result.sakSakstype).isEqualTo(Sakstype.FAGSAK)
         assertThat(result.sakFagsakId).isEqualTo("123")
@@ -46,10 +50,13 @@ internal class DokumentEnhetInputMapperTest {
     @Test
     fun `FAGSAK without sakFagsakId is rejected`() {
         assertThrows<DokumentEnhetNotValidException> {
-            mapper.mapJournalfoeringDataInput(input(sakFagsakId = null, sakstypeId = null), DokumentType.VEDTAK)
+            mapper.mapJournalfoeringDataInput(input = input(sakFagsakId = null, sakstypeId = null), dokumentType = DokumentType.VEDTAK)
         }
         assertThrows<DokumentEnhetNotValidException> {
-            mapper.mapJournalfoeringDataInput(input(sakFagsakId = " ", sakstypeId = Sakstype.FAGSAK.id), DokumentType.VEDTAK)
+            mapper.mapJournalfoeringDataInput(
+                input = input(sakFagsakId = " ", sakstypeId = Sakstype.FAGSAK.id),
+                dokumentType = DokumentType.VEDTAK,
+            )
         }
     }
 
@@ -57,8 +64,8 @@ internal class DokumentEnhetInputMapperTest {
     fun `GENERELL_SAK without sakFagsakId is accepted`() {
         val result =
             mapper.mapJournalfoeringDataInput(
-                input(sakFagsakId = null, sakstypeId = Sakstype.GENERELL_SAK.id, sakFagsystemId = Fagsystem.FS22.id),
-                DokumentType.VEDTAK,
+                input = input(sakFagsakId = null, sakstypeId = Sakstype.GENERELL_SAK.id, sakFagsystemId = Fagsystem.FS22.id),
+                dokumentType = DokumentType.VEDTAK,
             )
 
         assertThat(result.sakSakstype).isEqualTo(Sakstype.GENERELL_SAK)
@@ -69,14 +76,17 @@ internal class DokumentEnhetInputMapperTest {
     @Test
     fun `ARKIVSAK is rejected`() {
         assertThrows<DokumentEnhetNotValidException> {
-            mapper.mapJournalfoeringDataInput(input(sakFagsakId = "123", sakstypeId = Sakstype.ARKIVSAK.id), DokumentType.VEDTAK)
+            mapper.mapJournalfoeringDataInput(
+                input = input(sakFagsakId = "123", sakstypeId = Sakstype.ARKIVSAK.id),
+                dokumentType = DokumentType.VEDTAK,
+            )
         }
     }
 
     @Test
     fun `unknown sakstypeId is rejected`() {
         assertThrows<DokumentEnhetNotValidException> {
-            mapper.mapJournalfoeringDataInput(input(sakFagsakId = "123", sakstypeId = "999"), DokumentType.VEDTAK)
+            mapper.mapJournalfoeringDataInput(input = input(sakFagsakId = "123", sakstypeId = "999"), dokumentType = DokumentType.VEDTAK)
         }
     }
 }

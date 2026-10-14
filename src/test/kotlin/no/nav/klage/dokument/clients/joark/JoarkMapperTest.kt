@@ -65,7 +65,7 @@ internal class JoarkMapperTest {
 
     @Test
     fun `FAGSAK gives same Sak as before`() {
-        val sak = createSak(journalfoeringData(KodeverkSakstype.FAGSAK, "fagsak-1", Fagsystem.FS36))
+        val sak = createSak(journalfoeringData(sakstype = KodeverkSakstype.FAGSAK, fagsakId = "fagsak-1", fagsystem = Fagsystem.FS36))
 
         assertThat(sak).isEqualTo(
             Sak(
@@ -83,7 +83,7 @@ internal class JoarkMapperTest {
 
     @Test
     fun `FAGSAK with FS22 maps to FagsaksSystem FS22`() {
-        val sak = createSak(journalfoeringData(KodeverkSakstype.FAGSAK, "fagsak-1", Fagsystem.FS22))
+        val sak = createSak(journalfoeringData(sakstype = KodeverkSakstype.FAGSAK, fagsakId = "fagsak-1", fagsystem = Fagsystem.FS22))
 
         assertThat(sak.fagsaksystem).isEqualTo(FagsaksSystem.FS22)
     }
@@ -91,13 +91,13 @@ internal class JoarkMapperTest {
     @Test
     fun `FAGSAK without fagsakId fails explicitly`() {
         assertThrows<IllegalStateException> {
-            createSak(journalfoeringData(KodeverkSakstype.FAGSAK, null, Fagsystem.FS36))
+            createSak(journalfoeringData(sakstype = KodeverkSakstype.FAGSAK, fagsakId = null, fagsystem = Fagsystem.FS36))
         }
     }
 
     @Test
     fun `GENERELL_SAK gives Sak with only sakstype`() {
-        val sak = createSak(journalfoeringData(KodeverkSakstype.GENERELL_SAK, null, Fagsystem.FS22))
+        val sak = createSak(journalfoeringData(sakstype = KodeverkSakstype.GENERELL_SAK, fagsakId = null, fagsystem = Fagsystem.FS22))
 
         assertThat(sak).isEqualTo(
             Sak(
@@ -118,7 +118,12 @@ internal class JoarkMapperTest {
     fun `GENERELL_SAK journalpost keeps bruker and tema`() {
         val journalpost =
             joarkMapper.createPartialJournalpostWithoutDocuments(
-                journalfoeringData = journalfoeringData(KodeverkSakstype.GENERELL_SAK, null, Fagsystem.FS22),
+                journalfoeringData =
+                    journalfoeringData(
+                        sakstype = KodeverkSakstype.GENERELL_SAK,
+                        fagsakId = null,
+                        fagsystem = Fagsystem.FS22,
+                    ),
                 opplastetHovedDokument = hoveddokument,
                 avsenderMottaker = avsenderMottaker,
             )
@@ -133,7 +138,7 @@ internal class JoarkMapperTest {
     @Test
     fun `ARKIVSAK is rejected`() {
         assertThrows<IllegalStateException> {
-            createSak(journalfoeringData(KodeverkSakstype.ARKIVSAK, null, Fagsystem.FS22))
+            createSak(journalfoeringData(sakstype = KodeverkSakstype.ARKIVSAK, fagsakId = null, fagsystem = Fagsystem.FS22))
         }
     }
 }
