@@ -62,8 +62,8 @@ data class DokumentEnhetWithDokumentreferanserInput(
         val temaId: String,
         val sakFagsakId: String?,
         val sakFagsystemId: String,
-        // null tolkes som FAGSAK for bakoverkompatibilitet
-        val sakstypeId: String? = null,
+        // null skal tolkes som FAGSAK for bakoverkompatibilitet
+        val sakstypeId: String?,
         val kildeReferanse: String,
         val enhet: String,
         val behandlingstema: String,
