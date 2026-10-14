@@ -46,7 +46,7 @@ class DokumentDistribusjonService(
                     "Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId",
                 )
                 if (activeSpringProfile == "dev") {
-                    logger.debug("Avtalemelding content (first 4000 chars): ${avtalemelding.take(4000)}")
+                    logger.debug("Avtalemelding content (first 8000 chars): ${avtalemelding.take(8000)}")
                 }
                 avtalemelding
             } else {
