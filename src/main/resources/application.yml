@@ -24,6 +24,8 @@ spring:
   sql:
     init:
       platform: postgresql
+  jpa:
+    open-in-view: true
 
 server:
   port: 7094
