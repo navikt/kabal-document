@@ -5,10 +5,8 @@ import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
-import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,7 +16,6 @@ import java.util.UUID
 
 @RestController
 @Tag(name = "kabal-document", description = "API for håndtering av dokumentenheter.")
-@ProtectedWithClaims(issuer = ISSUER_AAD)
 @RequestMapping("/dokumentenheter")
 class DokumentEnhetController(
     private val dokumentEnhetMapper: DokumentEnhetMapper,

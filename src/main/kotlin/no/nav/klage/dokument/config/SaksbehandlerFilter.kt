@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse
 import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.repositories.DokumentEnhetRepository
 import no.nav.klage.dokument.util.getTeamLogger
-import org.springframework.core.Ordered
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -20,8 +20,12 @@ import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.util.UUID
 
+/**
+ * Runs after the Spring Security filter chain, so only authenticated requests reach the database lookup,
+ * and after Boot's RequestContextFilter (order -105), which activates the request scope CurrentSaksbehandlerHolder needs.
+ */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(SecurityFilterProperties.DEFAULT_FILTER_ORDER + 1)
 class SaksbehandlerFilter(
     private val currentSaksbehandlerHolder: CurrentSaksbehandlerHolder,
     private val dokumentEnhetRepository: DokumentEnhetRepository,
