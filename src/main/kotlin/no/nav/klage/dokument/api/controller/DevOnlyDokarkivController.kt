@@ -2,10 +2,8 @@ package no.nav.klage.dokument.api.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import no.nav.klage.dokument.config.SecurityConfiguration.Companion.ISSUER_AAD
 import no.nav.klage.dokument.service.JournalfoeringService
 import no.nav.klage.dokument.util.getLogger
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PatchMapping
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController
 @Profile("dev")
 @RestController
 @Tag(name = "dokarkiv-dev", description = "API for opprydding av testdata i Dokarkiv. Kun tilgjengelig i dev.")
-@ProtectedWithClaims(issuer = ISSUER_AAD)
 @RequestMapping("/dokarkiv/dev")
 class DevOnlyDokarkivController(
     private val journalfoeringService: JournalfoeringService,

@@ -1,52 +1,32 @@
 package no.nav.klage.dokument.util
 
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties
+import no.nav.klage.auth.TexasClient
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class TokenUtil(
-    private val clientConfigurationProperties: ClientConfigurationProperties,
-    private val oAuth2AccessTokenService: OAuth2AccessTokenService,
+    private val texasClient: TexasClient,
+    @Value($$"api://${NAIS_CLUSTER_NAME}.${NAIS_NAMESPACE}.${KABAL_FILE_API_APP_NAME}/.default")
+    private val kabalFileApiScope: String,
+    @Value($$"api://${SAF_SCOPE}/.default")
+    private val safScope: String,
+    @Value($$"api://${PDL_SCOPE}/.default")
+    private val pdlScope: String,
+    @Value($$"api://${DOKARKIV_SCOPE}/.default")
+    private val dokarkivScope: String,
+    @Value($$"api://${DOKDIST_SCOPE}/.default")
+    private val dokdistScope: String,
 ) {
-    companion object {
-        @Suppress("JAVA_CLASS_ON_COMPANION")
-        private val logger = getLogger(javaClass.enclosingClass)
-    }
+    fun getAppAccessTokenWithKabalFileApiScope(): String = texasClient.machineToMachineToken(kabalFileApiScope)
 
-    fun getAppAccessTokenWithKabalFileApiScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["kabal-file-api-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithSafScope(): String = texasClient.machineToMachineToken(safScope)
 
-    fun getAppAccessTokenWithSafScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["saf-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithPdlScope(): String = texasClient.machineToMachineToken(pdlScope)
 
-    fun getAppAccessTokenWithPdlScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["pdl-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getSaksbehandlerAccessTokenWithDokarkivScope(): String = texasClient.onBehalfOfCurrentUser(dokarkivScope)
 
-    fun getSaksbehandlerAccessTokenWithDokarkivScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["dokarkiv-onbehalfof"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithDokarkivScope(): String = texasClient.machineToMachineToken(dokarkivScope)
 
-    fun getAppAccessTokenWithDokarkivScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["dokarkiv-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
-
-    fun getAppAccessTokenWithDokdistScope(): String {
-        val clientProperties = clientConfigurationProperties.registration["dokdist-maskintilmaskin"]!!
-        val response = oAuth2AccessTokenService.getAccessToken(clientProperties)
-        return response.access_token!!
-    }
+    fun getAppAccessTokenWithDokdistScope(): String = texasClient.machineToMachineToken(dokdistScope)
 }
