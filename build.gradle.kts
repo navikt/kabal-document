@@ -6,7 +6,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 val mockkVersion = "1.14.11"
 val ktlintVersion = "1.8.0"
 val h2Version = "1.4.200"
-val klageAuthVersion = "0.3.0"
+val klageAuthVersion = "0.4.0"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
 val springDocVersion = "3.1.1"
