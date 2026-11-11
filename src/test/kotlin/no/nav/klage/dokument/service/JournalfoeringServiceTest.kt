@@ -111,7 +111,12 @@ internal class JournalfoeringServiceTest {
             )
         val journalpostId = "JOURNALPOST_ID"
         avsenderMottakerDistribusjon1.journalpostId = journalpostId
-        justRun { joarkClient.finalizeJournalpostAsSystemUser(journalpostId, enhet) }
+        justRun {
+            joarkClient.finalizeJournalpostAsSystemUser(
+                journalpostId = journalpostId,
+                journalfoerendeEnhet = enhet,
+            )
+        }
 
         journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
             avsenderMottakerDistribusjon = avsenderMottakerDistribusjon1,
