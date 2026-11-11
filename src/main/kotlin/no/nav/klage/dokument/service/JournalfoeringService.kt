@@ -35,7 +35,6 @@ class JournalfoeringService(
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
-        const val SYSTEM_JOURNALFOERENDE_ENHET = "9999"
 
         val ourJacksonObjectMapper =
             jacksonObjectMapper()
@@ -169,11 +168,13 @@ class JournalfoeringService(
         destinationFileOutputStream.close()
     }
 
-    fun finalizeJournalpostAsSystemUser(journalpostId: String) =
-        joarkClient.finalizeJournalpostAsSystemUser(
-            journalpostId = journalpostId,
-            journalfoerendeEnhet = SYSTEM_JOURNALFOERENDE_ENHET,
-        )
+    fun finalizeJournalpost(
+        journalpostId: String,
+        journalfoerendeEnhet: String,
+    ) = joarkClient.finalizeJournalpostAsSystemUser(
+        journalpostId = journalpostId,
+        journalfoerendeEnhet = journalfoerendeEnhet,
+    )
 
     fun tilknyttVedleggAsSystemUser(
         journalpostId: String,
@@ -197,15 +198,19 @@ class JournalfoeringService(
                 ),
         )
 
-    fun ferdigstillJournalpostForAvsenderMottakerDistribusjon(avsenderMottakerDistribusjon: AvsenderMottakerDistribusjon): LocalDateTime {
+    fun ferdigstillJournalpostForAvsenderMottakerDistribusjon(
+        avsenderMottakerDistribusjon: AvsenderMottakerDistribusjon,
+        journalfoerendeEnhet: String,
+    ): LocalDateTime {
         if (avsenderMottakerDistribusjon.journalpostId == null) {
             throw JournalpostNotFoundException(
                 "Ingen journalpostId registrert i avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id}",
             )
         }
 
-        finalizeJournalpostAsSystemUser(
+        finalizeJournalpost(
             journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
+            journalfoerendeEnhet = journalfoerendeEnhet,
         )
 
         return LocalDateTime.now()

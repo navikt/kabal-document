@@ -3,7 +3,10 @@ package no.nav.klage.dokument.service
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
+import io.mockk.verify
+import no.nav.klage.dokument.clients.joark.JoarkClient
 import no.nav.klage.dokument.clients.joark.JoarkMapper
 import no.nav.klage.dokument.clients.joark.JournalpostType
 import no.nav.klage.dokument.domain.dokument.AvsenderMottaker
@@ -21,6 +24,8 @@ import no.nav.klage.kodeverk.Sakstype
 import no.nav.klage.kodeverk.Tema
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -93,6 +98,33 @@ internal class JournalfoeringServiceTest {
             journalfoerendeSaksbehandlerIdent = "S123456",
             dokumentType = DokumentType.VEDTAK,
         )
+
+    @ParameterizedTest
+    @ValueSource(strings = ["4291", "9999"])
+    fun `finalization forwards the supplied enhet to Joark`(enhet: String) {
+        val joarkClient = mockk<JoarkClient>()
+        val journalfoeringService =
+            JournalfoeringService(
+                joarkClient = joarkClient,
+                joarkMapper = JoarkMapper(),
+                mellomlagerService = mockk(),
+            )
+        val journalpostId = "JOURNALPOST_ID"
+        avsenderMottakerDistribusjon1.journalpostId = journalpostId
+        justRun { joarkClient.finalizeJournalpostAsSystemUser(journalpostId, enhet) }
+
+        journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
+            avsenderMottakerDistribusjon = avsenderMottakerDistribusjon1,
+            journalfoerendeEnhet = enhet,
+        )
+
+        verify(exactly = 1) {
+            joarkClient.finalizeJournalpostAsSystemUser(
+                journalpostId = journalpostId,
+                journalfoerendeEnhet = enhet,
+            )
+        }
+    }
 
     @Test
     @Disabled

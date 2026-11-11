@@ -255,7 +255,7 @@ internal class DokumentEnhetServiceTest {
             )
         } returns journalpostResponse3
 
-        every { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) } returns LocalDateTime.now()
+        every { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any(), any()) } returns LocalDateTime.now()
         every { journalfoeringService.tilknyttVedleggAsSystemUser(journalpostId = any(), journalfoerteVedlegg = any()) } returns
             TilknyttVedleggResponse(
                 feiledeDokumenter = emptyList(),
@@ -305,11 +305,13 @@ internal class DokumentEnhetServiceTest {
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon1,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon2,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
 
@@ -360,6 +362,7 @@ internal class DokumentEnhetServiceTest {
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon3,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
 
@@ -408,11 +411,13 @@ internal class DokumentEnhetServiceTest {
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon1,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon2,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
 
@@ -452,11 +457,13 @@ internal class DokumentEnhetServiceTest {
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon1,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
         verify(exactly = 1) {
             journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                 avsenderMottakerDistribusjon2,
+                journalfoerendeEnhet = dokumentEnhetTilDist.journalfoeringData.enhet,
             )
         }
 
@@ -503,7 +510,7 @@ internal class DokumentEnhetServiceTest {
                 journalfoerendeSaksbehandlerIdent = any(),
             )
         }
-        verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any()) }
+        verify(exactly = 0) { journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(any(), any()) }
         verify(exactly = 0) {
             dokumentDistribusjonService.distribuerJournalpostTilMottaker(
                 journalpostId = any(),
