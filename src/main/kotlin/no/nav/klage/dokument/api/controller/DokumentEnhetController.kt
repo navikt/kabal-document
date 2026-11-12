@@ -5,6 +5,7 @@ import no.nav.klage.dokument.api.input.DokumentEnhetWithDokumentreferanserInput
 import no.nav.klage.dokument.api.mapper.DokumentEnhetMapper
 import no.nav.klage.dokument.api.view.DokumentEnhetFullfoertView
 import no.nav.klage.dokument.api.view.DokumentEnhetView
+import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
 import no.nav.klage.dokument.service.DokumentEnhetService
 import no.nav.klage.dokument.util.getLogger
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,10 +21,13 @@ import java.util.UUID
 class DokumentEnhetController(
     private val dokumentEnhetMapper: DokumentEnhetMapper,
     private val dokumentEnhetService: DokumentEnhetService,
+    private val klageUnleashProxyClient: KlageUnleashProxyClient,
 ) {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         private val logger = getLogger(javaClass.enclosingClass)
+
+        private const val FAIL_FERDIGSTILLING_KABAL_DOCUMENT_TOGGLE = "fail-ferdigstilling-kabal-document"
     }
 
     @PostMapping("/meddokumentreferanser")
@@ -43,6 +47,9 @@ class DokumentEnhetController(
         @PathVariable("dokumentEnhetId") dokumentEnhetId: UUID,
     ): DokumentEnhetFullfoertView {
         logger.debug("Kall mottatt på fullfoerDokumentEnhet for {}", dokumentEnhetId)
+        if (klageUnleashProxyClient.isEnabled(FAIL_FERDIGSTILLING_KABAL_DOCUMENT_TOGGLE)) {
+            throw RuntimeException("Feature toggle '$FAIL_FERDIGSTILLING_KABAL_DOCUMENT_TOGGLE' is enabled.")
+        }
         val dokumentEnhet = dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetId)
         if (!dokumentEnhet.isAvsluttet()) {
             throw RuntimeException("DokumentEnhet (id: $dokumentEnhetId) feilet under fullføring. Se logger.")
