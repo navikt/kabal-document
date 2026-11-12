@@ -162,6 +162,7 @@ class DokumentEnhetService(
                     avsenderMottakerDistribusjon.ferdigstiltIJoark =
                         journalfoeringService.ferdigstillJournalpostForAvsenderMottakerDistribusjon(
                             avsenderMottakerDistribusjon = avsenderMottakerDistribusjon,
+                            journalfoerendeEnhet = dokumentEnhet.journalfoeringData.enhet,
                         )
                     avsenderMottakerDistribusjon.modified = LocalDateTime.now()
                     avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
