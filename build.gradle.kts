@@ -3,14 +3,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
-val mockkVersion = "1.14.11"
+val mockkVersion = "1.14.12"
 val ktlintVersion = "1.8.0"
 val h2Version = "1.4.200"
 val klageAuthVersion = "0.4.0"
 val logstashVersion = "9.0"
 val springMockkVersion = "5.0.1"
-val springDocVersion = "3.1.1"
-val shedlockVersion = "7.10.1"
+val springDocVersion = "3.2.0"
+val shedlockVersion = "7.11.0"
 val archunitVersion = "1.5.1"
 val ehcacheVersion = "3.12.0"
 val kodeverkVersion = "3.4.2"
@@ -28,7 +28,7 @@ repositories {
 }
 
 plugins {
-    val kotlinVersion = "2.4.20"
+    val kotlinVersion = "2.4.21"
     id("org.springframework.boot") version "4.1.2"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version kotlinVersion
