@@ -34,6 +34,10 @@ class AvsenderMottakerDistribusjon(
     var ferdigstiltIJoark: LocalDateTime? = null,
     @Column(name = "dokdist_referanse")
     var dokdistReferanse: UUID? = null,
+    @Column(name = "avtalemelding_arkivsaksnummer")
+    var avtalemeldingArkivsaksnummer: String? = null,
+    @Column(name = "avtalemelding_sendt")
+    var avtalemeldingSendt: LocalDateTime? = null,
     @Column(name = "modified")
     var modified: LocalDateTime = LocalDateTime.now(),
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
