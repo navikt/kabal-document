@@ -188,7 +188,7 @@ class DokumentEnhetService(
                             logger.debug(
                                 "Distributing journalpost ${avsenderMottakerDistribusjon.journalpostId} for avsenderMottakerDistribusjon ${avsenderMottakerDistribusjon.id} in dokumentEnhet ${dokumentEnhet.id}",
                             )
-                            avsenderMottakerDistribusjon.dokdistReferanse =
+                            val resultat =
                                 dokumentDistribusjonService.distribuerJournalpostTilMottaker(
                                     journalpostId = avsenderMottakerDistribusjon.journalpostId!!,
                                     dokumentType = dokumentEnhet.dokumentType,
@@ -199,7 +199,13 @@ class DokumentEnhetService(
                                         avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten,
                                     trygderettenMetadata = trygderettenMetadata,
                                 )
-                            avsenderMottakerDistribusjon.modified = LocalDateTime.now()
+                            avsenderMottakerDistribusjon.dokdistReferanse = resultat.dokdistReferanse
+                            val now = LocalDateTime.now()
+                            if (resultat.avtalemeldingArkivsaksnummer != null) {
+                                avsenderMottakerDistribusjon.avtalemeldingArkivsaksnummer = resultat.avtalemeldingArkivsaksnummer
+                                avsenderMottakerDistribusjon.avtalemeldingSendt = now
+                            }
+                            avsenderMottakerDistribusjon.modified = now
                             avsenderMottakerDistribusjonRepository.save(avsenderMottakerDistribusjon)
                         } catch (t: Throwable) {
                             logger.error(

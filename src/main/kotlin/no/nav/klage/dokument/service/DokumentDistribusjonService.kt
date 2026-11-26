@@ -11,6 +11,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.UUID
 
+data class DistribusjonResultat(
+    val dokdistReferanse: UUID,
+    val avtalemeldingArkivsaksnummer: String?,
+)
+
 @Service
 class DokumentDistribusjonService(
     private val dokDistFordelingClient: DokDistFordelingClient,
@@ -31,8 +36,8 @@ class DokumentDistribusjonService(
         avsenderMottakerDistribusjonId: UUID,
         mottakerIsTrygderetten: Boolean,
         trygderettenMetadata: TrygderettenMetadataInput?,
-    ): UUID {
-        val avtalemelding =
+    ): DistribusjonResultat {
+        val (avtalemeldingArkivsaksnummer, avtalemelding) =
             if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten &&
                 klageUnleashProxyClient.isEnabled("createEkspedisjonsbrevToTR")
             ) {
@@ -48,19 +53,24 @@ class DokumentDistribusjonService(
                 if (activeSpringProfile == "dev") {
                     logger.debug("Avtalemelding content (first 8000 chars): ${avtalemelding.take(8000)}")
                 }
-                avtalemelding
+                arkivsaksnummer to avtalemelding
             } else {
-                null
+                null to null
             }
 
-        return dokDistFordelingClient
-            .distribuerJournalpost(
-                journalpostId = journalpostId,
-                dokumentType = dokumentType,
-                tvingSentralPrint = tvingSentralPrint,
-                adresse = adresse?.toDokDistAdresse(),
-                avtalemeldingTilTrygderetten = avtalemelding,
-            ).bestillingsId
+        val dokdistReferanse =
+            dokDistFordelingClient
+                .distribuerJournalpost(
+                    journalpostId = journalpostId,
+                    dokumentType = dokumentType,
+                    tvingSentralPrint = tvingSentralPrint,
+                    adresse = adresse?.toDokDistAdresse(),
+                    avtalemeldingTilTrygderetten = avtalemelding,
+                ).bestillingsId
+        return DistribusjonResultat(
+            dokdistReferanse = dokdistReferanse,
+            avtalemeldingArkivsaksnummer = avtalemeldingArkivsaksnummer,
+        )
     }
 
     private fun Adresse.toDokDistAdresse(): no.nav.klage.dokument.clients.dokdistfordeling.Adresse =

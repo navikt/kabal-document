@@ -34,7 +34,6 @@ internal class DokumentEnhetServiceTest {
     private val dokumentEnhetInputMapper = mockk<DokumentEnhetInputMapper>()
     private val journalfoeringService = mockk<JournalfoeringService>()
     private val dokumentDistribusjonService = mockk<DokumentDistribusjonService>()
-    private val mellomlagerService = mockk<MellomlagerService>()
     private val avsenderMottakerDistribusjonRepository = mockk<AvsenderMottakerDistribusjonRepository>()
     private val trygderettenMetadataRepository = mockk<TrygderettenMetadataRepository>()
     val journalpostId1 = "JOURNALPOST_ID_1"
@@ -275,7 +274,11 @@ internal class DokumentEnhetServiceTest {
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
             )
-        } returns UUID.randomUUID()
+        } returns
+            DistribusjonResultat(
+                dokdistReferanse = UUID.randomUUID(),
+                avtalemeldingArkivsaksnummer = null,
+            )
     }
 
     @Test
@@ -494,6 +497,58 @@ internal class DokumentEnhetServiceTest {
                 trygderettenMetadata = null,
             )
         }
+    }
+
+    @Test
+    fun `info om avtalemelding lagres etter vellykket distribusjon`() {
+        val dokumentEnhetTilDist = journalfoertMenIkkeDistribuertDokumentEnhetMedVedleggOgToBrevMottakere()
+        dokumentEnhetTilDist.avsenderMottakerDistribusjoner.forEach {
+            it.avtalemeldingArkivsaksnummer = null
+            it.avtalemeldingSendt = null
+        }
+        every { dokumentEnhetRepository.getReferenceById(any()) } returns dokumentEnhetTilDist
+        every {
+            dokumentDistribusjonService.distribuerJournalpostTilMottaker(
+                journalpostId = journalpostId1,
+                dokumentType = any(),
+                tvingSentralPrint = any(),
+                adresse = any(),
+                avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
+            )
+        } returns
+            DistribusjonResultat(
+                dokdistReferanse = UUID.randomUUID(),
+                avtalemeldingArkivsaksnummer = "2024123456",
+            )
+        every {
+            dokumentDistribusjonService.distribuerJournalpostTilMottaker(
+                journalpostId = journalpostId2,
+                dokumentType = any(),
+                tvingSentralPrint = any(),
+                adresse = any(),
+                avsenderMottakerDistribusjonId = any(),
+                mottakerIsTrygderetten = false,
+                trygderettenMetadata = null,
+            )
+        } returns
+            DistribusjonResultat(
+                dokdistReferanse = UUID.randomUUID(),
+                avtalemeldingArkivsaksnummer = null,
+            )
+
+        dokumentEnhetService.ferdigstillDokumentEnhet(dokumentEnhetTilDist.id)
+
+        val avtalemeldingDistribusjon =
+            dokumentEnhetTilDist.avsenderMottakerDistribusjoner.first { it.journalpostId == journalpostId1 }
+        assertThat(avtalemeldingDistribusjon.avtalemeldingArkivsaksnummer).isEqualTo("2024123456")
+        assertThat(avtalemeldingDistribusjon.avtalemeldingSendt).isNotNull
+
+        val ingenAvtalemeldingDistribusjon =
+            dokumentEnhetTilDist.avsenderMottakerDistribusjoner.first { it.journalpostId == journalpostId2 }
+        assertThat(ingenAvtalemeldingDistribusjon.avtalemeldingArkivsaksnummer).isNull()
+        assertThat(ingenAvtalemeldingDistribusjon.avtalemeldingSendt).isNull()
     }
 
     @Test
