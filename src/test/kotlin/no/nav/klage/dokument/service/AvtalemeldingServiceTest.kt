@@ -12,13 +12,9 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Saksmappe
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
-import no.nav.klage.dokument.clients.ereg.EregClient
-import no.nav.klage.dokument.clients.ereg.NoekkelInfoOmOrganisasjon
+import no.nav.klage.dokument.clients.klagelookup.KlageLookupClient
+import no.nav.klage.dokument.clients.klagelookup.PersonResponse
 import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
-import no.nav.klage.dokument.clients.pdl.graphql.HentPersonResponse
-import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
-import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
-import no.nav.klage.dokument.clients.pdl.graphql.PdlPersonDataWrapper
 import no.nav.klage.dokument.clients.saf.graphql.AvsenderMottaker
 import no.nav.klage.dokument.clients.saf.graphql.Bruker
 import no.nav.klage.dokument.clients.saf.graphql.BrukerType
@@ -77,8 +73,7 @@ import no.nav.klage.kodeverk.Tema as KodeverkTema
 
 class AvtalemeldingServiceTest {
     val safGraphQlClient = mockk<SafGraphQlClient>()
-    val pdlClient = mockk<PdlClient>()
-    val eregClient = mockk<EregClient>()
+    val klageLookupClient = mockk<KlageLookupClient>()
     val klageUnleashProxyClient =
         mockk<KlageUnleashProxyClient>().apply {
             every { isEnabled(any()) } returns false
@@ -123,17 +118,13 @@ class AvtalemeldingServiceTest {
     val tittelVedleggInngaaende = "Dokumentasjon til klage, Fra $avsenderMottakerNavnOrigJp"
 
     val dokumentInfoIdVedlegg2 = "9876543"
-    val eregNavn = "Bedrift AS"
-    val pdlFornavn = "Bjarne"
-    val pdlEtternavn = "Betjent"
-    val pdlSammensattNavn = "Bjarne Betjent"
+    val klageLookupSammensattNavn = "Bjarne Betjent"
 
     val avtalemeldingService =
         AvtalemeldingService(
             safGraphQlClient = safGraphQlClient,
             applicationName = "test",
-            pdlClient = pdlClient,
-            eregClient = eregClient,
+            klageLookupClient = klageLookupClient,
             klageUnleashProxyClient = klageUnleashProxyClient,
         )
 
@@ -183,13 +174,14 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemeldingXml) =
             avtalemeldingService.generateMarshalledAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val v: Validator = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
@@ -216,7 +208,7 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         every { klageUnleashProxyClient.isEnabled("nav-tr-v2") } returns true
 
         val (arkivsaksnummer, avtalemeldingXml) =
@@ -224,6 +216,7 @@ class AvtalemeldingServiceTest {
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = trygderettenMetadataInput,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val v = Validator.forLanguage(Languages.W3C_XML_SCHEMA_NS_URI)
@@ -246,13 +239,14 @@ class AvtalemeldingServiceTest {
                 originalJournalpostIdForVedlegg = null,
             )
         every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (_, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = trygderettenMetadataInput,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val saksmappe = avtalemelding.mappe.first() as Saksmappe
@@ -268,13 +262,14 @@ class AvtalemeldingServiceTest {
                 originalJournalpostIdForVedlegg = null,
             )
         every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (_, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = trygderettenMetadataInput.copy(trygderettenSaksnummer = null),
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val saksmappe = avtalemelding.mappe.first() as Saksmappe
@@ -290,13 +285,14 @@ class AvtalemeldingServiceTest {
                 originalJournalpostIdForVedlegg = null,
             )
         every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         assertThrows<DokumentEnhetNotValidException> {
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = trygderettenMetadataInput.copy(trygderettenSaksnummer = "2027"),
+                sakenGjelderFnr = brukerIdFnr,
             )
         }
     }
@@ -314,13 +310,14 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertAvtalemelding(avtalemelding = avtalemelding)
@@ -331,49 +328,53 @@ class AvtalemeldingServiceTest {
             safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(any())
         }
         verify(exactly = 1) {
-            pdlClient.getPersonInfo(brukerIdFnr)
-        }
-        verify(exactly = 0) {
-            eregClient.hentNoekkelInformasjonOmOrganisasjon(any())
+            klageLookupClient.getPerson(fnr = brukerIdFnr)
         }
     }
 
     @Test
-    fun `input where bruker is organization, with no external journalpost reference, generates expected avtalemelding`() {
-        val journalpost1 =
-            getJournalpost(
-                brukerOrgNummer = brukerIdOrgnr,
-                originalJournalpostIdForVedlegg = null,
-            )
-        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost1
-        every { safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = any()) } returns
-            listOf(
-                journalpost1,
-                getJournalpost2(journalposttype = Journalposttype.I),
-            )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
+    fun `lookup missing name placeholder is used unchanged`() {
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns
+            getJournalpost(brukerOrgNummer = null, originalJournalpostIdForVedlegg = null)
+        every { klageLookupClient.getPerson(fnr = brukerIdFnr) } returns PersonResponse(sammensattNavn = "mangler navn")
 
-        val (arkivsaksnummer, avtalemelding) =
+        val (_, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
-        assertAvtalemelding(avtalemelding = avtalemelding, brukerIsOrganisasjon = true)
-        verify(exactly = 1) {
-            safGraphQlClient.getJournalpostAsSystembruker(journalpostId1)
-        }
-        verify(exactly = 0) {
-            safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(any())
-        }
-        verify(exactly = 0) {
-            pdlClient.getPersonInfo(brukerIdFnr)
-        }
-        verify(exactly = 1) {
-            eregClient.hentNoekkelInformasjonOmOrganisasjon(any())
-        }
+        val saksmappe = avtalemelding.mappe.single() as Saksmappe
+        val personPart = saksmappe.part.single { it.partRolle == SAKSPART_ROLLE_DAP }
+        assertThat(personPart.partNavn).isEqualTo("mangler navn")
+        assertThat(personPart.foedselsnummer.foedselsnummer).isEqualTo(brukerIdFnr)
+    }
+
+    @Test
+    fun `person lookup failure is propagated`() {
+        val journalpost =
+            getJournalpost(
+                brukerOrgNummer = null,
+                originalJournalpostIdForVedlegg = null,
+            )
+        val failure = RuntimeException("lookup failed")
+        every { safGraphQlClient.getJournalpostAsSystembruker(any()) } returns journalpost
+        every { klageLookupClient.getPerson(fnr = any()) } throws failure
+
+        val actual =
+            assertThrows<RuntimeException> {
+                avtalemeldingService.generateAvtalemelding(
+                    journalpostId = journalpostId1,
+                    bestillingsId = bestillingsId,
+                    trygderettenMetadata = null,
+                    sakenGjelderFnr = brukerIdFnr,
+                )
+            }
+
+        assertThat(actual).isSameAs(failure)
+        verify(exactly = 1) { klageLookupClient.getPerson(fnr = brukerIdFnr) }
     }
 
     @Test
@@ -389,14 +390,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertDokumentbeskrivelseVedlegg(
@@ -418,10 +418,7 @@ class AvtalemeldingServiceTest {
             safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(any())
         }
         verify(exactly = 1) {
-            pdlClient.getPersonInfo(brukerIdFnr)
-        }
-        verify(exactly = 0) {
-            eregClient.hentNoekkelInformasjonOmOrganisasjon(any())
+            klageLookupClient.getPerson(fnr = brukerIdFnr)
         }
     }
 
@@ -438,14 +435,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.U),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertDokumentbeskrivelseVedlegg(
@@ -486,14 +482,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.U),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val dokumentobjektHoveddokument =
@@ -533,14 +528,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.U),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val dokumentobjektHoveddokument =
@@ -580,14 +574,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.U),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val dokumentobjektHoveddokument =
@@ -627,14 +620,13 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.U),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
-        every { eregClient.hentNoekkelInformasjonOmOrganisasjon(any()) } returns hentOrganisasjonResponse
-
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         val dokumentobjektHoveddokument =
@@ -663,13 +655,14 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertAvtalemelding(
@@ -691,13 +684,14 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertThat(avtalemelding.antallFiler).isEqualTo(1)
@@ -723,13 +717,14 @@ class AvtalemeldingServiceTest {
                 journalpost1,
                 getJournalpost2(journalposttype = Journalposttype.I, journalfoertAvNavn = null, opprettetAvNavn = null),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertThat(
@@ -771,13 +766,14 @@ class AvtalemeldingServiceTest {
                     dokumentInfoId = dokumentInfoIdVedlegg2,
                 ),
             )
-        every { pdlClient.getPersonInfo(any()) } returns hentPersonResponse
+        every { klageLookupClient.getPerson(fnr = any()) } returns personResponse
 
         val (arkivsaksnummer, avtalemelding) =
             avtalemeldingService.generateAvtalemelding(
                 journalpostId = journalpostId1,
                 bestillingsId = bestillingsId,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = brukerIdFnr,
             )
 
         assertThat(avtalemelding.mappe.first().opprettetDato).isEqualTo(
@@ -843,7 +839,7 @@ class AvtalemeldingServiceTest {
             assertThat(sakspartDAP.foedselsnummer.foedselsnummer).isEqualTo(brukerIdFnr)
             assertThat(sakspartDAP.organisasjonsnummer).isNull()
         }
-        assertThat(sakspartDAP.partNavn).isEqualTo(if (brukerIsOrganisasjon) eregNavn else pdlSammensattNavn)
+        assertThat(sakspartDAP.partNavn).isEqualTo(klageLookupSammensattNavn)
         assertThat(sakspartDAP.partRolle).isEqualTo(SAKSPART_ROLLE_DAP)
         assertThat(sakspartDAP.kontaktperson).isNull()
     }
@@ -994,48 +990,7 @@ class AvtalemeldingServiceTest {
         return navMappeElement.getValue()
     }
 
-    val hentPersonResponse =
-        HentPersonResponse(
-            data =
-                PdlPersonDataWrapper(
-                    hentPerson =
-                        PdlPerson(
-                            folkeregisteridentifikator =
-                                listOf(
-                                    PdlPerson.Folkeregisteridentifikator(
-                                        identifikasjonsnummer = brukerIdFnr,
-                                    ),
-                                ),
-                            adressebeskyttelse = listOf(),
-                            navn =
-                                listOf(
-                                    PdlPerson.Navn(
-                                        fornavn = pdlFornavn,
-                                        mellomnavn = null,
-                                        etternavn = pdlEtternavn,
-                                    ),
-                                ),
-                            kjoenn = listOf(),
-                            sivilstand = listOf(),
-                            vergemaalEllerFremtidsfullmakt = listOf(),
-                            doedsfall = listOf(),
-                            sikkerhetstiltak = listOf(),
-                        ),
-                ),
-            errors = listOf(),
-        )
-
-    val hentOrganisasjonResponse =
-        NoekkelInfoOmOrganisasjon(
-            navn =
-                NoekkelInfoOmOrganisasjon.Navn(
-                    sammensattnavn = eregNavn,
-                ),
-            organisasjonsnummer = brukerIdOrgnr,
-            enhetstype = "",
-            opphoersdato = null,
-            adresse = null,
-        )
+    val personResponse = PersonResponse(sammensattNavn = klageLookupSammensattNavn)
 
     fun getJournalpost(
         brukerOrgNummer: String?,

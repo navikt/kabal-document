@@ -7,11 +7,6 @@ JOARK_SERVICE_URL: https://dokarkiv.prod-fss-pub.nais.io/rest/journalpostapi/v1/
 DOKDIST_SCOPE: prod-fss.teamdokumenthandtering.dokdistfordeling
 DOKDIST_SERVICE_URL: https://dokdistfordeling.prod-fss-pub.nais.io/rest/v1/distribuerjournalpost
 
-PDL_BASE_URL: https://pdl-api.prod-fss-pub.nais.io/graphql
-PDL_SCOPE: prod-fss.pdl.pdl-api
-
-EREG_URL: https://ereg-services.prod-fss-pub.nais.io/api/v2
-
 springdoc:
   api-docs:
     enabled: false

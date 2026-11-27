@@ -10,7 +10,6 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.FoedselsnummerType
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.nav.avtaltmelding.trygderetten.v1.NavMappe
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
-import no.nav.klage.dokument.clients.pdl.graphql.PdlPerson
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
 import no.nav.klage.dokument.clients.saf.graphql.Dokumentvariant
 import no.nav.klage.dokument.clients.saf.graphql.Filtype
@@ -140,11 +139,6 @@ fun getDokumentbeskrivelseOpprettetAv(
     } else {
         newJournalpost.journalfortAvNavn!!
     }
-
-fun getSammensattNavn(navn: PdlPerson.Navn?): String? {
-    val mellomnavn = navn?.mellomnavn?.let { " ${it.trim()}" } ?: ""
-    return navn?.let { "${it.fornavn}$mellomnavn ${it.etternavn}" }
-}
 
 /**
  * Splits saksnummeret fra Trygderetten into saksaar and sakssekvensnummer for the saksmappe. The number

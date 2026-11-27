@@ -36,6 +36,7 @@ class DokumentDistribusjonService(
         avsenderMottakerDistribusjonId: UUID,
         mottakerIsTrygderetten: Boolean,
         trygderettenMetadata: TrygderettenMetadataInput?,
+        sakenGjelderFnr: String,
     ): DistribusjonResultat {
         val (avtalemeldingArkivsaksnummer, avtalemelding) =
             if (dokumentType == DokumentType.EKSPEDISJONSBREV_TIL_TRYGDERETTEN && mottakerIsTrygderetten &&
@@ -46,6 +47,7 @@ class DokumentDistribusjonService(
                         journalpostId = journalpostId,
                         bestillingsId = avsenderMottakerDistribusjonId.toString(),
                         trygderettenMetadata = trygderettenMetadata,
+                        sakenGjelderFnr = sakenGjelderFnr,
                     )
                 logger.debug(
                     "Avtalemelding generert for journalpost: $journalpostId, arkivsaksnummer: $arkivsaksnummer, meldingId: $avsenderMottakerDistribusjonId",

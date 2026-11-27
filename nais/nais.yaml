@@ -80,6 +80,7 @@ spec:
       rules:
         - application: kabal-file-api
         - application: klage-unleash-proxy
+        - application: klage-lookup
         - application: clamav
           namespace: clamav
         - application: logging
@@ -91,13 +92,11 @@ spec:
   envFrom:
     - secret: srvklage-saksbeh
     - secret: sts-apikey
-    - secret: pdl-apikey
     - secret: slack-url
     - secret: slack-channel-id
     - secret: norg2
     - secret: axsys
     - secret: journalpost-apikey
-    - secret: ereg
     - secret: dokdist-apikey
   env:
     - name: SPRING_PROFILES_ACTIVE

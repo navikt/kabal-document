@@ -63,4 +63,6 @@ KABAL_FILE_API_APP_NAME: kabal-file-api
 
 KLAGE_UNLEASH_PROXY_URL: http://klage-unleash-proxy
 
+KLAGE_LOOKUP_BASE_URL: http://klage-lookup
+
 ORGANISASJONSNUMMER_TRYGDERETTEN: 974761084

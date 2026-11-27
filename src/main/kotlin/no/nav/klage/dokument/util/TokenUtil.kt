@@ -11,8 +11,8 @@ class TokenUtil(
     private val kabalFileApiScope: String,
     @Value($$"api://${SAF_SCOPE}/.default")
     private val safScope: String,
-    @Value($$"api://${PDL_SCOPE}/.default")
-    private val pdlScope: String,
+    @Value($$"api://${NAIS_CLUSTER_NAME}.${NAIS_NAMESPACE}.klage-lookup/.default")
+    private val klageLookupScope: String,
     @Value($$"api://${DOKARKIV_SCOPE}/.default")
     private val dokarkivScope: String,
     @Value($$"api://${DOKDIST_SCOPE}/.default")
@@ -22,7 +22,7 @@ class TokenUtil(
 
     fun getAppAccessTokenWithSafScope(): String = texasClient.machineToMachineToken(safScope)
 
-    fun getAppAccessTokenWithPdlScope(): String = texasClient.machineToMachineToken(pdlScope)
+    fun getAppAccessTokenWithKlageLookupScope(): String = texasClient.machineToMachineToken(klageLookupScope)
 
     fun getSaksbehandlerAccessTokenWithDokarkivScope(): String = texasClient.onBehalfOfCurrentUser(dokarkivScope)
 
