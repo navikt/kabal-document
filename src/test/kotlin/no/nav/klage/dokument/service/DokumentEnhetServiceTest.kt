@@ -273,6 +273,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         } returns
             DistribusjonResultat(
@@ -332,6 +333,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
         verify(exactly = 1) {
@@ -343,6 +345,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
     }
@@ -383,6 +386,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
     }
@@ -438,6 +442,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
     }
@@ -484,6 +489,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
         verify(exactly = 1) {
@@ -495,6 +501,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
     }
@@ -516,6 +523,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         } returns
             DistribusjonResultat(
@@ -531,6 +539,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         } returns
             DistribusjonResultat(
@@ -585,6 +594,7 @@ internal class DokumentEnhetServiceTest {
                 avsenderMottakerDistribusjonId = any(),
                 mottakerIsTrygderetten = false,
                 trygderettenMetadata = null,
+                sakenGjelderFnr = any(),
             )
         }
     }

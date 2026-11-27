@@ -9,11 +9,8 @@ import no.arkivverket.standarder.noark5.arkivmelding.v2.Korrespondansepart
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Part
 import no.arkivverket.standarder.noark5.arkivmelding.v2.Saksmappe
 import no.nav.klage.dokument.api.input.TrygderettenMetadataInput
-import no.nav.klage.dokument.clients.ereg.EregClient
+import no.nav.klage.dokument.clients.klagelookup.KlageLookupClient
 import no.nav.klage.dokument.clients.klageunleashproxy.KlageUnleashProxyClient
-import no.nav.klage.dokument.clients.pdl.graphql.PdlClient
-import no.nav.klage.dokument.clients.saf.graphql.Bruker
-import no.nav.klage.dokument.clients.saf.graphql.BrukerType
 import no.nav.klage.dokument.clients.saf.graphql.DokumentInfo
 import no.nav.klage.dokument.clients.saf.graphql.Journalpost
 import no.nav.klage.dokument.clients.saf.graphql.SafGraphQlClient
@@ -44,7 +41,6 @@ import no.nav.klage.dokument.util.getNavMappe
 import no.nav.klage.dokument.util.getNow
 import no.nav.klage.dokument.util.getOldestDateFromDokumentbeskrivelser
 import no.nav.klage.dokument.util.getREPPart
-import no.nav.klage.dokument.util.getSammensattNavn
 import no.nav.klage.dokument.util.marshalAvtalemelding
 import no.nav.klage.dokument.util.splitTrygderettenSaksnummer
 import no.nav.klage.kodeverk.Tema
@@ -59,8 +55,7 @@ class AvtalemeldingService(
     private val safGraphQlClient: SafGraphQlClient,
     @Value($$"${spring.application.name}")
     private val applicationName: String,
-    private val pdlClient: PdlClient,
-    private val eregClient: EregClient,
+    private val klageLookupClient: KlageLookupClient,
     private val klageUnleashProxyClient: KlageUnleashProxyClient,
 ) {
     companion object {
@@ -74,6 +69,7 @@ class AvtalemeldingService(
         journalpostId: String,
         bestillingsId: String,
         trygderettenMetadata: TrygderettenMetadataInput?,
+        sakenGjelderFnr: String,
     ): Pair<String, String> =
         try {
             val useV2 = klageUnleashProxyClient.isEnabled(NAV_TR_V2_TOGGLE)
@@ -83,6 +79,7 @@ class AvtalemeldingService(
                     bestillingsId = bestillingsId,
                     trygderettenMetadata = trygderettenMetadata,
                     useV2 = useV2,
+                    sakenGjelderFnr = sakenGjelderFnr,
                 )
             val avtalemeldingAsString =
                 marshalAvtalemelding(
@@ -101,6 +98,7 @@ class AvtalemeldingService(
         bestillingsId: String,
         trygderettenMetadata: TrygderettenMetadataInput?,
         useV2: Boolean = false,
+        sakenGjelderFnr: String,
     ): Pair<String, Arkivmelding> {
         val journalpost = getJournalpost(journalpostId = journalpostId)
         val datoAvtalemeldingOpprettet = getNow()
@@ -116,6 +114,7 @@ class AvtalemeldingService(
             getDokumentbeskrivelser(
                 datoAvtalemeldingOpprettet = datoAvtalemeldingOpprettet,
                 newJournalpost = journalpost,
+                sakenGjelderFnr = sakenGjelderFnr,
             )
 
         val arkivsaksnummer =
@@ -132,6 +131,7 @@ class AvtalemeldingService(
                 arkivsaksnummer = arkivsaksnummer,
                 trygderettenMetadata = trygderettenMetadata,
                 useV2 = useV2,
+                sakenGjelderFnr = sakenGjelderFnr,
             ),
         )
 
@@ -144,6 +144,7 @@ class AvtalemeldingService(
         arkivsaksnummer: String,
         trygderettenMetadata: TrygderettenMetadataInput?,
         useV2: Boolean,
+        sakenGjelderFnr: String,
     ): Saksmappe {
         val sakOpprettetDato =
             if (journalpost.sak?.datoOpprettet != null) {
@@ -167,7 +168,7 @@ class AvtalemeldingService(
                     trygderettenMetadata = trygderettenMetadata,
                 )
             part.add(getAMPPart(opprettetAvNavn = journalpost.opprettetAvNavn))
-            part.add(getDAPPart(bruker = journalpost.bruker))
+            part.add(getDAPPart(sakenGjelderFnr = sakenGjelderFnr))
             if (useV2) {
                 trygderettenMetadata?.representant?.let { part.add(getREPPart(representant = it)) }
             }
@@ -226,31 +227,12 @@ class AvtalemeldingService(
     private fun getDokumentbeskrivelser(
         datoAvtalemeldingOpprettet: XMLGregorianCalendar?,
         newJournalpost: Journalpost,
+        sakenGjelderFnr: String,
     ): Collection<Dokumentbeskrivelse> {
-        val bruker = newJournalpost.bruker
-        val brukerId =
-            when (bruker.type) {
-                BrukerType.FNR, BrukerType.ORGNR -> {
-                    bruker.id
-                }
-
-                BrukerType.AKTOERID -> {
-                    pdlClient
-                        .getPersonInfo(
-                            ident = bruker.id,
-                        ).data
-                        ?.hentPerson
-                        ?.folkeregisteridentifikator
-                        ?.firstOrNull()
-                        ?.identifikasjonsnummer
-                        ?: throw RuntimeException("Foedselsnummer not found")
-                }
-            }
-
         val dokumenter = newJournalpost.dokumenter ?: throw RuntimeException("No files in journalpost")
         val existingJournalpostList =
             if (dokumenter.any { it.originalJournalpostId != null }) {
-                getJournalpostListForBrukerId(brukerId = brukerId)
+                getJournalpostListForBrukerId(brukerId = sakenGjelderFnr)
             } else {
                 listOf(newJournalpost)
             }
@@ -376,36 +358,12 @@ class AvtalemeldingService(
     fun getJournalpostListForBrukerId(brukerId: String): List<Journalpost> =
         safGraphQlClient.getDokumentoversiktBrukerAsSystembruker(brukerId = brukerId)
 
-    private fun getDAPPart(bruker: Bruker): Part =
-        when (bruker.type) {
-            BrukerType.FNR, BrukerType.AKTOERID -> {
-                val personInfo = pdlClient.getPersonInfo(ident = bruker.id)
-                val fnr =
-                    personInfo.data
-                        ?.hentPerson
-                        ?.folkeregisteridentifikator
-                        ?.firstOrNull()
-                        ?.identifikasjonsnummer
-                        ?: throw RuntimeException("Foedselsnummer not found for bruker ${bruker.id}")
-                Part().apply {
-                    partNavn =
-                        getSammensattNavn(
-                            personInfo.data.hentPerson.navn
-                                .firstOrNull(),
-                        )
-                    partRolle = SAKSPART_ROLLE_DAP
-                    foedselsnummer = FoedselsnummerType().apply { foedselsnummer = fnr }
-                }
-            }
-
-            BrukerType.ORGNR -> {
-                val orgnummer = bruker.id
-                val noekkelInfoOmOrganisasjon = eregClient.hentNoekkelInformasjonOmOrganisasjon(orgnummer)
-                Part().apply {
-                    partNavn = noekkelInfoOmOrganisasjon.navn.sammensattnavn
-                    partRolle = SAKSPART_ROLLE_DAP
-                    organisasjonsnummer = EnhetsidentifikatorType().apply { organisasjonsnummer = orgnummer }
-                }
-            }
+    private fun getDAPPart(sakenGjelderFnr: String): Part {
+        val personInfo = klageLookupClient.getPerson(fnr = sakenGjelderFnr)
+        return Part().apply {
+            partNavn = personInfo.sammensattNavn
+            partRolle = SAKSPART_ROLLE_DAP
+            foedselsnummer = FoedselsnummerType().apply { foedselsnummer = sakenGjelderFnr }
         }
+    }
 }

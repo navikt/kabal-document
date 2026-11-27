@@ -198,6 +198,7 @@ class DokumentEnhetService(
                                     mottakerIsTrygderetten =
                                         avsenderMottakerDistribusjon.avsenderMottaker.partId?.value == organisasjonsnummerTrygderetten,
                                     trygderettenMetadata = trygderettenMetadata,
+                                    sakenGjelderFnr = dokumentEnhet.journalfoeringData.sakenGjelder.value,
                                 )
                             avsenderMottakerDistribusjon.dokdistReferanse = resultat.dokdistReferanse
                             val now = LocalDateTime.now()

@@ -20,7 +20,7 @@ class WebClientConfig {
         const val SMALL_FILE_UPLOAD_TIMEOUT_SECONDS = 25L // dokarkiv - small file uploads (faster failure detection)
         const val FILE_API_TIMEOUT_SECONDS = 60L // file-api - file operations
         const val STANDARD_TIMEOUT_SECONDS = 30L // saf, dokdist
-        const val FAST_LOOKUP_TIMEOUT_SECONDS = 10L // pdl, ereg - quick lookups
+        const val FAST_LOOKUP_TIMEOUT_SECONDS = 10L // klage-lookup - quick lookups
         const val CONNECT_TIMEOUT_MILLIS = 5_000
     }
 
@@ -79,7 +79,7 @@ class WebClientConfig {
         )
 
     /**
-     * HttpClient for fast lookups (pdl, ereg) - 10 second timeout.
+     * HttpClient for fast lookups (klage-lookup) - 10 second timeout.
      */
     @Bean
     fun fastLookupHttpClient(connectionProvider: ConnectionProvider): HttpClient =
